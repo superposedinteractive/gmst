@@ -7,10 +7,6 @@ local music = {
 
 if LoadedSounds == nil then
     LoadedSounds = {}
-
-    for key, value in pairs(music) do
-        LoadedSounds[value] = CreateSound(LocalPlayer(), value)
-    end
 end
 
 local currentSound = nil
@@ -20,13 +16,18 @@ net.Receive("cataclysm_zone", function()
     print("Entering zone " .. zone)
 
     if music[zone] then
-        print("Playing " .. music[zone])
+        local snd = music[zone]
+        print("Playing " .. zone)
+
+        if LoadedSounds[snd] == nil then
+            LoadedSounds[snd] = CreateSound(LocalPlayer(), snd)
+        end
 
         if currentSound ~= nil then
             currentSound:FadeOut(3)
         end
 
-        currentSound = LoadedSounds[music[zone]]
+        currentSound = LoadedSounds[snd]
         currentSound:Play()
         currentSound:ChangeVolume(0)
         currentSound:ChangeVolume(1, 3)
