@@ -22,6 +22,16 @@ function GM:CalcView(ply, pos, ang, fov)
 		view.drawviewer = true
 	end
 
+	local tr = util.TraceLine({
+		start = pos,
+		endpos = view.origin,
+		filter = ply
+	})
+
+	if(tr.Hit) then
+		view.origin = tr.HitPos + tr.HitNormal * 5
+	end
+
 	return view
 end
 

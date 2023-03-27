@@ -1,4 +1,5 @@
 // cataclysm - Player manager
+util.AddNetworkString("cataclysm_chat")
 
 function GM:PlayerSpawn(ply)
 	ply:SetModel(ply:GetInfo("cl_playermodel"))
@@ -35,4 +36,14 @@ function GM:PlayerStartTaunt(ply, actid, len)
 			
 		end
 	end)
+end
+
+function GM:PlayerSay(ply, text, team)
+	net.Start("cataclysm_chat")
+		net.WriteString(ply:GetNWString("zone") or "Somewhere")
+		net.WriteString(ply:Nick())
+		net.WriteString(text)
+	net.Broadcast()
+
+	return ""
 end
