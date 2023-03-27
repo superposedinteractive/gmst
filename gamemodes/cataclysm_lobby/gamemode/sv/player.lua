@@ -7,6 +7,7 @@ function GM:PlayerSpawn(ply)
 	ply:UnSpectate()
 	ply:CrosshairEnable()
 	ply:SetCrouchedWalkSpeed(0.3)
+	ply:AllowFlashlight(true)
 end
 
 function GM:GetFallDamage()
@@ -24,3 +25,15 @@ timer.Create("cataclysm_globalheal", 0.25, 0, function()
 		end
 	end
 end)
+
+function GM:PlayerStartTaunt(ply, actid, len)
+	ply:CrosshairDisable()
+	ply:Freeze(true)
+
+	timer.Simple(len, function()
+		if(IsValid(ply)) then
+			ply:CrosshairEnable()
+			ply:Freeze(false)
+		end
+	end)
+end

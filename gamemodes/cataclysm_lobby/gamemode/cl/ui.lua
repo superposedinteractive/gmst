@@ -1,16 +1,16 @@
 // cataclysm - General UI
 
 local hudExceptions = {
-    "CHudCrosshair",
-    "CHudCloseCaption",
-    "CHudDamageIndicator",
-    "CHudMessage",
-    "CHudHintDisplay",
-    "CHudWeapon",
-    "CHudGMod",
-    "CHudChat",
+	["CHudCrosshair"] = true,
+	["CHudCloseCaption"] = true,
+	["CHudDamageIndicator"] = true,
+	["CHudMessage"] = true,
+	["CHudHintDisplay"] = true,
+	["CHudWeapon"] = true,
+	["CHudGMod"] = true,
+	["CHudChat"] = true,
 }
 
 function GM:HUDShouldDraw(name)
-    return table.HasValue(hudExceptions, name)
+	return hudExceptions[name] || false
 end
