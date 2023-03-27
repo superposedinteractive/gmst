@@ -28,12 +28,11 @@ end)
 
 function GM:PlayerStartTaunt(ply, actid, len)
 	ply:CrosshairDisable()
-	ply:Freeze(true)
 
 	timer.Simple(len, function()
 		if(IsValid(ply)) then
 			ply:CrosshairEnable()
-			ply:Freeze(false)
+			
 		end
 	end)
 end

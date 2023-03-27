@@ -2,7 +2,7 @@
 
 local scroll = 0
 
-hook.Add("CalcView", "cataclysm", function(ply, pos, ang, fov)
+function GM:CalcView(ply, pos, ang, fov)
 	local view = {}
 
 	if(!LocalPlayer():IsPlayingTaunt()) then
@@ -10,14 +10,29 @@ hook.Add("CalcView", "cataclysm", function(ply, pos, ang, fov)
 		view.angles = ang
 		view.fov = fov
 		view.drawviewer = (scroll != 0)
+	else
+		if(scroll == 0) then
+			view.origin = pos - ang:Forward() * 100
+		else
+			view.origin = pos - ang:Forward() * scroll
+		end
+
+		view.angles = ang
+		view.fov = fov
+		view.drawviewer = true
 	end
 
 	return view
-end)
+end
 
-hook.Add("InputMouseApply", "cataclysm", function(cmd, x, y, angle)
+hook.Add("InputMouseApply", "cataclysm_zoom", function(cmd, x, y, angle)
 	scroll = math.Clamp(scroll - (math.Clamp(math.ceil(cmd:GetMouseWheel()) * 10000, -1, 1) * 5), 0, 100)
 	cmd:SetMouseWheel(0)
 end)
 
-function PLAYER:ShouldDrawLocal
+function GM:CreateMove(cmd)
+	if(LocalPlayer():IsPlayingTaunt()) then
+		cmd:ClearMovement()
+		cmd:ClearButtons()
+	end
+end
