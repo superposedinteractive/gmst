@@ -1,12 +1,34 @@
 include("shared.lua")
 
 local music = {
-	["Trainstation"] = "/sound/music/lobby1.mp3"
+    ["Trainstation"] = "music/lobby1.mp3",
+    ["Lobby"] = "music/lobby2.mp3"
 }
 
+if LoadedSounds == nil then
+    LoadedSounds = {}
+
+    for key, value in pairs(music) do
+        LoadedSounds[value] = CreateSound(LocalPlayer(), value)
+    end
+end
+
+local currentSound = nil
+
 net.Receive("cataclysm_zone", function()
-	local zone = net.ReadString()
-	if music[zone] then
-		surface.PlaySound(music[zone])
-	end
+    local zone = net.ReadString()
+    print("Entering zone " .. zone)
+
+    if music[zone] then
+        print("Playing " .. music[zone])
+
+        if currentSound ~= nil then
+            currentSound:FadeOut(5)
+        end
+
+        currentSound = LoadedSounds[music[zone]]
+        currentSound:Play()
+        currentSound:ChangeVolume(0)
+        currentSound:ChangeVolume(1, 5)
+    end
 end)
