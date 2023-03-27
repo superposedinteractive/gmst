@@ -1,0 +1,4 @@
+// cataclysm - NETVARS SHARED
+
+networkVariables = {
+}

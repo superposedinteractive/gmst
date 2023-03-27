@@ -1,0 +1,6 @@
+"cataclysm_lobby" {
+	"base"  "base"
+	"title" "cataclysm_lobby"
+	"category"  "other"
+	"menusystem"	"1"
+}
