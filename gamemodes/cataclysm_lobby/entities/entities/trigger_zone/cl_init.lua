@@ -23,12 +23,12 @@ net.Receive("cataclysm_zone", function()
         print("Playing " .. music[zone])
 
         if currentSound ~= nil then
-            currentSound:FadeOut(5)
+            currentSound:FadeOut(3)
         end
 
         currentSound = LoadedSounds[music[zone]]
         currentSound:Play()
         currentSound:ChangeVolume(0)
-        currentSound:ChangeVolume(1, 5)
+        currentSound:ChangeVolume(1, 3)
     end
 end)
