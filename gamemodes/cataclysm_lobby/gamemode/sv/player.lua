@@ -41,6 +41,7 @@ end
 function GM:PlayerSay(ply, text, team)
 	net.Start("cataclysm_chat")
 		net.WriteString(ply:GetNWString("zone") or "Somewhere")
+		net.WriteVector(ply:GetPlayerColor())
 		net.WriteString(ply:Nick())
 		net.WriteString(text)
 	net.Broadcast()

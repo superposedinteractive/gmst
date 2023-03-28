@@ -1,8 +1,7 @@
 include("shared.lua")
 
 local music = {
-    ["Trainstation"] = "music/lobby1.mp3",
-    ["Lobby"] = "music/lobby2.mp3"
+    ["Lobby"] = "/cataclysm/music/lobby2.mp3"
 }
 
 local LoadedSounds = {}
@@ -11,11 +10,9 @@ local currentSound = nil
 net.Receive("cataclysm_zone", function()
     local zone = net.ReadString()
 	LocalVars["zone"] = zone
-    print("Entering zone " .. zone)
 
     if music[zone] then
         local snd = music[zone]
-        print("Playing " .. zone)
 
         if LoadedSounds[snd] == nil then
             if !IsValid(LocalPlayer()) then 
@@ -27,7 +24,7 @@ net.Receive("cataclysm_zone", function()
             end
         end
 
-        if currentSound ~= nil then
+        if(currentSound ~= nil) then
             currentSound:FadeOut(3)
         end
 
@@ -44,5 +41,9 @@ net.Receive("cataclysm_zone", function()
 			currentSound:ChangeVolume(0)
 			currentSound:ChangeVolume(1, 3)
 		end            
-    end
+    else
+		if currentSound ~= nil then
+			currentSound:FadeOut(3)
+		end
+	end
 end)

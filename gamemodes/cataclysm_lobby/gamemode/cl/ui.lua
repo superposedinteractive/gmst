@@ -1,6 +1,18 @@
 // cataclysm - General UI
 gameevent.Listen("player_changename")
 
+local hudExceptions = {
+	["CHudCrosshair"] = true,
+	["CHudCloseCaption"] = true,
+	["CHudDamageIndicator"] = true,
+	["CHudMessage"] = true,
+	["CHudHintDisplay"] = true,
+	["CHudWeapon"] = true,
+	["CHudGMod"] = true,
+	["CHudChat"] = true,
+	["NetGraph"] = true
+}
+
 local function m_AlignText( text, font, x, y, xalign, yalign )
 	surface.SetFont( font )
 	local textw, texth = surface.GetTextSize( text )
@@ -83,22 +95,6 @@ function GM:OnScreenSizeChanged(w, h)
 	createFonts()
 end
 
-local hudExceptions = {
-	["CHudCrosshair"] = true,
-	["CHudCloseCaption"] = true,
-	["CHudDamageIndicator"] = true,
-	["CHudMessage"] = true,
-	["CHudHintDisplay"] = true,
-	["CHudWeapon"] = true,
-	["CHudGMod"] = true,
-	["CHudChat"] = true,
-	["NetGraph"] = true
-}
-
-function GM:HUDShouldDraw(name)
-	return hudExceptions[name] || false
-end
-
 local function SetupHUD()
 	if IsValid(GUIElements.quick_hud) then
 		GUIElements.quick_hud:Remove()
@@ -132,6 +128,10 @@ local function SetupHUD()
 		draw.SimpleText(LocalVars["zone"] or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(money .. "cc", "Trebuchet32", w/2, 66, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
+end
+
+function GM:HUDShouldDraw(name)
+	return hudExceptions[name] || false
 end
 
 function GM:InitPostEntity()
