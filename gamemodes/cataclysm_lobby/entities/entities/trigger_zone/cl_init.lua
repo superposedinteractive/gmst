@@ -5,14 +5,12 @@ local music = {
     ["Lobby"] = "music/lobby2.mp3"
 }
 
-if LoadedSounds == nil then
-    LoadedSounds = {}
-end
-
+local LoadedSounds = {}
 local currentSound = nil
 
 net.Receive("cataclysm_zone", function()
     local zone = net.ReadString()
+	LocalVars["zone"] = zone
     print("Entering zone " .. zone)
 
     if music[zone] then
@@ -20,16 +18,31 @@ net.Receive("cataclysm_zone", function()
         print("Playing " .. zone)
 
         if LoadedSounds[snd] == nil then
-            LoadedSounds[snd] = CreateSound(LocalPlayer(), snd)
+            if !IsValid(LocalPlayer()) then 
+                timer.Simple(1, function() 
+                    LoadedSounds[snd] = CreateSound(LocalPlayer(), snd)
+                end)
+            else
+                LoadedSounds[snd] = CreateSound(LocalPlayer(), snd)
+            end
         end
 
         if currentSound ~= nil then
             currentSound:FadeOut(3)
         end
 
-        currentSound = LoadedSounds[snd]
-        currentSound:Play()
-        currentSound:ChangeVolume(0)
-        currentSound:ChangeVolume(1, 3)
+        if !IsValid(LocalPlayer()) then 
+			timer.Simple(1, function() 
+				currentSound = LoadedSounds[snd]
+				currentSound:Play()
+				currentSound:ChangeVolume(0)
+				currentSound:ChangeVolume(1, 3)
+			end)
+		else
+			currentSound = LoadedSounds[snd]
+			currentSound:Play()
+			currentSound:ChangeVolume(0)
+			currentSound:ChangeVolume(1, 3)
+		end            
     end
 end)

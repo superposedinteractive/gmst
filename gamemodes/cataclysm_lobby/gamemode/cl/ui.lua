@@ -129,7 +129,7 @@ local function SetupHUD()
 	GUIElements.quick_hud.Paint = function(self, w, h)
 		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
 		WavyText(nickname, "Trebuchet24Bold", 20, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, -1, 2)
-		draw.SimpleText("Cataclysm", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(LocalVars["zone"] or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(money .. "cc", "Trebuchet32", w/2, 66, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end
