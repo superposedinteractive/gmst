@@ -20,10 +20,14 @@ local currentSound = nil
 
 net.Receive("cataclysm_zone", function()
 	local zone = net.ReadString()
+
+	if zone == LocalVars["zone"] then return end
+
 	LocalVars["zone"] = zone
 
 	if Sounds[zone] then
 		local snd = Sounds[zone]
+
 		PrintTable(snd)
 
 		if IsValid(LocalPlayer()) then
@@ -34,7 +38,7 @@ net.Receive("cataclysm_zone", function()
 			end)
 		end
 	else
-		if currentSound ~= nil then
+		if currentSound ~= nil && zone ~= LocalVars["zone"] then
 			currentSound:FadeOut(3)
 		end
 	end
@@ -42,19 +46,26 @@ end)
 
 
 function PlaySound(snd)
-    local sndFile = snd["Sounds"][math.random(#snd["Sounds"])]
+	local sndFile = snd["Sounds"][math.random(#snd["Sounds"])]
 
-    if LoadedSounds[sndFile] == nil then
-        LoadedSounds[sndFile] = CreateSound(LocalPlayer(), sndFile)
-    end
+	if LoadedSounds[sndFile] == nil then
+		if IsValid(LocalPlayer()) then
+			LoadedSounds[sndFile] = CreateSound(LocalPlayer(), sndFile)
+		end
+	end
 
-    if currentSound ~= nil then
-        currentSound:FadeOut(3)
-    end
+	if currentSound ~= nil then
+		currentSound:FadeOut(3)
+	end
 
-    currentSound = LoadedSounds[sndFile]
-
-    currentSound:PlayEx(0, 100)
-
-    currentSound:ChangeVolume(snd["Volume"] or 1, 3)
+	if IsValid(LocalPlayer()) then
+		currentSound = LoadedSounds[sndFile]
+		currentSound:PlayEx(0, 100)
+		
+		currentSound:ChangeVolume(snd["Volume"] or 1, 3)
+	else
+		timer.Simple(1, function()
+			PlaySound(snd)
+		end)
+	end
 end
