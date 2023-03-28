@@ -45,11 +45,22 @@ function PlaySound(snd)
     end
 
     if currentSound ~= nil then
+        if timer.Exists("cataclysm_zone_dsp") then
+            timer.Stop("cataclysm_zone_dsp")
+        end
+
         currentSound:FadeOut(3)
     end
 
     currentSound = LoadedSounds[sndFile]
-    currentSound:PlayEx(0, 100)
-    currentSound:SetDSP(snd["Dsp"] or 0)
+
+        currentSound:PlayEx(0, 100)
+
     currentSound:ChangeVolume(snd["Volume"] or 1, 3)
+
+    timer.Create("cataclysm_zone_dsp", 3, 1, function()
+        currentSound:SetDSP(snd["Dsp"])
+    end)
+
+    timer.Start("cataclysm_zone_dsp")
 end
