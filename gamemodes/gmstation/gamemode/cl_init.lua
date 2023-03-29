@@ -22,7 +22,7 @@ if(!IsValid(LocalVars)) then
 	LocalVars = {}
 end
 
-for k,v in ipairs(file.Find("cataclysm_lobby/gamemode/cl/*.lua", "LUA")) do
+for k,v in ipairs(file.Find("gmstation/gamemode/cl/*.lua", "LUA")) do
 	print("Loading "..v)
 	include("cl/"..v)
 end

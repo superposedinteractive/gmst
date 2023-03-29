@@ -1,4 +1,4 @@
-// cataclysm - Camera controls
+// GMStation - Camera controls
 
 local scroll = 0
 
@@ -35,7 +35,7 @@ function GM:CalcView(ply, pos, ang, fov)
 	return view
 end
 
-hook.Add("InputMouseApply", "cataclysm_zoom", function(cmd, x, y, angle)
+hook.Add("InputMouseApply", "gmstation_zoom", function(cmd, x, y, angle)
 	scroll = math.Clamp(scroll - (math.Clamp(math.ceil(cmd:GetMouseWheel()) * 10000, -1, 1) * 5), 0, 100)
 	cmd:SetMouseWheel(0)
 end)

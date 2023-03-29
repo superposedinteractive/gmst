@@ -2,7 +2,7 @@ include("shared.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
 
-util.AddNetworkString("cataclysm_zone")
+util.AddNetworkString("gmstation_zone")
 
 function ENT:Initialize()
 	self:SetSolid(SOLID_BBOX)
@@ -20,7 +20,7 @@ function ENT:StartTouch(ent)
 		ent:SetNWString("zone", self.zone)
 		print("Player " .. ent:Nick() .. " entered zone " .. self.zone)
 
-		net.Start("cataclysm_zone")
+		net.Start("gmstation_zone")
 		net.WriteString(self.zone)
 		net.Send(ent)
 	end

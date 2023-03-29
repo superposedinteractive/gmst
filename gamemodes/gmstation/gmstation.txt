@@ -1,6 +1,7 @@
-"cataclysm_lobby" {
+"gmstation" {
 	"base"  "base"
-	"title" "cataclysm_lobby"
+	"title" "GMStation"
 	"category"  "other"
 	"menusystem"	"1"
+	"maps"		"^gmst_"
 }

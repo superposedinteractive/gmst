@@ -6,7 +6,7 @@ local Sounds = {
 		["Sounds"] = {"/ambient/atmosphere/station_ambience_loop2.wav"}
 	},
 	["Lobby"] = {
-		["Sounds"] = {"/cataclysm/music/lobby1.mp3", "/cataclysm/music/lobby2.mp3", "/cataclysm/music/lobby3.mp3",}
+		["Sounds"] = {"/gmstation/music/lobby1.mp3", "/gmstation/music/lobby2.mp3", "/gmstation/music/lobby3.mp3",}
 	},
 	["Comedically long tunnel that serves no purpose"] = {
 		["Sounds"] = {
@@ -18,7 +18,7 @@ local Sounds = {
 local LoadedSounds = {}
 local currentSound = nil
 
-net.Receive("cataclysm_zone", function()
+net.Receive("gmstation_zone", function()
 	local zone = net.ReadString()
 
 	if zone == LocalVars["zone"] then return end

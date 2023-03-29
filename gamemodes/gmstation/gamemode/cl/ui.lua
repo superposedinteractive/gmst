@@ -1,4 +1,4 @@
-// cataclysm - General UI
+// GMStation - General UI
 gameevent.Listen("player_changename")
 
 local hudExceptions = {
@@ -9,7 +9,6 @@ local hudExceptions = {
 	["CHudHintDisplay"] = true,
 	["CHudWeapon"] = true,
 	["CHudGMod"] = true,
-	["CHudChat"] = true,
 	["NetGraph"] = true
 }
 
@@ -87,6 +86,13 @@ local function createFonts()
 		antialias = true,
 		additive = true,
 	})
+	surface.CreateFont("Trebuchet8", {
+		font = "Trebuchet MS",
+		size = ScreenScale(6),
+		weight = 10000,
+		antialias = true,
+		shadow = true
+	})
 end
 
 createFonts()
@@ -121,7 +127,7 @@ local function SetupHUD()
 	
 	GUIElements.quick_hud = vgui.Create("DPanel")
 	GUIElements.quick_hud:SetSize(250 + w, 100)
-	GUIElements.quick_hud:SetPos(32, ScrH() - GUIElements.quick_hud:GetTall() - 32)
+	GUIElements.quick_hud:SetPos(32, ScrH() - 100 - 32)
 	GUIElements.quick_hud.Paint = function(self, w, h)
 		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
 		WavyText(nickname, "Trebuchet24Bold", 20, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, -1, 2)
@@ -140,8 +146,8 @@ function GM:InitPostEntity()
 	end)
 end
 
-hook.Add("player_changename", "cataclysm_nameUpdate", function()
-	timer.Simple(0.5, function()
+hook.Add("player_changename", "gmstation_nameUpdate", function()
+	timer.Simple(2, function()
 		SetupHUD()
 	end)
 end)

@@ -1,5 +1,5 @@
-// cataclysm - Player manager
-util.AddNetworkString("cataclysm_chat")
+// GMStation - Player manager
+util.AddNetworkString("gmstation_chat")
 
 function GM:PlayerSpawn(ply)
 	ply:SetModel(ply:GetInfo("cl_playermodel"))
@@ -19,7 +19,7 @@ function GM:PlayerCanPickupWeapon()
 	return false
 end
 
-timer.Create("cataclysm_globalheal", 0.25, 0, function()
+timer.Create("gmstation_globalheal", 0.25, 0, function()
 	for k, v in pairs(player.GetAll()) do
 		if(v:Health() < v:GetMaxHealth() && v:Alive()) then
 			v:SetHealth(v:Health() + 1)
@@ -39,7 +39,7 @@ function GM:PlayerStartTaunt(ply, actid, len)
 end
 
 function GM:PlayerSay(ply, text, team)
-	net.Start("cataclysm_chat")
+	net.Start("gmstation_chat")
 		net.WriteString(ply:GetNWString("zone") or "Somewhere")
 		net.WriteVector(ply:GetPlayerColor())
 		net.WriteString(ply:Nick())
