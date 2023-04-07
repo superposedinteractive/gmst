@@ -27,7 +27,7 @@ function gmstation_NetVarSet(var, value)
 end
 
 net.Receive("gmstation_GetNetVars", function(len, ply)
-	print("DEBUG: (NET) gmstation_GetNetVars - " .. ply:Nick() .. " a full update of netvars.")
+	print("DEBUG: (NET) gmstation_GetNetVars - " .. ply:Name() .. " a full update of netvars.")
 	net.Start("gmstation_FullNetVarUpdate")
 		net.WriteTable(networkVariables)
 	net.Send(ply)

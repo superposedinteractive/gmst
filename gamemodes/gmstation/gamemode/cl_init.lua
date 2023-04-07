@@ -1,5 +1,9 @@
 include("shared.lua")
 
+if !oldChat then
+	chat.AddText = oldChat
+end
+
 if(!table.IsEmpty(GUIElements or {})) then
 	for v in pairs(GUIElements) do
 		GUIElements[v]:Remove()

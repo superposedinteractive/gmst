@@ -1,6 +1,6 @@
 // GMStation - Chat system
 
-local function customChat( ... )
+function chat.AddText( ... )
 	local args = {...}
 
 	for _, obj in ipairs( args ) do
@@ -13,13 +13,13 @@ local function customChat( ... )
 		elseif obj:IsPlayer() then
 			local col = GAMEMODE:GetTeamColor( obj )
 			GUIElements.chatbox.box:InsertColorChange( col.r, col.g, col.b, 255 )
-			GUIElements.chatbox.box:AppendText( obj:Nick() )
+			GUIElements.chatbox.box:AppendText( obj:Name() )
 		end
 	end
 
 	GUIElements.chatbox.box:AppendText( "\n" )
 
-	chat.AddText( ... )
+	oldChat( ... )
 end
 
 net.Receive("gmstation_chat", function()
@@ -28,7 +28,7 @@ net.Receive("gmstation_chat", function()
 	local nick = net.ReadString()
 	local msg = net.ReadString()
 
-	customChat(Color(100, 100, 100), zone .. " | ", Color(color.x * 255, color.y * 255, color.z * 255), nick .. ": ", Color(255, 255, 255), msg)
+	chat.AddText(Color(100, 100, 100), zone .. " | ", Color(color.x * 255, color.y * 255, color.z * 255), nick .. ": ", Color(255, 255, 255), msg)
 
 	chat.PlaySound()
 end)

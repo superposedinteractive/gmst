@@ -9,10 +9,16 @@ local Sounds = {
 		["Loop"] = true,
 		["Sounds"] = {"/gmstation/music/lobby1.mp3", "/gmstation/music/lobby2.mp3", "/gmstation/music/lobby3.mp3"}
 	},
+	["Outside"] = {
+		["Loop"] = true,
+		["Sounds"] = {"/gmstation/music/lakeside.mp3", "/gmstation/music/lakeside2.mp3"}
+	},
+	["Seaside"] = {
+		["Loop"] = true,
+		["Sounds"] = {"/gmstation/music/lobbyroof.mp3"}
+	},
 	["Comedically long tunnel that serves no purpose"] = {
-		["Sounds"] = {
-			"ambient/tones/tunnel_wind_loop.wav"
-		}
+		["Sounds"] = {"ambient/tones/tunnel_wind_loop.wav"}
 	}
 }
 
@@ -73,8 +79,7 @@ function PlaySound(snd, loop)
 			local dur = SoundDuration(sndFile) * 2.0
 
 			timer.Create("gmstation_looping_music", dur, 0, function()
-				currentSound:Stop()
-				currentSound:Play()
+				PlaySound(snd)
 			end)
 		end
 

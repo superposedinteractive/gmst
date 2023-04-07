@@ -2,9 +2,12 @@
 util.AddNetworkString("gmstation_chat")
 
 function GM:PlayerSpawn(ply)
-	ply:SetModel(ply:GetInfo("cl_playermodel"))
+	ply:SetModel(player_manager.TranslatePlayerModel(ply:GetInfo("cl_playermodel")))
 	ply:SetPlayerColor(Vector(ply:GetInfo("cl_playercolor")))
 	ply:SetupHands()
+
+	print(ply:GetInfo("cl_playermodel"))
+
 	ply:UnSpectate()
 	ply:CrosshairEnable()
 	ply:SetCrouchedWalkSpeed(0.3)
@@ -42,7 +45,7 @@ function GM:PlayerSay(ply, text, team)
 	net.Start("gmstation_chat")
 		net.WriteString(ply:GetNWString("zone") or "Somewhere")
 		net.WriteVector(ply:GetPlayerColor())
-		net.WriteString(ply:Nick())
+		net.WriteString(ply:Name())
 		net.WriteString(text)
 	net.Broadcast()
 
