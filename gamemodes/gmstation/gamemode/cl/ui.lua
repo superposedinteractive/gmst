@@ -155,7 +155,7 @@ local function createFonts()
 	surface.CreateFont("TrebuchetChat", {
 		font = "Trebuchet MS",
 		size = ScreenScale(6),
-		weight = false,
+		weight = 1000,
 		antialias = false,
 		shadow = true
 	})
