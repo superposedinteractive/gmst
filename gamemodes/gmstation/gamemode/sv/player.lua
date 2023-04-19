@@ -1,5 +1,6 @@
 // GMStation - Player manager
 util.AddNetworkString("gmstation_chat")
+util.AddNetworkString("gmstation_taunt")
 
 function GM:PlayerSpawn(ply)
 	ply:SetModel(player_manager.TranslatePlayerModel(ply:GetInfo("cl_playermodel")))
@@ -33,10 +34,13 @@ end)
 function GM:PlayerStartTaunt(ply, actid, len)
 	ply:CrosshairDisable()
 
+	net.Start("gmstation_taunt")
+		net.WriteInt(len, 32)
+	net.Send(ply)
+
 	timer.Simple(len, function()
 		if(IsValid(ply)) then
 			ply:CrosshairEnable()
-			
 		end
 	end)
 end
@@ -44,8 +48,7 @@ end
 function GM:PlayerSay(ply, text, team)
 	net.Start("gmstation_chat")
 		net.WriteString(ply:GetNWString("zone") or "Somewhere")
-		net.WriteVector(ply:GetPlayerColor())
-		net.WriteString(ply:Name())
+		net.WriteEntity(ply)
 		net.WriteString(text)
 	net.Broadcast()
 

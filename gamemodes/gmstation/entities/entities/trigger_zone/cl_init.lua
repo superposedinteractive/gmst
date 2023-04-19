@@ -7,14 +7,17 @@ local Sounds = {
 	},
 	["Lobby"] = {
 		["Loop"] = true,
+		["Duration"] = {220.16, 294.50, 240.09},
 		["Sounds"] = {"/gmstation/music/lobby1.mp3", "/gmstation/music/lobby2.mp3", "/gmstation/music/lobby3.mp3"}
 	},
 	["Outside"] = {
 		["Loop"] = true,
+		["Duration"] = {139.23, 214.15},
 		["Sounds"] = {"/gmstation/music/lakeside.mp3", "/gmstation/music/lakeside2.mp3"}
 	},
 	["Seaside"] = {
 		["Loop"] = true,
+		["Duration"] = {94.17},
 		["Sounds"] = {"/gmstation/music/lobbyroof.mp3"}
 	},
 	["Comedically long tunnel that serves no purpose"] = {
@@ -36,8 +39,6 @@ net.Receive("gmstation_zone", function()
 		local snd = Sounds[zone]
 		local loop = snd["Loop"] or false
 
-		PrintTable(snd)
-
 		if IsValid(LocalPlayer()) then
 			PlaySound(snd, loop)
 		else
@@ -54,10 +55,8 @@ end)
 
 
 function PlaySound(snd, loop)
-	// We need to rewrite this to IGmodAudioChannel because CSoundPatch is fucked
-	// but IGmodAudioChannel has no fade-outs and fade-ins etc
-
-	local sndFile = snd["Sounds"][math.random(#snd["Sounds"])]
+	local roll = math.random(#snd["Sounds"])
+	local sndFile = snd["Sounds"][roll]
 
 	timer.Remove("gmstation_looping_music")
 
@@ -75,11 +74,13 @@ function PlaySound(snd, loop)
 		currentSound = LoadedSounds[sndFile]
 		currentSound:PlayEx(0, 100)
 
-		if loop && system.IsWindows() then // Linux GMod breaks SoundDuration on linux so fuck it
-			local dur = SoundDuration(sndFile) * 2.0
+		if loop then
+			local dur = snd["Duration"][roll]
 
-			timer.Create("gmstation_looping_music", dur, 0, function()
-				PlaySound(snd)
+			timer.Create("gmstation_looping_music", dur - 3, 0, function()
+				currentSound:Stop()
+				currentSound:PlayEx(0, 100)
+				currentSound:ChangeVolume(snd["Volume"] or 1, 3)
 			end)
 		end
 

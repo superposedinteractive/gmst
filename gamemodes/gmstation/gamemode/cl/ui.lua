@@ -152,6 +152,13 @@ local function createFonts()
 		antialias = true,
 		shadow = false
 	})
+	surface.CreateFont("TrebuchetChat", {
+		font = "Trebuchet MS",
+		size = ScreenScale(6),
+		weight = false,
+		antialias = false,
+		shadow = true
+	})
 	surface.CreateFont("Trebuchet16Add", {
 		font = "Trebuchet MS",
 		size = ScreenScale(8),
@@ -188,29 +195,16 @@ local function SetupHUD()
 
 	local width = 250
 	local money = 1000000
-	local nickname = LocalPlayer():Name()
-	
-	if(string.len(nickname) > 16) then
-		nickname = string.sub(nickname, 1, 16) .. "..."
-	end
-	surface.SetFont("Trebuchet24")
-	local w,h = surface.GetTextSize(nickname)
-	
-	if(w < 250) then
-		width = 250 + w
-	else 
-		width = 250
-	end
-	
+
 	surface.SetFont("Trebuchet32")
 	local money_w,h = surface.GetTextSize("1000000")
 	
 	GUIElements.quick_hud = vgui.Create("DPanel")
-	GUIElements.quick_hud:SetSize(250 + w, 100)
+	GUIElements.quick_hud:SetSize(300, 100)
 	GUIElements.quick_hud:SetPos(32, ScrH() - 100 - 32)
 	GUIElements.quick_hud.Paint = function(self, w, h)
 		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
-		draw.SimpleWavyText(nickname, "Trebuchet24Bold", 20, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, -1, 2)
+		draw.SimpleText("GMStation", "Trebuchet24Bold", 18, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(LocalVars["zone"] or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(money .. "cc", "Trebuchet32", w/2, 66, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end

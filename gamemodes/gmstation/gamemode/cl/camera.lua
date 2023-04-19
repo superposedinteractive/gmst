@@ -1,6 +1,11 @@
 // GMStation - Camera controls
 
 local scroll = 0
+local tauntAngle = Angle(0, 0, 0)
+
+net.Receive("gmstation_taunt", function()
+	tauntAngle = LocalPlayer():EyeAngles()
+end)
 
 function GM:CalcView(ply, pos, ang, fov)
 	local view = {}
@@ -29,7 +34,7 @@ function GM:CalcView(ply, pos, ang, fov)
 	})
 
 	if(tr.Hit) then
-		view.origin = tr.HitPos + tr.HitNormal * 5
+		view.origin = tr.HitPos + tr.HitNormal
 	end
 
 	return view
@@ -44,5 +49,8 @@ function GM:CreateMove(cmd)
 	if(LocalPlayer():IsPlayingTaunt()) then
 		cmd:ClearMovement()
 		cmd:ClearButtons()
+		// force the player to look at the angles but allow camera movement
+		cmd:SetViewAngles(tauntAngle)
+
 	end
 end

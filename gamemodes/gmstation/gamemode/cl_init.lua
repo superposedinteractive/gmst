@@ -1,7 +1,8 @@
 include("shared.lua")
 
 if !oldChat then
-	chat.AddText = oldChat
+	MsgN("Overriding chat.AddText")
+	oldChat = chat.AddText
 end
 
 if(!table.IsEmpty(GUIElements or {})) then
