@@ -1,5 +1,6 @@
 // GMStation - General UI
-gameevent.Listen("player_changename")
+local white = Material("vgui/white")
+local hover_popup = Material("gmstation/ui/hover_popup.png")
 
 local hudExceptions = {
 	["CHudCloseCaption"] = true,
@@ -8,6 +9,7 @@ local hudExceptions = {
 	["CHudHintDisplay"] = true,
 	["CHudWeapon"] = true,
 	["CHudGMod"] = true,
+	["CHudCrosshair"] = true,
 	["NetGraph"] = true
 }
 
@@ -38,7 +40,7 @@ function draw.LinearGradient(x, y, w, h, stops, horizontal)
 
 	table.SortByMember(stops, "offset", true)
 
-	render.SetMaterial(Material("vgui/white"))
+	render.SetMaterial(white)
 	mesh.Begin(MATERIAL_QUADS, #stops - 1)
 	for i = 1, #stops - 1 do
 		local offset1 = math.Clamp(stops[i].offset, 0, 1)
@@ -126,75 +128,76 @@ end
 local function createFonts()
 	surface.CreateFont("Trebuchet48", {
 		font = "Trebuchet MS",
-		size = ScreenScale(24),
+		size = 72,
 		weight = 500,
 		antialias = true,
 		shadow = false
 	})
 	surface.CreateFont("Trebuchet32", {
 		font = "Trebuchet MS",
-		size = ScreenScale(16),
+		size = 48,
 		weight = 500,
 		antialias = true,
 		shadow = false
 	})
 	surface.CreateFont("Trebuchet24Bold", {
 		font = "Trebuchet MS",
-		size = ScreenScale(12),
+		size = 36,
 		weight = 1000,
 		antialias = true,
 		shadow = false
 	})
 	surface.CreateFont("Trebuchet16", {
 		font = "Trebuchet MS",
-		size = ScreenScale(8),
+		size = 24,
 		weight = 500,
 		antialias = true,
 		shadow = false
 	})
 	surface.CreateFont("TrebuchetChat", {
 		font = "Trebuchet MS",
-		size = ScreenScale(6),
+		size = 18,
 		weight = 1000,
 		antialias = false,
 		shadow = true
 	})
 	surface.CreateFont("Trebuchet16Add", {
 		font = "Trebuchet MS",
-		size = ScreenScale(8),
+		size = 24,
 		weight = 500,
 		antialias = true,
 		additive = true,
 	})
 	surface.CreateFont("Trebuchet16Bold", {
 		font = "Trebuchet MS",
-		size = ScreenScale(8),
+		size = 24,
 		weight = 1000,
 		antialias = true,
 		shadow = false
 	})
 	surface.CreateFont("Trebuchet8", {
 		font = "Trebuchet MS",
-		size = ScreenScale(6),
+		size = 18,
 		weight = 10000,
 		antialias = true,
 		shadow = true
 	})
 end
 
-createFonts()
-
-function GM:OnScreenSizeChanged(w, h)
+function SetupHUD()
 	createFonts()
-end
 
-local function SetupHUD()
+	if IsValid(GUIElements.registering) then
+		GUIElements.registering:Remove()
+	end
+
 	if IsValid(GUIElements.quick_hud) then
 		GUIElements.quick_hud:Remove()
 	end
 
-	local width = 250
-	local money = 1000000
+	if IsValid(GUIElements.info_box) then
+		GUIElements.info_box:Remove()
+	end
 
 	surface.SetFont("Trebuchet32")
 	local money_w,h = surface.GetTextSize("1000000")
@@ -206,35 +209,55 @@ local function SetupHUD()
 		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
 		draw.SimpleText("GMStation", "Trebuchet24Bold", 18, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(LocalVars["zone"] or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-		draw.SimpleText(money .. "cc", "Trebuchet32", w/2, 66, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(GLOBALS.money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
 	GUIElements.info_box = vgui.Create("DPanel")
 	GUIElements.info_box:SetSize(200, 100)
 	GUIElements.info_box:SetPos(ScrW() - 200, 0)
 	GUIElements.info_box.Paint = function(self, w, h)
-		-- draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
 		draw.SimpleText("GMStation", "Trebuchet24Bold", w/2, h / 2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		draw.SimpleText("PreAlpha", "Trebuchet16Bold", w/1.5, h / 2 + 20, Color(255, 175, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end
 
+function GM:HUDDrawTargetID()
+	local tr = util.GetPlayerTrace( LocalPlayer() )
+	local trace = util.TraceLine( tr )
+	if (!trace.Hit) then return end
+	if (!trace.HitNonWorld) then return end
+	
+	if (!trace.Entity:IsPlayer()) then
+		local text = trace.Entity:GetNWString("UseText")
+		if text == "" then
+			text = "Interact"
+		end
+
+		surface.SetMaterial(hover_popup)
+		surface.SetDrawColor(255, 255, 255, 255)
+		surface.DrawTexturedRect(ScrW() / 2 + 16, ScrH() / 2 - 16, 256, 32)
+
+		draw.SimpleText(text, "Trebuchet16", ScrW() / 2 + 16 + 8, ScrH() / 2, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	end
+end
+
+net.Receive("gmstation_first_join", function()
+	if IsValid(GUIElements.registering) then
+		GUIElements.registering:Remove()
+	end
+
+	GUIElements.registering = vgui.Create("DPanel")
+	GUIElements.registering:SetSize(ScrW(), ScrH())
+	GUIElements.registering.Paint = function(self, w, h)
+		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 200))
+		draw.SimpleText("Please wait while we register you...", "Trebuchet32", w/2, h/2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+end)
+
 function GM:HUDShouldDraw(name)
 	return hudExceptions[name] || false
 end
 
-function GM:InitPostEntity()
-	timer.Simple(1, function()
-		SetupHUD()
-	end)
-end
-
-hook.Add("player_changename", "gmstation_nameUpdate", function()
-	timer.Simple(2, function()
-		SetupHUD()
-	end)
-end)
-
-function GM:OnReloaded()
+function GM:OnScreenSizeChanged(w, h)
 	SetupHUD()
 end

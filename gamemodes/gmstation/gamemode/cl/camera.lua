@@ -51,6 +51,5 @@ function GM:CreateMove(cmd)
 		cmd:ClearButtons()
 		// force the player to look at the angles but allow camera movement
 		cmd:SetViewAngles(tauntAngle)
-
 	end
 end

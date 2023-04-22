@@ -32,7 +32,11 @@ net.Receive("gmstation_chat", function()
 	local ply = net.ReadEntity()
 	local msg = net.ReadString()
 
-	chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg)
+	if IsValid(ply) then
+		chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg)
+	else
+		chat.AddText(Color(255, 255, 255), msg)
+	end
 
 	chat.PlaySound()
 end)

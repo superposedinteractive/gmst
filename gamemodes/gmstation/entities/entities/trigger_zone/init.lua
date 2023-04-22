@@ -18,10 +18,10 @@ end
 function ENT:StartTouch(ent)
 	if(ent:IsPlayer()) then
 		ent:SetNWString("zone", self.zone)
-		print("Player " .. ent:Name() .. " entered zone " .. self.zone)
+		MsgN("[GMST] Player " .. ent:Name() .. " entered zone " .. self.zone)
 
 		net.Start("gmstation_zone")
-		net.WriteString(self.zone)
+			net.WriteString(self.zone)
 		net.Send(ent)
 	end
 end

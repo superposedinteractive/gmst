@@ -1,5 +1,9 @@
 include("shared.lua")
 
+GLOBALS = {}
+GLOBALS.url = "local.loopback"
+GLOBALS.money = "???"
+
 if !oldChat then
 	MsgN("Overriding chat.AddText")
 	oldChat = chat.AddText

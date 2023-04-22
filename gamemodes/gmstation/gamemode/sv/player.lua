@@ -2,12 +2,18 @@
 util.AddNetworkString("gmstation_chat")
 util.AddNetworkString("gmstation_taunt")
 
+function PlayerMessage(ply, msg)
+	net.Start("gmstation_chat")
+		net.WriteString("GMStation")
+		net.WriteEntity(nil)
+		net.WriteString(msg)
+	net.Broadcast()
+end
+
 function GM:PlayerSpawn(ply)
 	ply:SetModel(player_manager.TranslatePlayerModel(ply:GetInfo("cl_playermodel")))
 	ply:SetPlayerColor(Vector(ply:GetInfo("cl_playercolor")))
 	ply:SetupHands()
-
-	print(ply:GetInfo("cl_playermodel"))
 
 	ply:UnSpectate()
 	ply:CrosshairEnable()
@@ -46,6 +52,18 @@ function GM:PlayerStartTaunt(ply, actid, len)
 end
 
 function GM:PlayerSay(ply, text, team)
+	if(string.sub(text, 1, 1) == "!") then
+		PlayerMessage(ply, "Used a command, not a chat message.")
+		return ""
+	end
+
+	if text == "insptt" then
+		ply:KillSilent()
+		ply:Spawn()
+		hook.Run("PlayerInitialSpawn", ply)
+		return ""
+	end
+	
 	net.Start("gmstation_chat")
 		net.WriteString(ply:GetNWString("zone") or "Somewhere")
 		net.WriteEntity(ply)
