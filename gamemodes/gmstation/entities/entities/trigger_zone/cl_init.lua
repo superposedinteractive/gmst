@@ -2,7 +2,7 @@ include("shared.lua")
 
 local Sounds = {
 	["Trainstation"] = {
-		["Volume"] = 0.1,
+		["Volume"] = 0.5,
 		["Sounds"] = {"/ambient/atmosphere/station_ambience_loop2.wav"}
 	},
 	["Lobby"] = {
@@ -26,7 +26,6 @@ local Sounds = {
 }
 
 local LoadedSounds = {}
-local currentSound = nil
 
 net.Receive("gmstation_zone", function()
 	local zone = net.ReadString()
@@ -47,16 +46,20 @@ net.Receive("gmstation_zone", function()
 			end)
 		end
 	else
-		if currentSound ~= nil && zone ~= LocalVars["zone"] then
-			currentSound:FadeOut(3)
+		if GLOBALS.currentSound ~= nil && zone ~= LocalVars["zone"] then
+			GLOBALS.currentSound:FadeOut(3)
 		end
 	end
 end)
 
-
 function PlaySound(snd, loop)
 	local roll = math.random(#snd["Sounds"])
 	local sndFile = snd["Sounds"][roll]
+	local volume = (snd["Volume"] or 1) * GLOBALS.volume
+	GLOBALS.ogVolume = snd["Volume"] or 1
+
+	print("Playing sound: " .. sndFile)
+	print("Volume: " .. volume)
 
 	timer.Remove("gmstation_looping_music")
 
@@ -66,25 +69,25 @@ function PlaySound(snd, loop)
 		end
 	end
 
-	if currentSound ~= nil then
-		currentSound:FadeOut(3)
+	if GLOBALS.currentSound ~= nil then
+		GLOBALS.currentSound:FadeOut(3)
 	end
 
 	if IsValid(LocalPlayer()) then
-		currentSound = LoadedSounds[sndFile]
-		currentSound:PlayEx(0, 100)
+		GLOBALS.currentSound = LoadedSounds[sndFile]
+		GLOBALS.currentSound:PlayEx(0, 100)
 
 		if loop then
 			local dur = snd["Duration"][roll]
 
 			timer.Create("gmstation_looping_music", dur - 3, 0, function()
-				currentSound:Stop()
-				currentSound:PlayEx(0, 100)
-				currentSound:ChangeVolume(snd["Volume"] or 1, 3)
+				GLOBALS.currentSound:Stop()
+				GLOBALS.currentSound:PlayEx(0, 100)
+				GLOBALS.currentSound:ChangeVolume(volume)
 			end)
 		end
 
-		currentSound:ChangeVolume(snd["Volume"] or 1, 3)
+		GLOBALS.currentSound:ChangeVolume(volume)
 	else
 		timer.Simple(1, function()
 			PlaySound(snd)

@@ -13,7 +13,7 @@ function PlayerMessage(ply, ...)
 		if IsValid(ply) && ply:IsPlayer() then
 			net.Send(ply)
 		else
-			MsgN("[GMStation] Invalid player passed to PlayerMessage.")
+			MsgN("[GMST] Invalid player passed to PlayerMessage.")
 		end
 	else
 		net.Broadcast()
@@ -29,6 +29,14 @@ function GM:PlayerSpawn(ply)
 	ply:CrosshairEnable()
 	ply:SetCrouchedWalkSpeed(0.3)
 	ply:AllowFlashlight(true)
+end
+
+function PlayerInit(ply)
+	function ply:GetMoney()
+		apiCall("gmstGetPlayerMoney", ply:SteamID64(), function(body)
+
+		end)
+	end
 end
 
 function GM:GetFallDamage()
@@ -65,12 +73,12 @@ end
 
 function GM:PlayerConnect(name, ip)
 	PlayerMessage(nil, name .. " has entered the station.")
-	MsgN("[GMStation] " .. name .. " joined.")
+	MsgN("[GMST] " .. name .. " joined.")
 end
 
 function GM:PlayerDisconnected(ply)
 	PlayerMessage(nil, ply:Nick() .. " has left the station.")
-	MsgN("[GMStation] " .. ply:Nick() .. " left.")
+	MsgN("[GMST] " .. ply:Nick() .. " left.")
 end
 
 function GM:PlayerSay(ply, text, team)
