@@ -2,12 +2,22 @@
 util.AddNetworkString("gmstation_chat")
 util.AddNetworkString("gmstation_taunt")
 
-function PlayerMessage(ply, msg)
+function PlayerMessage(ply, ...)
+	local args = {...}
+
 	net.Start("gmstation_chat")
 		net.WriteString("GMStation")
 		net.WriteEntity(nil)
-		net.WriteString(msg)
-	net.Broadcast()
+		net.WriteTable(args)
+	if(ply) then
+		if IsValid(ply) && ply:IsPlayer() then
+			net.Send(ply)
+		else
+			MsgN("[GMStation] Invalid player passed to PlayerMessage.")
+		end
+	else
+		net.Broadcast()
+	end
 end
 
 function GM:PlayerSpawn(ply)
@@ -26,7 +36,7 @@ function GM:GetFallDamage()
 end
 
 function GM:PlayerCanPickupWeapon()
-	return false
+	return true
 end
 
 timer.Create("gmstation_globalheal", 0.25, 0, function()
@@ -49,6 +59,18 @@ function GM:PlayerStartTaunt(ply, actid, len)
 			ply:CrosshairEnable()
 		end
 	end)
+
+	gmstRestartMap(5)
+end
+
+function GM:PlayerConnect(name, ip)
+	PlayerMessage(nil, name .. " has entered the station.")
+	MsgN("[GMStation] " .. name .. " joined.")
+end
+
+function GM:PlayerDisconnected(ply)
+	PlayerMessage(nil, ply:Nick() .. " has left the station.")
+	MsgN("[GMStation] " .. ply:Nick() .. " left.")
 end
 
 function GM:PlayerSay(ply, text, team)

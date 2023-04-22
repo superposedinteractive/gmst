@@ -180,13 +180,11 @@ local function createFonts()
 		size = 18,
 		weight = 10000,
 		antialias = true,
-		shadow = true
+		shadow = false
 	})
 end
 
 function SetupHUD()
-	createFonts()
-
 	if IsValid(GUIElements.registering) then
 		GUIElements.registering:Remove()
 	end
@@ -259,5 +257,32 @@ function GM:HUDShouldDraw(name)
 end
 
 function GM:OnScreenSizeChanged(w, h)
-	SetupHUD()
+	createFonts()
+	if IsValid(GUIElements.quick_hud) then
+		SetupHUD()
+	end
 end
+
+net.Receive("gmstation_map_restart", function()
+	local time = net.ReadFloat()
+
+	if IsValid(GUIElements.restarting) then
+		GUIElements.restarting:Remove()
+	end
+
+	timer.Create("gmstation_map_restart", time, 1, function() end)
+
+	GUIElements.restarting = vgui.Create("DPanel")
+	GUIElements.restarting:SetSize(300, 100)
+	GUIElements.restarting:SetPos(ScrW() / 2 - GUIElements.restarting:GetWide() / 2, ScrH() / 2 - GUIElements.restarting:GetTall() / 2 + 32)
+	GUIElements.restarting.Paint = function(self, w, h)
+		local time = string.ToMinutesSeconds(timer.TimeLeft("gmstation_map_restart"))
+
+		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w/2 + 1, h/2 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w/2, h/2, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(time, "Trebuchet8", w/2 + 1, h/2 + 20 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(time, "Trebuchet8", w/2, h/2 + 20, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+end)
+
+createFonts()

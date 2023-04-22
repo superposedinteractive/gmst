@@ -15,9 +15,11 @@ function apiCall(url, args, callback)
 end
 
 net.Receive("gmstation_first_join_done", function()
-	apiCall("gmstGetPlayerMoney", {steamid = LocalPlayer():SteamID64()}, function(body, len, headers, code)
-		GLOBALS.money = tonumber(body)
-	end)
+	timer.Simple(3, function()
+		apiCall("gmstGetPlayerMoney", {steamid = LocalPlayer():SteamID64()}, function(body, len, headers, code)
+			GLOBALS.money = tonumber(body)
+		end)
 
-	SetupHUD()
+		SetupHUD()
+	end)
 end)

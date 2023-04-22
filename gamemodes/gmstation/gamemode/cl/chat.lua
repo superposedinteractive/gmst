@@ -136,7 +136,7 @@ hook.Add("PlayerBindPress", "gmstation_chat", function(ply, bind, pressed)
 end)
 
 function GM:ChatText( index, name, text, type )
-	if type == "joinleave" || type == "none" || type == "servermsg" then 
+	if type == "none" || type == "servermsg" then 
 		GUIElements.chatbox.box:AppendText( text .. "\n" )
 	end
 end

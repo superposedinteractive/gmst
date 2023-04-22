@@ -1,6 +1,17 @@
 util.AddNetworkString("gmstation_first_join")
 util.AddNetworkString("gmstation_first_join_done")
 
+local function apiPanic()
+	MsgN("[GMST] API is down. Kicking all players.")
+	gameevent.Listen("player_connect")
+	hook.Add("player_connect", "gmstation_kick", function(data)
+		game.KickID(data.networkid, "\nGMStation is currently experiencing API downtime. Please try again later.\nSorry.")
+	end)
+	for k, v in pairs(player.GetAll()) do
+		ULib.kick(v, "\nGMStation is currently experiencing API downtime. Please try again later.\nSorry.")
+	end
+end
+
 function apiCall(url, args, callback)
 	local get = ""
 	for k, v in pairs(args) do
@@ -16,6 +27,7 @@ function apiCall(url, args, callback)
 		end
 	end, function(error)
 		MsgN(error)
+		apiPanic()
 	end)
 end
 
@@ -26,15 +38,15 @@ function GM:PlayerInitialSpawn(ply)
 			net.Start("gmstation_first_join")
 			net.Send(ply)
 
-			ply:Freeze(true)
+			ply:Lock()
 
-			timer.Simple(2, function()
+			timer.Simple(5, function()
 				apiCall("gmstRegisterPlayer", {steamid = ply:SteamID64(), password = GLOBALS.password}, function(body, len, headers, code)
 					if body == "0" then
 						MsgN("[GMST] Registered " .. ply:Name())
 						net.Start("gmstation_first_join_done")
 						net.Send(ply)
-						ply:Freeze(false)
+						ply:UnLock()
 					end
 				end)
 			end)
@@ -44,4 +56,19 @@ function GM:PlayerInitialSpawn(ply)
 		end
 	end)
 
+	if timer.Exists("gmstation_map_restart") then
+		net.Start("gmstation_map_restart")
+			net.WriteFloat(timer.TimeLeft("gmstation_map_restart"))
+		net.Send(ply)
+	end
 end
+
+apiCall("gmstHello", {}, function(body, len, headers, code)
+	if body != "0" then
+		apiPanic()
+	else
+		MsgN("[GMST] API Ok")
+	end
+end, function(error)
+	apiPanic()
+end)
