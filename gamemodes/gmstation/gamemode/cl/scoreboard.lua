@@ -120,7 +120,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		playerPanel.location:Dock(BOTTOM)
 		playerPanel.location:DockMargin(0, 0, 0, 10)
 
-		timer.Create("gmstation_scoreboard_" .. v:SteamID(), 1, 0, function()
+		timer.Create("gmstation_scoreboard_" .. v:SteamID(), 0.5, 0, function()
 			if(IsValid(playerPanel.location)) then
 				playerPanel.location:SetText(v:GetNWString("zone") or "Somewhere")
 			end

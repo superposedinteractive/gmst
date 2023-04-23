@@ -2,7 +2,7 @@ include("shared.lua")
 
 local Sounds = {
 	["Trainstation"] = {
-		["Volume"] = 0.5,
+		["Volume"] = 0.25,
 		["Sounds"] = {"/ambient/atmosphere/station_ambience_loop2.wav"}
 	},
 	["Lobby"] = {
@@ -57,9 +57,6 @@ function PlaySound(snd, loop)
 	local sndFile = snd["Sounds"][roll]
 	local volume = (snd["Volume"] or 1) * GLOBALS.volume
 	GLOBALS.ogVolume = snd["Volume"] or 1
-
-	print("Playing sound: " .. sndFile)
-	print("Volume: " .. volume)
 
 	timer.Remove("gmstation_looping_music")
 
