@@ -45,8 +45,10 @@ function GM:CalcView(ply, pos, ang, fov)
 end
 
 hook.Add("InputMouseApply", "gmstation_zoom", function(cmd, x, y, angle)
-	scroll = math.Clamp(scroll - (math.Clamp(math.ceil(cmd:GetMouseWheel()) * 10000, -1, 1) * 5), 0, 100)
-	cmd:SetMouseWheel(0)
+	if (!input.IsMouseDown(MOUSE_LEFT)) then
+		scroll = math.Clamp(scroll - (math.Clamp(math.ceil(cmd:GetMouseWheel()) * 10000, -1, 1) * 5), 0, 100)
+		cmd:SetMouseWheel(0)
+	end
 end)
 
 function GM:CreateMove(cmd)

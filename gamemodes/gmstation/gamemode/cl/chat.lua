@@ -46,7 +46,7 @@ net.Receive("gmstation_chat", function()
 		chat.AddText(msg)
 	end
 
-	chat.PlaySound()
+	surface.PlaySound("gmstation/sfx/chat" .. math.random(1, 2) .. ".wav")
 end)
 
 GUIElements.chatbox = vgui.Create("DFrame")
@@ -94,11 +94,8 @@ GUIElements.chatbox.text.OnKeyCodeTyped = function(self, key)
 
 	if key == KEY_ENTER then
 		local trimmed = string.Trim(self:GetText())
-		trimmed = string.gsub(trimmed, "\"", "'")
 	
-		if trimmed == "" then GUIElements.chatbox.close() return end
-	
-		LocalPlayer():ConCommand("say " .. trimmed)
+		LocalPlayer():ConCommand("say \"" .. trimmed .. "\"")
 	
 		GUIElements.chatbox.close()
 	

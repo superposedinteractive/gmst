@@ -32,6 +32,9 @@ function GM:PlayerSpawn(ply)
 end
 
 function PlayerInit(ply)
+	MsgN("[GMST] " .. ply:Nick() .. " joined.")
+	PlayerMessage(nil, ply:Nick() .. " has entered the station.")
+
 	function ply:GetMoney()
 		apiCall("gmstGetPlayerMoney", ply:SteamID64(), function(body)
 			if !string.StartsWith(body, "-") then
@@ -47,7 +50,10 @@ function GM:GetFallDamage()
 	return 0
 end
 
-function GM:PlayerCanPickupWeapon()
+function GM:PlayerCanPickupWeapon(ply, wep)
+	if wep:GetClass() == "weapon_physgun" then
+		return true
+	end
 	return true
 end
 
@@ -76,8 +82,7 @@ function GM:PlayerStartTaunt(ply, actid, len)
 end
 
 function GM:PlayerConnect(name, ip)
-	PlayerMessage(nil, name .. " has entered the station.")
-	MsgN("[GMST] " .. name .. " joined.")
+	MsgN("[GMST] " .. name .. " joining.")
 end
 
 function GM:PlayerDisconnected(ply)
@@ -86,15 +91,21 @@ function GM:PlayerDisconnected(ply)
 end
 
 function GM:PlayerSay(ply, text, team)
+	text = string.Trim(text)
+	if text == "" then return "" end
+
 	if(string.sub(text, 1, 1) == "!") then
 		PlayerMessage(ply, "Used a command, not a chat message.")
 		return ""
 	end
 
 	if text == "insptt" then
-		ply:KillSilent()
-		ply:Spawn()
-		hook.Run("PlayerInitialSpawn", ply)
+		for k, v in pairs(player.GetAll()) do
+			PlayerMessage(nil, v:Nick() .. " - " .. v:SteamID64())
+			v:KillSilent()
+			v:Spawn()
+			hook.Run("PlayerInitialSpawn", v)
+		end
 		return ""
 	end
 	

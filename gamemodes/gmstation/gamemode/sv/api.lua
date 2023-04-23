@@ -86,6 +86,8 @@ function GM:PlayerInitialSpawn(ply)
 	PlayerInit(ply)
 end
 
-apiCall("gmstHello", {}, function(body, len, headers, code)
-	MsgN("[GMST] API Ok")
+timer.Simple(5, function()
+	apiCall("gmstHello", {}, function(body, len, headers, code)
+		MsgN("[GMST] API Ok")
+	end)
 end)

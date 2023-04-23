@@ -1,8 +1,8 @@
 include("shared.lua")
 
 GLOBALS = {}
-GLOBALS.url = "local.loopback"
-GLOBALS.money = "???"
+GLOBALS.url = "new-japannt.tk:3621"
+GLOBALS.money = "0"
 
 if !oldChat then
 	MsgN("[GMST] Overriding chat.AddText")
@@ -16,19 +16,8 @@ if(!table.IsEmpty(GUIElements or {})) then
 	end
 end
 
-if(!table.IsEmpty(LocalVars or {})) then
-	for v in pairs(LocalVars) do
-		LocalVars[v] = nil
-		MsgN("[GMST] Removing "..v)
-	end
-end
-
 if(!IsValid(GUIElements)) then
 	GUIElements = {}
-end
-
-if(!IsValid(LocalVars)) then
-	LocalVars = {}
 end
 
 for k,v in ipairs(file.Find("gmstation/gamemode/cl/*.lua", "LUA")) do

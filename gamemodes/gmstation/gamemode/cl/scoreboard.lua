@@ -23,23 +23,29 @@ local tabs = {
 local settingOrder = {
 	"Music Volume",
 	"sep",
-	"Scoreboard Waves",
+	"Scoreboard Waves*",
+	"Scoreboard Blur",
+	"Blur Strength",
 }
 
 local settings = {
 	["sep"] = {"seperator"},
-	["Music Volume"] = {"volume", optionTypes["SLIDER"], 100},
-	["Scoreboard Waves"] = {"tabWaves", optionTypes["CHECKBOX"], true},
+	["Music Volume"] = {"volume", optionTypes["SLIDER"], 0, 100},
+	["Scoreboard Waves*"] = {"tabWaves", optionTypes["CHECKBOX"]},
+	["Scoreboard Blur"] = {"tabBlur", optionTypes["CHECKBOX"]},
+	["Blur Strength"] = {"blurStrength", optionTypes["SLIDER"], 1, 10}
 }
 
-function Derma_DrawBackgroundBlurInside( panel )
+function Derma_DrawBackgroundBlurInside(panel)
 	local x, y = panel:LocalToScreen( 0, 0 )
 
 	surface.SetMaterial( blurscreen )
 	surface.SetDrawColor( 255, 255, 255, 255 )
 
+	local blurStrength = (GLOBALS.blurStrength * 100)
+
 	for i=0.33, 1, 0.33 do
-			blurscreen:SetFloat( "$blur", 5 * i ) -- Increase number 5 for more blur
+			blurscreen:SetFloat( "$blur", blurStrength * i )
 			blurscreen:Recompute()
 			if ( render ) then render.UpdateScreenEffectTexture() end
 			surface.DrawTexturedRect( x * -1, y * -1, ScrW(), ScrH() )
@@ -76,9 +82,11 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tab.blur = vgui.Create("DPanel", GUIElements.tab)
 	GUIElements.tab.blur:SetSize(GUIElements.tab:GetWide(), GUIElements.tab:GetTall())
 	GUIElements.tab.blur:Center()
-	GUIElements.tab.blur:Dock(FILL)
+	GUIElements.tab.blur:SetSize(GUIElements.tab:GetWide(), GUIElements.tab:GetTall())
 	GUIElements.tab.blur.Paint = function(self, w, h)
-		Derma_DrawBackgroundBlurInside(self)
+		if GLOBALS.tabBlur then
+			Derma_DrawBackgroundBlurInside(self)
+		end
 	end
 
 	GUIElements.tab.header = vgui.Create("DPanel", GUIElements.tab)
@@ -150,7 +158,8 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs.settings:SetVisible(false)
 	GUIElements.tabs.settings:DockMargin(16, 16, 16, 16)
 	GUIElements.tabs.settings.Paint = function(self, w, h)
-		draw.SimpleText("Settings are saved automatically.", "Trebuchet16Bold", w - 8, h - 8, textColor2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+		draw.SimpleText("Settings are saved automatically.", "Trebuchet16Bold", w - 8, h - 4, textColor2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+		draw.SimpleText("* - Possibly expensive to run.", "Trebuchet8", w - 8, h - 24, textColor2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
 	end
 
 	GUIElements.tabs.settings.list = vgui.Create("DScrollPanel", GUIElements.tabs.settings)
@@ -199,7 +208,8 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			setting.slider = vgui.Create("DNumSlider", setting)
 			setting.slider:SetWide(200)
 			setting.slider:SetMin(0)
-			setting.slider:SetMax(v[3])
+			setting.slider:SetMin(v[3])
+			setting.slider:SetMax(v[4])
 			setting.slider:SetDecimals(0)
 			setting.slider:SetValue(GLOBALS[v[1]] * 100 or 0)
 			setting.slider:Dock(FILL)
@@ -260,6 +270,8 @@ end)
 
 hook.Add("ScoreboardHide", "gmstation_tab", function()
 	gui.EnableScreenClicker(false)
+
+	saveSettings(true)
 
 	if(IsValid(GUIElements.tab)) then
 		GUIElements.tab:AlphaTo(0, 0.125, 0, function()

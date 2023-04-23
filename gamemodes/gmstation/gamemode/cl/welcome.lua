@@ -41,3 +41,5 @@ concommand.Add("gms_panic", function(ply, cmd, args)
 		panic("Test error")
 	end
 end)
+
+RunConsoleCommand("mat_bloomscale", 0.35)

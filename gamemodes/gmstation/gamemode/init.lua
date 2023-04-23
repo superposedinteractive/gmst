@@ -16,3 +16,19 @@ for k,v in ipairs(file.Find("gmstation/gamemode/sv/*.lua", "LUA")) do
 	print("Loading "..v)
 	include("sv/"..v)
 end
+
+resource.AddFile("/materials/gwenskin/gmstation.png")
+resource.AddFile("/materials/gmstation/ui/hover_popup.png")
+resource.AddFile("/materials/gmstation/ui/ply_gradient.png")
+
+// add every file from /sound/gmstation/music/ to the download list
+for k,v in ipairs(file.Find("sound/gmstation/music/*.mp3", "GAME")) do
+	MsgN("Adding "..v.." to download list")
+	resource.AddFile("sound/gmstation/music/"..v)
+end
+
+// add every file from /sound/gmstation/sfx/ to the download list
+for k,v in ipairs(file.Find("sound/gmstation/sfx/*.mp3", "GAME")) do
+	MsgN("Adding "..v.." to download list")
+	resource.AddFile("sound/gmstation/sfx/"..v)
+end

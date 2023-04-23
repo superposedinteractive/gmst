@@ -30,9 +30,9 @@ local LoadedSounds = {}
 net.Receive("gmstation_zone", function()
 	local zone = net.ReadString()
 
-	if zone == LocalVars["zone"] then return end
+	if zone == GLOBALS.zone then return end
 
-	LocalVars["zone"] = zone
+	GLOBALS.zone = zone
 
 	if Sounds[zone] then
 		local snd = Sounds[zone]
@@ -46,7 +46,7 @@ net.Receive("gmstation_zone", function()
 			end)
 		end
 	else
-		if GLOBALS.currentSound ~= nil && zone ~= LocalVars["zone"] then
+		if GLOBALS.currentSound ~= nil && zone ~= GLOBALS.zone then
 			GLOBALS.currentSound:FadeOut(3)
 		end
 	end

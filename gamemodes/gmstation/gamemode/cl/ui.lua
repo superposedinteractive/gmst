@@ -206,7 +206,7 @@ function SetupHUD()
 	GUIElements.quick_hud.Paint = function(self, w, h)
 		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
 		draw.SimpleText("GMStation", "Trebuchet24Bold", 18, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText(LocalVars["zone"] or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(GLOBALS.zone or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(GLOBALS.money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
@@ -220,23 +220,7 @@ function SetupHUD()
 end
 
 function GM:HUDDrawTargetID()
-	local tr = util.GetPlayerTrace( LocalPlayer() )
-	local trace = util.TraceLine( tr )
-	if (!trace.Hit) then return end
-	if (!trace.HitNonWorld) then return end
-	
-	if (!trace.Entity:IsPlayer()) then
-		local text = trace.Entity:GetNWString("UseText")
-		if text == "" then
-			text = "Interact"
-		end
-
-		surface.SetMaterial(hover_popup)
-		surface.SetDrawColor(255, 255, 255, 255)
-		surface.DrawTexturedRect(ScrW() / 2 + 16, ScrH() / 2 - 16, 256, 32)
-
-		draw.SimpleText(text, "Trebuchet16", ScrW() / 2 + 16 + 8, ScrH() / 2, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	end
+	return false
 end
 
 net.Receive("gmstation_first_join", function()
