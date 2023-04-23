@@ -5,10 +5,10 @@ local function apiPanic()
 	MsgN("[GMST] API is down. Kicking all players.")
 	gameevent.Listen("player_connect")
 	hook.Add("player_connect", "gmstation_kick", function(data)
-		game.KickID(data.networkid, "GMStation is currently experiencing API downtime. Please try again later.\nSorry...")
+		game.KickID(data.networkid, "GMStation is currently experiencing an API outage. Please try again later.\nSorry...")
 	end)
 	for k, v in pairs(player.GetAll()) do
-		ULib.kick(v, "GMStation is currently experiencing API downtime. Please try again later.\n\nSorry...")
+		ULib.kick(v, "GMStation is currently experiencing an API outage. Please try again later.\n\nSorry...")
 	end
 end
 
@@ -26,8 +26,8 @@ function apiCall(url, args, callback)
 
 		if body == -1 || body == -6 || body == nil then
 			MsgN("[GMST] API Error!")
-			for i = 1, 600, 1 do
-				timer.Simple(i / 10, function()
+			for i = 1, 6000, 1 do
+				timer.Simple(i / 60, function()
 					local str = "DUMP"
 					for i = 1, math.random(1, 100), 1 do
 						str = str .. string.char(math.random(32, 126))
