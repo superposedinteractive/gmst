@@ -22,6 +22,25 @@ function apiCall(url, args, callback)
 	MsgN("http://" .. GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
 
 	http.Fetch("http://" .. GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
+		body = tonumber(body)
+
+		if body == -1 || body == -6 || body == nil then
+			MsgN("[GMST] API Error!")
+			for i = 1, 600, 1 do
+				timer.Simple(i / 10, function()
+					local str = "DUMP"
+					for i = 1, math.random(1, 100), 1 do
+						str = str .. string.char(math.random(32, 126))
+					end
+					PlayerMessage(nil, Color(255, 0, 0), str)
+				end)
+			end
+			timer.Simple(240, function()
+				apiPanic()
+			end)
+			return
+		end
+
 		if callback then
 			callback(body, len, headers, code)
 		end
@@ -33,7 +52,7 @@ end
 
 function GM:PlayerInitialSpawn(ply)
 	apiCall("gmstPlayerExists", {steamid = ply:SteamID64()}, function(body, len, headers, code)
-		if body != "0" then
+		if body != 0 then
 			MsgN("[GMST] Player " .. ply:Name() .. " is not registered, registering...")
 			net.Start("gmstation_first_join")
 			net.Send(ply)
@@ -42,7 +61,7 @@ function GM:PlayerInitialSpawn(ply)
 
 			timer.Simple(10, function()
 				apiCall("gmstRegisterPlayer", {steamid = ply:SteamID64(), password = GLOBALS.password}, function(body, len, headers, code)
-					if body == "0" then
+					if body == 0 then
 						MsgN("[GMST] Registered " .. ply:Name())
 						net.Start("gmstation_first_join_done")
 							net.WriteString(ply:SteamID64())
@@ -68,11 +87,5 @@ function GM:PlayerInitialSpawn(ply)
 end
 
 apiCall("gmstHello", {}, function(body, len, headers, code)
-	if body != "0" then
-		apiPanic()
-	else
-		MsgN("[GMST] API Ok")
-	end
-end, function(error)
-	apiPanic()
+	MsgN("[GMST] API Ok")
 end)

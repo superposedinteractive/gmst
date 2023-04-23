@@ -2,19 +2,27 @@
 
 function chat.AddText( ... )
 	local args = {...}
+	if #args == 1 and type( args[1] ) == "table" then
+		args = args[1]
+	end
 
 	GUIElements.chatbox.box:InsertColorChange( 255, 255, 255, 255 )
 
-	for _, obj in ipairs( args ) do
-		if !IsValid(GUIElements.chatbox.box) then continue end
-		if type( obj ) == "table" then
-			GUIElements.chatbox.box:InsertColorChange( obj.r, obj.g, obj.b, 255 )
-		elseif type( obj ) == "string"  then
+	if !IsValid(GUIElements.chatbox.box) then return end
+
+	for _, obj in pairs( args ) do
+		if type( obj ) == "string"  then
 			GUIElements.chatbox.box:AppendText( obj )
+			continue 
+		elseif type( obj ) == "table" then
+			GUIElements.chatbox.box:InsertColorChange( obj.r, obj.g, obj.b, 255 )
+			continue
 		elseif obj:IsPlayer() then
 			local col = obj:GetPlayerColor() * 255
 			GUIElements.chatbox.box:InsertColorChange( col.r, col.g, col.b, 255 )
 			GUIElements.chatbox.box:AppendText( obj:Nick() )
+			GUIElements.chatbox.box:InsertColorChange( 255, 255, 255, 255 )
+			continue 
 		end
 	end
 
@@ -30,12 +38,12 @@ end
 net.Receive("gmstation_chat", function()
 	local zone = net.ReadString()
 	local ply = net.ReadEntity()
-	local msg = net.ReadString()
-
+	local msg = net.ReadTable()
+	
 	if IsValid(ply) then
-		chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg)
+		chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg[1])
 	else
-		chat.AddText(Color(255, 255, 255), msg)
+		chat.AddText(msg)
 	end
 
 	chat.PlaySound()

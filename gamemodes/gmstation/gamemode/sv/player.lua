@@ -34,7 +34,11 @@ end
 function PlayerInit(ply)
 	function ply:GetMoney()
 		apiCall("gmstGetPlayerMoney", ply:SteamID64(), function(body)
-
+			if !string.StartsWith(body, "-") then
+				return tonumber(body)
+			else
+				return 0
+			end
 		end)
 	end
 end
@@ -97,7 +101,7 @@ function GM:PlayerSay(ply, text, team)
 	net.Start("gmstation_chat")
 		net.WriteString(ply:GetNWString("zone") or "Somewhere")
 		net.WriteEntity(ply)
-		net.WriteString(text)
+		net.WriteTable({text})
 	net.Broadcast()
 
 	return ""
