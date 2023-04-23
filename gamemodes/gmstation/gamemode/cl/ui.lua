@@ -247,8 +247,9 @@ net.Receive("gmstation_first_join", function()
 	GUIElements.registering = vgui.Create("DPanel")
 	GUIElements.registering:SetSize(ScrW(), ScrH())
 	GUIElements.registering.Paint = function(self, w, h)
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 200))
-		draw.SimpleText("Please wait while we register you...", "Trebuchet32", w/2, h/2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 250))
+		draw.SimpleText("Please wait while we register you...", "Trebuchet32", w/2, h/2 - 16, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("This may take a few seconds.", "Trebuchet16", w/2, h/2 + 16, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end)
 

@@ -7,7 +7,7 @@ net.Receive("gmstation_taunt", function()
 	tauntAngle = LocalPlayer():EyeAngles()
 end)
 
-function GM:CalcView(ply, pos, ang, fov)
+local function thirdperson(ply, pos, ang)
 	local view = {}
 
 	if(!LocalPlayer():IsPlayingTaunt()) then
@@ -38,6 +38,10 @@ function GM:CalcView(ply, pos, ang, fov)
 	end
 
 	return view
+end
+
+function GM:CalcView(ply, pos, ang, fov)
+	return thirdperson(ply, pos, ang)
 end
 
 hook.Add("InputMouseApply", "gmstation_zoom", function(cmd, x, y, angle)

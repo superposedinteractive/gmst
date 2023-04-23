@@ -20,8 +20,16 @@ local tabs = {
 	"Settings"
 }
 
+local settingOrder = {
+	"Music Volume",
+	"sep",
+	"Scoreboard Waves",
+}
+
 local settings = {
-	["Music Volume"] = {"volume", optionTypes["SLIDER"], 100}
+	["sep"] = {"seperator"},
+	["Music Volume"] = {"volume", optionTypes["SLIDER"], 100},
+	["Scoreboard Waves"] = {"tabWaves", optionTypes["CHECKBOX"], true},
 }
 
 function Derma_DrawBackgroundBlurInside( panel )
@@ -55,11 +63,20 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tab:AlphaTo(255, 0.125, 0)
 	GUIElements.tab.Paint = function(self, w, h)
 		draw.RoundedBox(0, 0, 0, w, h, bgColor)
+
+		if GLOBALS.tabWaves then
+			for i = 0, 16, 1 do
+				for ii = 0, w / 16, 1 do
+					draw.RoundedBox(0, ii * 16, h/2 + math.sin(CurTime() + (ii * i) / w * 60) * h / 16 + (i * (w / 32)), 16, h, Color(0, 78, 218, i * 50))
+				end
+			end
+		end
 	end
 
 	GUIElements.tab.blur = vgui.Create("DPanel", GUIElements.tab)
 	GUIElements.tab.blur:SetSize(GUIElements.tab:GetWide(), GUIElements.tab:GetTall())
 	GUIElements.tab.blur:Center()
+	GUIElements.tab.blur:Dock(FILL)
 	GUIElements.tab.blur.Paint = function(self, w, h)
 		Derma_DrawBackgroundBlurInside(self)
 	end
@@ -84,16 +101,17 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tab.header.title:Dock(LEFT)
 	GUIElements.tab.header.title:DockMargin(4, 0, 0, 0)
 
-	GUIElements.tabs.players = vgui.Create("DPanelList", GUIElements.tabs)
+	GUIElements.tabs.players = vgui.Create("DScrollPanel", GUIElements.tabs)
 	GUIElements.tabs.players:Dock(FILL)
-	GUIElements.tabs.players:EnableVerticalScrollbar(true)
-	GUIElements.tabs.players:EnableHorizontal(false)
-	GUIElements.tabs.players:SetSpacing(1)
 	GUIElements.tabs.players:SetVisible(true)
 
+	GUIElements.tabs.players.panel = vgui.Create("DListLayout", GUIElements.tabs.players)
+	GUIElements.tabs.players.panel:Dock(FILL)
+
 	for k, v in pairs(player.GetAll()) do
-		local playerPanel = vgui.Create("DPanel")
+		local playerPanel = vgui.Create("DPanel", GUIElements.tabs.players.panel)
 		playerPanel:SetTall(64)
+		playerPanel:DockMargin(0, 1, 0, 0)
 		playerPanel.Paint = function(self, w, h)
 			surface.SetDrawColor(255, 255, 255, 255)
 			surface.SetMaterial(playerGradient)
@@ -125,40 +143,49 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 				playerPanel.location:SetText(v:GetNWString("zone") or "Somewhere")
 			end
 		end)
-
-		GUIElements.tabs.players:AddItem(playerPanel)
 	end
 
-	GUIElements.tabs.settings = vgui.Create("DPanelList", GUIElements.tabs)
+	GUIElements.tabs.settings = vgui.Create("DPanel", GUIElements.tabs)
 	GUIElements.tabs.settings:Dock(FILL)
-	GUIElements.tabs.settings:EnableVerticalScrollbar(true)
-	GUIElements.tabs.settings:EnableHorizontal(false)
-	GUIElements.tabs.settings:SetSpacing(1)
 	GUIElements.tabs.settings:SetVisible(false)
-
-	GUIElements.tabs.settings.list = vgui.Create("DPanelList", GUIElements.tabs.settings)
-	GUIElements.tabs.settings.list:Dock(FILL)
-	GUIElements.tabs.settings.list:EnableVerticalScrollbar(true)
-	GUIElements.tabs.settings.list:EnableHorizontal(false)
-	GUIElements.tabs.settings.list:SetSpacing(1)
-	GUIElements.tabs.settings.list:DockMargin(16, 16, 16, 16)
-
-	GUIElements.tabs.settings.list.title_panel = vgui.Create("DPanel", GUIElements.tabs.settings.list)
-	GUIElements.tabs.settings.list.title_panel:SetTall(64)
-	GUIElements.tabs.settings.list.title_panel:Dock(TOP)
-	GUIElements.tabs.settings.list.title_panel.Paint = function(self, w, h)
+	GUIElements.tabs.settings:DockMargin(16, 16, 16, 16)
+	GUIElements.tabs.settings.Paint = function(self, w, h)
+		draw.SimpleText("Settings are saved automatically.", "Trebuchet16Bold", w - 8, h - 8, textColor2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
 	end
 
-	GUIElements.tabs.settings.list.title = vgui.Create("DLabel", GUIElements.tabs.settings.list.title_panel)
+	GUIElements.tabs.settings.list = vgui.Create("DScrollPanel", GUIElements.tabs.settings)
+	GUIElements.tabs.settings.list:Dock(FILL)
+	GUIElements.tabs.settings.list.Paint = function(self, w, h)
+	end
+
+	GUIElements.tabs.settings.list.title = vgui.Create("DLabel", GUIElements.tabs.settings.list)
 	GUIElements.tabs.settings.list.title:SetFont("Trebuchet32")
 	GUIElements.tabs.settings.list.title:SetText("Settings")
 	GUIElements.tabs.settings.list.title:SetTextColor(textColor)
 	GUIElements.tabs.settings.list.title:SizeToContents()
+	GUIElements.tabs.settings.list.title:Dock(TOP)
 
-	for k, v in pairs(settings) do
+	for i = 1, #settingOrder, 1 do
+		local k = settingOrder[i]
+		local v = settings[settingOrder[i]]
+
+		-- Lua, why lua WHYYYYYYYYYYYYY
+
 		local setting = vgui.Create("DPanel", GUIElements.tabs.settings.list)
 		setting:Dock(TOP)
 		setting.Paint = function(self, w, h)
+		end
+
+		if string.StartWith(k, "sep") then
+			setting:SetTall(1)
+			setting:DockMargin(0, 8, 0, 8)
+			setting.Paint = function(self, w, h)
+				draw.NoTexture()
+				surface.SetDrawColor(textColor2)
+				surface.DrawTexturedRect(0, 0, w, h)
+			end
+			
+			continue
 		end
 
 		setting.name = vgui.Create("DLabel", setting)
@@ -174,40 +201,44 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			setting.slider:SetMin(0)
 			setting.slider:SetMax(v[3])
 			setting.slider:SetDecimals(0)
-			setting.slider:SetValue(GLOBALS[v[1]] * 100 or 0 * 100)
+			setting.slider:SetValue(GLOBALS[v[1]] * 100 or 0)
 			setting.slider:Dock(FILL)
 			setting.slider:DockMargin(0, 0, 0, 0)
 			setting.slider.OnValueChanged = function(self, value)
 				GLOBALS[v[1]] = value / 100
 				saveSettings()
 			end
+			continue
 		elseif v[2] == optionTypes["CHECKBOX"] then
 			setting.checkbox = vgui.Create("DCheckBoxLabel", setting)
 			setting.checkbox:SetWide(200)
 			setting.checkbox:SetText("")
-			setting.checkbox:SetValue(v[1])
+			setting.checkbox:SetValue(GLOBALS[v[1]])
 			setting.checkbox:Dock(RIGHT)
 			setting.checkbox:DockMargin(0, 0, 0, 0)
 			setting.checkbox:SetTextColor(textColor)
+			setting.checkbox.OnChange = function(self, value)
+				GLOBALS[v[1]] = value
+				saveSettings()
+			end
+			continue
 		end
 	end
 
-
-	GUIElements.tab.tabList = vgui.Create("DPanelList", GUIElements.tab)
+	GUIElements.tab.tabList = vgui.Create("DScrollPanel", GUIElements.tab)
 	GUIElements.tab.tabList:Dock(LEFT)
 	GUIElements.tab.tabList:SetWide(96)
-	GUIElements.tab.tabList:SetSpacing(1)
 	GUIElements.tab.tabList.Paint = function(self, w, h)
 		draw.RoundedBox(0, 0, 0, w, h, rowColor2)
 	end
 
 	for k, v in pairs(tabs) do
-		local button = vgui.Create("DButton")
+		local button = vgui.Create("DButton", GUIElements.tab.tabList)
 		button:SetText(v)
 		button:SetTextColor(textColor)
 		button:SetFont("Trebuchet16")
 		button:SetSize(GUIElements.tab.tabList:GetWide(), 32)
-		button:SetX(20)
+		button:Dock(TOP)
 		button.Paint = function(self, w, h)
 			if(self:IsHovered()) then
 				draw.RoundedBox(0, 0, 0, w, h, rowColor1)
@@ -222,8 +253,6 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 
 			GUIElements.tabs[v:lower()]:SetVisible(true)
 		end
-
-		GUIElements.tab.tabList:AddItem(button)
 	end
 
 	return false

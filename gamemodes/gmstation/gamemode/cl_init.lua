@@ -3,7 +3,6 @@ include("shared.lua")
 GLOBALS = {}
 GLOBALS.url = "local.loopback"
 GLOBALS.money = "???"
-GLOBALS.volume = 0.5
 
 if !oldChat then
 	MsgN("[GMST] Overriding chat.AddText")

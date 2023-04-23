@@ -1,5 +1,6 @@
 local saveableGlobals = {
-	"volume"
+	["volume"] = 0.5,
+	["tabWaves"] = true
 }
 
 function apiCall(url, args, callback)
@@ -29,15 +30,22 @@ end)
 
 function saveSettings()
 	MsgN("[GMST] Saving & Applying settings file")
+
 	local settings = {}
-	for k,v in ipairs(saveableGlobals) do
-		settings[v] = GLOBALS[v]
+	for k, v in pairs(saveableGlobals) do
+		if GLOBALS[k] != nil then
+			settings[k] = GLOBALS[k]
+		else
+			settings[k] = saveableGlobals[k]
+		end
+		
+		GLOBALS[k] = settings[k]
 	end
 	
 	file.Write("gmstation/settings.json", util.TableToJSON(settings))
 
 	if GLOBALS.currentSound then
-		GLOBALS.currentSound:ChangeVolume(GLOBALS.volume)
+		GLOBALS.currentSound:ChangeVolume(GLOBALS.volume * GLOBALS.ogVolume)
 	end
 end
 
@@ -45,10 +53,15 @@ if(file.Exists("gmstation/settings.json", "DATA")) then
 	MsgN("[GMST] Loading settings file")
 	local settings = util.JSONToTable(file.Read("gmstation/settings.json", "DATA"))
 	if(settings) then
-		GLOBALS.volume = settings.volume
+		for k, v in pairs(settings) do
+			print(k, v)
+			GLOBALS[k] = v
+		end
+	else
+		panic("Failed to load settings file")
 	end
 else
-	MsgN("[GMST] Creating settings file")
+	MsgN("[GMST] Creating settings file & setting default values")
 	file.CreateDir("gmstation")
 	saveSettings()
 end
