@@ -4,6 +4,14 @@ SKIN.Author = "superposed"
 SKIN.DermaVersion = 1
 SKIN.GwenTexture = Material("gwenskin/gmstation.png")
 
+SKIN.text_dark = Color( 255, 255, 255, 255 )
+SKIN.text_bright = Color( 255, 255, 255, 255 )
+SKIN.text_normal = Color( 255, 255, 255, 255 )
+SKIN.colTextEntryText = Color( 0, 0, 0, 255 )
+SKIN.colTextEntryTextHighlight = Color( 255, 255, 255, 255 )
+SKIN.colTextEntryTextCursor = Color( 0, 0, 0, 255 )
+SKIN.colTextEntryTextPlaceholder = Color( 0, 0, 0, 100 )
+
 SKIN.tex = {}
 
 SKIN.tex.Selection					= GWEN.CreateTextureBorder( 384, 32, 31, 31, 4, 4, 4, 4 )
@@ -164,6 +172,7 @@ SKIN.tex.CategoryList = {}
 SKIN.tex.CategoryList.Outer		= GWEN.CreateTextureBorder( 256, 384, 63, 63, 8, 8, 8, 8 )
 SKIN.tex.CategoryList.Inner		= GWEN.CreateTextureBorder( 320, 384, 63, 63, 8, 21, 8, 8 )
 SKIN.tex.CategoryList.Header	= GWEN.CreateTextureBorder( 320, 352, 63, 31, 8, 8, 8, 8 )
+SKIN.tex.CategoryList.InnerH	= GWEN.CreateTextureBorder( 320, 384, 63, 20, 8, 8, 8, 8 )
 
 SKIN.tex.Tooltip = GWEN.CreateTextureBorder( 384, 64, 31, 31, 8, 8, 8, 8 )
 

@@ -54,7 +54,7 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 	if wep:GetClass() == "weapon_physgun" then
 		return true
 	end
-	return true
+	return false
 end
 
 timer.Create("gmstation_globalheal", 0.25, 0, function()

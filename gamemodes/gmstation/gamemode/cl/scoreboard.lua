@@ -63,7 +63,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	end
 
 	GUIElements.tab = vgui.Create("DPanel")
-	GUIElements.tab:SetSize(800, 500)
+	GUIElements.tab:SetSize(math.min(ScrW() - 100, 800), math.min(ScrH() - 100, 500))
 	GUIElements.tab:Center()
 	GUIElements.tab:SetAlpha(0)
 	GUIElements.tab:AlphaTo(255, 0.125, 0)

@@ -59,7 +59,6 @@ if(file.Exists("gmstation/settings.json", "DATA")) then
 	local settings = util.JSONToTable(file.Read("gmstation/settings.json", "DATA"))
 	if(settings) then
 		for k, v in pairs(settings) do
-			print(k, v)
 			GLOBALS[k] = v
 		end
 	else

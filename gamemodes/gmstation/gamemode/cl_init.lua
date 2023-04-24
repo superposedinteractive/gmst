@@ -1,7 +1,7 @@
 include("shared.lua")
 
 GLOBALS = {}
-GLOBALS.url = "new-japannt.tk:3621"
+GLOBALS.url = "local.loopback/gmstation"
 GLOBALS.money = "0"
 
 if !oldChat then
