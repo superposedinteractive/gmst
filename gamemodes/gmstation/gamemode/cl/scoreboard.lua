@@ -72,9 +72,28 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 
 		if CL_GLOBALS.tabWaves then
 			for i = 0, 16, 1 do
+				local verts = {
+					{
+						x = 0,
+						y = h
+					}
+				}
+
 				for ii = 0, w / 16, 1 do
-					draw.RoundedBox(0, ii * 16, h/2 + math.sin(CurTime() + (ii * i) / w * 60) * h / 16 + (i * (w / 32)), 16, h, Color(0, 78, 218, i * 50))
+					verts[#verts+1] = {
+						x = ii * 16,
+						y = h/2 + math.sin(CurTime() + (ii * i) / w * 60) * h / 16 + (i * (w / 32))
+					}
 				end
+
+				verts[#verts+1] = {
+						x = w,
+						y = h
+					}
+
+				surface.SetDrawColor(0, 78, 218, i * 50)
+				draw.NoTexture()
+				surface.DrawPoly(verts)
 			end
 		end
 	end
