@@ -9,7 +9,7 @@ if !oldChat then
 	oldChat = chat.AddText
 end
 
-if not IsValid(GUIElements) then
+if GUIElements == nil then
 	GUIElements = {}
 end
 
@@ -17,6 +17,7 @@ if not table.IsEmpty(GUIElements or {}) then
 	for v in pairs(GUIElements) do
 		GUIElements[v]:Remove()
 		MsgN("[GMST] Removing "..v)
+		chat.AddText(Color(255, 0, 0), "[GMST] Removing "..v)
 	end
 end
 

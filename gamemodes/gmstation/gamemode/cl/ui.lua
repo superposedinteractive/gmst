@@ -223,6 +223,58 @@ function GM:HUDDrawTargetID()
 	return false
 end
 
+function GM:HUDShouldDraw(name)
+	return hudExceptions[name] || false
+end
+
+function GM:OnScreenSizeChanged(w, h)
+	createFonts()
+	if IsValid(GUIElements.quick_hud) then
+		SetupHUD()
+	end
+end
+
+function displaySpeech(icon, text)
+	if IsValid(GUIElements.speech) then
+		GUIElements.speech:Remove()
+	end
+
+	surface.PlaySound("/friends/message.wav")
+
+	local time = string.len(text) * 0.25
+
+	if icon == nil then
+		icon = "missigno-cat"
+	end
+
+	chat.AddText("gmstation/ui/textbox/" .. icon .. ".png")
+
+	icon = Material("gmstation/ui/textbox/" .. icon .. ".png", "noclamp smooth")
+
+	GUIElements.speech = vgui.Create("DPanel")
+	GUIElements.speech:SetSize(math.min(ScrW() - 64, 1000), 100)
+	GUIElements.speech:CenterHorizontal()
+	GUIElements.speech:SetY(ScrH())
+	GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH() - 100 - 32, 0.5, 0, 0.5)
+	GUIElements.speech.Paint = function(self, w, h)
+		draw.RoundedBox(2, 0, 0, w, h, Color(0, 0, 0, 200))
+		surface.SetDrawColor(255, 255, 255)
+		surface.SetMaterial(icon)
+		surface.DrawTexturedRectRotated(48, 48, 64, 64, math.sin(CurTime() * 2) * 5)
+		draw.SimpleText(text, "Trebuchet16", 64 + 16, 48, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	end
+
+	timer.Simple(time, function()
+		if IsValid(GUIElements.speech) then
+			GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH(), 0.5, 0, 0.5, function()
+				GUIElements.speech:Remove()
+			end)
+		end
+	end)
+end
+
+displaySpeech(nil, "You are now registered!")
+
 net.Receive("gmstation_first_join", function()
 	if IsValid(GUIElements.registering) then
 		GUIElements.registering:Remove()
@@ -236,17 +288,6 @@ net.Receive("gmstation_first_join", function()
 		draw.SimpleText("This may take a few seconds.", "Trebuchet16", w/2, h/2 + 16, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 end)
-
-function GM:HUDShouldDraw(name)
-	return hudExceptions[name] || false
-end
-
-function GM:OnScreenSizeChanged(w, h)
-	createFonts()
-	if IsValid(GUIElements.quick_hud) then
-		SetupHUD()
-	end
-end
 
 net.Receive("gmstation_map_restart", function()
 	local time = net.ReadFloat()
