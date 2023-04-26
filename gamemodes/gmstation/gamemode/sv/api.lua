@@ -8,7 +8,12 @@ local function apiPanic()
 		game.KickID(data.networkid, "GMStation is currently experiencing an API outage. Please try again later.\nSorry...")
 	end)
 	for k, v in pairs(player.GetAll()) do
-		ULib.kick(v, "GMStation is currently experiencing an API outage. Please try again later.\n\nSorry...")
+		-- I see no reason to use ULib, but I'll leave it with a fallback.
+		if ULib then 
+			ULib.kick(v, "GMStation is currently experiencing an API outage. Please try again later.\n\nSorry...")
+		else
+			v:Kick("GMStation is currently experiencing an API outage. Please try again later.\n\nSorry...")
+		end
 	end
 end
 
@@ -19,9 +24,9 @@ function apiCall(url, args, callback)
 	end
 	get = string.sub(get, 1, string.len(get) - 1)
 
-	MsgN("http://" .. GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
+	MsgN("http://" .. SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
 
-	http.Fetch("http://" .. GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
+	http.Fetch("http://" .. SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
 		body = tonumber(body)
 
 		if body == -1 || body == -6 || body == nil then
@@ -60,7 +65,7 @@ function GM:PlayerInitialSpawn(ply)
 			ply:Lock()
 
 			timer.Simple(10, function()
-				apiCall("gmstRegisterPlayer", {steamid = ply:SteamID64(), password = GLOBALS.password}, function(body, len, headers, code)
+				apiCall("gmstRegisterPlayer", {steamid = ply:SteamID64(), password = SV_GLOBALS.password}, function(body, len, headers, code)
 					if body == 0 then
 						MsgN("[GMST] Registered " .. ply:Name())
 						net.Start("gmstation_first_join_done")

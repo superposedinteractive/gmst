@@ -10,7 +10,7 @@ function chat.AddText( ... )
 
 	if !IsValid(GUIElements.chatbox.box) then return end
 
-	for _, obj in pairs( args ) do
+	for _, obj in pairs(args) do
 		if type( obj ) == "string"  then
 			GUIElements.chatbox.box:AppendText( obj )
 			continue 

@@ -12,7 +12,7 @@ function apiCall(url, args, callback)
 	end
 	get = string.sub(get, 1, string.len(get) - 1)
 
-	http.Fetch("http://" .. GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
+	http.Fetch("http://" .. CL_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
 		if callback then
 			callback(body, len, headers, code)
 		end
@@ -24,7 +24,7 @@ end
 net.Receive("gmstation_first_join_done", function()
 	local steamid = net.ReadString() -- LocalPlayer():SteamID64() sometimes player isn't ready yet
 	apiCall("gmstGetPlayerMoney", {steamid = steamid}, function(body, len, headers, code)
-		GLOBALS.money = tonumber(body)
+		CL_GLOBALS.money = tonumber(body)
 	end)
 
 	SetupHUD()
@@ -35,17 +35,17 @@ function saveSettings(write)
 
 	local settings = {}
 	for k, v in pairs(saveableGlobals) do
-		if GLOBALS[k] != nil then
-			settings[k] = GLOBALS[k]
+		if CL_GLOBALS[k] != nil then
+			settings[k] = CL_GLOBALS[k]
 		else
 			settings[k] = saveableGlobals[k]
 		end
 		
-		GLOBALS[k] = settings[k]
+		CL_GLOBALS[k] = settings[k]
 	end
 	
-	if GLOBALS.currentSound then
-		GLOBALS.currentSound:ChangeVolume(GLOBALS.volume * GLOBALS.ogVolume)
+	if CL_GLOBALS.currentSound then
+		CL_GLOBALS.currentSound:ChangeVolume(CL_GLOBALS.volume * CL_GLOBALS.ogVolume)
 	end
 
 	if write then
@@ -59,7 +59,7 @@ if(file.Exists("gmstation/settings.json", "DATA")) then
 	local settings = util.JSONToTable(file.Read("gmstation/settings.json", "DATA"))
 	if(settings) then
 		for k, v in pairs(settings) do
-			GLOBALS[k] = v
+			CL_GLOBALS[k] = v
 		end
 	else
 		panic("Failed to load settings file")
