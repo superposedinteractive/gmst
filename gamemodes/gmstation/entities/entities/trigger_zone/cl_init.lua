@@ -30,9 +30,9 @@ local LoadedSounds = {}
 net.Receive("gmstation_zone", function()
 	local zone = net.ReadString()
 
-	if zone == GLOBALS.zone then return end
+	if zone == CL_GLOBALS.zone then return end
 
-	GLOBALS.zone = zone
+	CL_GLOBALS.zone = zone
 
 	if Sounds[zone] then
 		local snd = Sounds[zone]
@@ -46,8 +46,8 @@ net.Receive("gmstation_zone", function()
 			end)
 		end
 	else
-		if GLOBALS.currentSound ~= nil && zone ~= GLOBALS.zone then
-			GLOBALS.currentSound:FadeOut(3)
+		if CL_GLOBALS.currentSound ~= nil && zone ~= CL_GLOBALS.zone then
+			CL_GLOBALS.currentSound:FadeOut(3)
 		end
 	end
 end)
@@ -55,8 +55,8 @@ end)
 function PlaySound(snd, loop)
 	local roll = math.random(#snd["Sounds"])
 	local sndFile = snd["Sounds"][roll]
-	local volume = (snd["Volume"] or 1) * GLOBALS.volume
-	GLOBALS.ogVolume = snd["Volume"] or 1
+	local volume = (snd["Volume"] or 1) * CL_GLOBALS.volume
+	CL_GLOBALS.ogVolume = snd["Volume"] or 1
 
 	timer.Remove("gmstation_looping_music")
 
@@ -66,25 +66,25 @@ function PlaySound(snd, loop)
 		end
 	end
 
-	if GLOBALS.currentSound ~= nil then
-		GLOBALS.currentSound:FadeOut(3)
+	if CL_GLOBALS.currentSound ~= nil then
+		CL_GLOBALS.currentSound:FadeOut(3)
 	end
 
 	if IsValid(LocalPlayer()) then
-		GLOBALS.currentSound = LoadedSounds[sndFile]
-		GLOBALS.currentSound:PlayEx(0, 100)
+		CL_GLOBALS.currentSound = LoadedSounds[sndFile]
+		CL_GLOBALS.currentSound:PlayEx(0, 100)
 
 		if loop then
 			local dur = snd["Duration"][roll]
 
 			timer.Create("gmstation_looping_music", dur - 3, 0, function()
-				GLOBALS.currentSound:Stop()
-				GLOBALS.currentSound:PlayEx(0, 100)
-				GLOBALS.currentSound:ChangeVolume(volume)
+				CL_GLOBALS.currentSound:Stop()
+				CL_GLOBALS.currentSound:PlayEx(0, 100)
+				CL_GLOBALS.currentSound:ChangeVolume(volume)
 			end)
 		end
 
-		GLOBALS.currentSound:ChangeVolume(volume)
+		CL_GLOBALS.currentSound:ChangeVolume(volume)
 	else
 		timer.Simple(1, function()
 			PlaySound(snd)

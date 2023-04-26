@@ -42,7 +42,7 @@ function Derma_DrawBackgroundBlurInside(panel)
 	surface.SetMaterial( blurscreen )
 	surface.SetDrawColor( 255, 255, 255, 255 )
 
-	local blurStrength = (GLOBALS.blurStrength * 100)
+	local blurStrength = (CL_GLOBALS.blurStrength * 100)
 
 	for i=0.33, 1, 0.33 do
 			blurscreen:SetFloat( "$blur", blurStrength * i )
@@ -70,7 +70,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tab.Paint = function(self, w, h)
 		draw.RoundedBox(0, 0, 0, w, h, bgColor)
 
-		if GLOBALS.tabWaves then
+		if CL_GLOBALS.tabWaves then
 			for i = 0, 16, 1 do
 				for ii = 0, w / 16, 1 do
 					draw.RoundedBox(0, ii * 16, h/2 + math.sin(CurTime() + (ii * i) / w * 60) * h / 16 + (i * (w / 32)), 16, h, Color(0, 78, 218, i * 50))
@@ -84,7 +84,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tab.blur:Center()
 	GUIElements.tab.blur:SetSize(GUIElements.tab:GetWide(), GUIElements.tab:GetTall())
 	GUIElements.tab.blur.Paint = function(self, w, h)
-		if GLOBALS.tabBlur then
+		if CL_GLOBALS.tabBlur then
 			Derma_DrawBackgroundBlurInside(self)
 		end
 	end
@@ -211,11 +211,11 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			setting.slider:SetMin(v[3])
 			setting.slider:SetMax(v[4])
 			setting.slider:SetDecimals(0)
-			setting.slider:SetValue(GLOBALS[v[1]] * 100 or 0)
+			setting.slider:SetValue(CL_GLOBALS[v[1]] * 100 or 0)
 			setting.slider:Dock(FILL)
 			setting.slider:DockMargin(0, 0, 0, 0)
 			setting.slider.OnValueChanged = function(self, value)
-				GLOBALS[v[1]] = value / 100
+				CL_GLOBALS[v[1]] = value / 100
 				saveSettings()
 			end
 			continue
@@ -223,12 +223,12 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			setting.checkbox = vgui.Create("DCheckBoxLabel", setting)
 			setting.checkbox:SetWide(200)
 			setting.checkbox:SetText("")
-			setting.checkbox:SetValue(GLOBALS[v[1]])
+			setting.checkbox:SetValue(CL_GLOBALS[v[1]])
 			setting.checkbox:Dock(RIGHT)
 			setting.checkbox:DockMargin(0, 0, 0, 0)
 			setting.checkbox:SetTextColor(textColor)
 			setting.checkbox.OnChange = function(self, value)
-				GLOBALS[v[1]] = value
+				CL_GLOBALS[v[1]] = value
 				saveSettings()
 			end
 			continue

@@ -26,20 +26,20 @@ net.Receive("gmstation_store", function()
 	local type = net.ReadString()
 	if GUIElements.store then GUIElements.store:Remove() end
 
-	if GLOBALS.currentSound then
-		GLOBALS.currentSound:ChangeVolume(0.01, 0.5)
+	if CL_GLOBALS.currentSound then
+		CL_GLOBALS.currentSound:ChangeVolume(0.01, 0.5)
 	end
 
 	local music = CreateSound(LocalPlayer(), "gmstation/music/store.mp3")
 
 	timer.Simple(0.5, function()
 		music:Stop()
-		music:PlayEx(GLOBALS.volume, 100)
+		music:PlayEx(CL_GLOBALS.volume, 100)
 	end)
 
 	timer.Create("gmstation_store_music", 60, 0, function()
 		music:Stop()
-		music:PlayEx(GLOBALS.volume, 100)
+		music:PlayEx(CL_GLOBALS.volume, 100)
 	end)
 
 	GUIElements.store = vgui.Create("DFrame")
@@ -50,8 +50,8 @@ net.Receive("gmstation_store", function()
 	GUIElements.store.OnClose = function()
 		timer.Remove("gmstation_store_music")
 		music:FadeOut(1)
-		if GLOBALS.currentSound then
-			GLOBALS.currentSound:ChangeVolume(GLOBALS.volume * GLOBALS.ogVolume)
+		if CL_GLOBALS.currentSound then
+			CL_GLOBALS.currentSound:ChangeVolume(CL_GLOBALS.volume * CL_GLOBALS.ogVolume)
 		end
 	end
 
