@@ -81,8 +81,8 @@ function GM:PlayerStartTaunt(ply, actid, len)
 	gmstRestartMap(5)
 end
 
-function GM:PlayerConnect(name, ip)
-	MsgN("[GMST] " .. name .. " joining.")
+function GM:PlayerConnect(name)
+	MsgN("[GMST] " .. name .. " is joining.")
 end
 
 function GM:PlayerDisconnected(ply)
