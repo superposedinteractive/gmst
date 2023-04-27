@@ -234,7 +234,7 @@ function GM:OnScreenSizeChanged(w, h)
 	end
 end
 
-function displaySpeech(icon, text)
+function displaySpeech(icon, text, name)
 	timer.Remove("gmstation_textbox")
 	if IsValid(GUIElements.speech) then
 		GUIElements.speech:Remove()
@@ -260,16 +260,18 @@ function displaySpeech(icon, text)
 	end)
 
 	GUIElements.speech = vgui.Create("DPanel")
-	GUIElements.speech:SetSize(math.min(ScrW() - 64, 500), 100)
+	GUIElements.speech:SetSize(math.min(ScrW() - 64, 750), 132)
 	GUIElements.speech:CenterHorizontal()
 	GUIElements.speech:SetY(ScrH())
-	GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH() - 100 - 32, 0.5, 0, 0.5)
+	GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH() - 100 - 64, 0.5, 0, 0.5)
 	GUIElements.speech.Paint = function(self, w, h)
-		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
+		draw.RoundedBox(4, 0, 32, w, h - 32, Color(0, 0, 0, 200))
+		draw.RoundedBox(4, 16, 16, w / 4, 32, Color(0, 0, 0))
+		draw.SimpleText(name || "Missingno", "Trebuchet16", w / 7, 32, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		surface.SetDrawColor(255, 255, 255)
 		surface.SetMaterial(icon)
-		surface.DrawTexturedRectRotated(48, 48, 64, 64, math.sin(CurTime() * 2) * 5)
-		draw.DrawText(texttext, "Trebuchet16", 96, 24, Color(255, 255, 255), TEXT_ALIGN_TOP)
+		surface.DrawTexturedRectRotated(48, h/2 + 16, 64, 64, math.sin(CurTime() * 2) * 5)
+		draw.DrawText(texttext, "Trebuchet16", 96, 24 + 32, Color(255, 255, 255), TEXT_ALIGN_TOP)
 	end
 
 	timer.Create("gmstation_textbox", time, 1, function()
@@ -280,8 +282,6 @@ function displaySpeech(icon, text)
 		end
 	end)
 end
-
-displaySpeech(nil, "I'm sure you will find what you are\nlooking for here.")
 
 net.Receive("gmstation_first_join", function()
 	if IsValid(GUIElements.registering) then
