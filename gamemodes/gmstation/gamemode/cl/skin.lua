@@ -17,7 +17,7 @@ SKIN.tex = {}
 SKIN.tex.Selection					= GWEN.CreateTextureBorder( 384, 32, 31, 31, 4, 4, 4, 4 )
 
 SKIN.tex.Panels = {}
-SKIN.tex.Panels.Normal				= GWEN.CreateTextureBorder( 256,	0, 63, 63, 16, 16, 16, 16 )
+SKIN.tex.Panels.Normal				= GWEN.CreateTextureBorder( 256, 128, 127, 127, 16, 16, 16, 16 )
 SKIN.tex.Panels.Bright				= GWEN.CreateTextureBorder( 256+64, 0, 63, 63, 16, 16, 16, 16 )
 SKIN.tex.Panels.Dark				= GWEN.CreateTextureBorder( 256,	64, 63, 63, 16, 16, 16, 16 )
 SKIN.tex.Panels.Highlight			= GWEN.CreateTextureBorder( 256+64, 64, 63, 63, 16, 16, 16, 16 )
