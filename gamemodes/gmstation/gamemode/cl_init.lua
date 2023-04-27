@@ -1,7 +1,7 @@
 include("shared.lua")
 
 CL_GLOBALS = {}
-CL_GLOBALS.url = "https://superposed.xyz/gmstation/"
+CL_GLOBALS.url = "https://superposed.xyz/gmstation"
 CL_GLOBALS.money = "0"
 
 if not oldChat then
