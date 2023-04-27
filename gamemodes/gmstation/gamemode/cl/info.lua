@@ -12,7 +12,7 @@ function apiCall(url, args, callback)
 	end
 	get = string.sub(get, 1, string.len(get) - 1)
 
-	http.Fetch("http://" .. CL_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
+	http.Fetch(CL_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
 		if callback then
 			callback(body, len, headers, code)
 		end

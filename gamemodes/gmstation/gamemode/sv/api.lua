@@ -24,9 +24,9 @@ function apiCall(url, args, callback)
 	end
 	get = string.sub(get, 1, string.len(get) - 1)
 
-	MsgN("http://" .. SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
+	MsgN(SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
 
-	http.Fetch("http://" .. SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
+	http.Fetch(SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
 		body = tonumber(body)
 
 		if body == -1 || body == -6 || body == nil then
