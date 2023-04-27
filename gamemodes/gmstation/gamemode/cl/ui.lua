@@ -270,7 +270,7 @@ function displaySpeech(icon, text, name)
 		draw.SimpleText(name || "Missingno", "Trebuchet16", w / 7, 32, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		surface.SetDrawColor(255, 255, 255)
 		surface.SetMaterial(icon)
-		surface.DrawTexturedRectRotated(48, h/2 + 16, 64, 64, math.sin(CurTime() * 2) * 5)
+		surface.DrawTexturedRectRotated(48, h/2 + 22, 64, 64, math.sin(CurTime() * 2) * 5)
 		draw.DrawText(texttext, "Trebuchet16", 96, 24 + 32, Color(255, 255, 255), TEXT_ALIGN_TOP)
 	end
 
