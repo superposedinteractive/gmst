@@ -292,7 +292,7 @@ end
 
 // Check if player has CS:S by loading a CS:S texture
 local css = Material("de_nuke/radwarning")
-if !css:IsError() then
+if css:IsError() then
 	GUIElements.css = vgui.Create("DPanel")
 	GUIElements.css:SetSize(math.min(ScrW() - 64, 750), 116)
 	GUIElements.css:CenterHorizontal()
