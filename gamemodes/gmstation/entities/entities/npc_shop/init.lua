@@ -14,10 +14,17 @@ function ENT:Initialize()
 	self:CapabilitiesAdd(CAP_ANIMATEDFACE, CAP_TURN_HEAD)
 end
 
+function ENT:KeyValue(key, value)
+	self[key] = value
+	MsgN("GMStation: ", key, " = ", value)
+end
+
 function ENT:Use(activator, caller, useType, value)
 	if activator:IsPlayer() then
 		net.Start("gmstation_store")
 			net.WriteString(self.store || "unknown")
+			net.WriteString(self.message || "Welcome!")
+			net.WriteString(self.exitMessage || "Goodbye!")
 		net.Send(activator)
 	end
 end

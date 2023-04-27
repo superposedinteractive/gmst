@@ -235,36 +235,44 @@ function GM:OnScreenSizeChanged(w, h)
 end
 
 function displaySpeech(icon, text)
+	timer.Remove("gmstation_textbox")
 	if IsValid(GUIElements.speech) then
 		GUIElements.speech:Remove()
 	end
 
-	surface.PlaySound("/friends/message.wav")
-
-	local time = string.len(text) * 0.25
+	local time = math.max(string.len(text) * 0.05, 3)
 
 	if icon == nil then
 		icon = "missigno-cat"
 	end
 
-	chat.AddText("gmstation/ui/textbox/" .. icon .. ".png")
-
 	icon = Material("gmstation/ui/textbox/" .. icon .. ".png", "noclamp smooth")
 
+	local texttext = ""
+	
+	timer.Simple(0.15, function()
+		for i = 1, string.len(text) do
+			timer.Simple(i * 0.025, function()
+				texttext = string.sub(text, 1, i)
+				surface.PlaySound("/gmstation/sfx/chat" .. math.random(1, 2) .. ".wav")
+			end)
+		end
+	end)
+
 	GUIElements.speech = vgui.Create("DPanel")
-	GUIElements.speech:SetSize(math.min(ScrW() - 64, 1000), 100)
+	GUIElements.speech:SetSize(math.min(ScrW() - 64, 500), 100)
 	GUIElements.speech:CenterHorizontal()
 	GUIElements.speech:SetY(ScrH())
 	GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH() - 100 - 32, 0.5, 0, 0.5)
 	GUIElements.speech.Paint = function(self, w, h)
-		draw.RoundedBox(2, 0, 0, w, h, Color(0, 0, 0, 200))
+		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
 		surface.SetDrawColor(255, 255, 255)
 		surface.SetMaterial(icon)
 		surface.DrawTexturedRectRotated(48, 48, 64, 64, math.sin(CurTime() * 2) * 5)
-		draw.SimpleText(text, "Trebuchet16", 64 + 16, 48, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.DrawText(texttext, "Trebuchet16", 96, 24, Color(255, 255, 255), TEXT_ALIGN_TOP)
 	end
 
-	timer.Simple(time, function()
+	timer.Create("gmstation_textbox", time, 1, function()
 		if IsValid(GUIElements.speech) then
 			GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH(), 0.5, 0, 0.5, function()
 				GUIElements.speech:Remove()
@@ -273,7 +281,7 @@ function displaySpeech(icon, text)
 	end)
 end
 
-displaySpeech(nil, "You are now registered!")
+displaySpeech(nil, "I'm sure you will find what you are\nlooking for here.")
 
 net.Receive("gmstation_first_join", function()
 	if IsValid(GUIElements.registering) then

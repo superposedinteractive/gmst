@@ -24,6 +24,11 @@ end
 
 net.Receive("gmstation_store", function()
 	local type = net.ReadString()
+	local message = net.ReadString()
+	local exitMessage = net.ReadString()
+
+	displaySpeech(nil, message)
+
 	if GUIElements.store then GUIElements.store:Remove() end
 
 	if CL_GLOBALS.currentSound then
@@ -49,6 +54,7 @@ net.Receive("gmstation_store", function()
 	GUIElements.store:MakePopup()
 	GUIElements.store.OnClose = function()
 		timer.Remove("gmstation_store_music")
+		displaySpeech(nil, exitMessage)
 		music:FadeOut(1)
 		if CL_GLOBALS.currentSound then
 			CL_GLOBALS.currentSound:ChangeVolume(CL_GLOBALS.volume * CL_GLOBALS.ogVolume)
