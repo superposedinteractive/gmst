@@ -17,7 +17,7 @@ function apiCall(url, args, callback)
 			callback(body, len, headers, code)
 		end
 	end, function(error)
-		MsgN(error)
+		panic("Failed to to talk to the API: " .. error)
 	end)
 end
 

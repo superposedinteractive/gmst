@@ -117,11 +117,19 @@ net.Receive("gmstation_store", function()
 	title:SetText("Store")
 	title:SizeToContents()
 
-	local closebutton = vgui.Create("DButton", titlebar)
-	closebutton:SetSize(128, 32)
+	local closebutton = vgui.Create("DImageButton", titlebar)
 	closebutton:Dock(RIGHT)
-	closebutton:SetText("Close")
+	closebutton:SetWide(32)
+	closebutton:DockMargin(0, 8, 8, 8)
+	closebutton:SetImage("icon16/cross.png")
 	closebutton.DoClick = function()
 		GUIElements.store.close()
 	end
+
+	hook.Add("Think", "gmstation_store_close", function()
+		if input.IsKeyDown(KEY_ESCAPE) then
+			GUIElements.store.close()
+			hook.Remove("Think", "gmstation_store_close")
+		end
+	end)
 end)

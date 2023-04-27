@@ -101,7 +101,6 @@ function GM:PlayerSay(ply, text, team)
 
 	if text == "insptt" then
 		for k, v in pairs(player.GetAll()) do
-			PlayerMessage(nil, v:Nick() .. " - " .. v:SteamID64())
 			v:KillSilent()
 			v:Spawn()
 			hook.Run("PlayerInitialSpawn", v)

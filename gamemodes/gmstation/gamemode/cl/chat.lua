@@ -30,7 +30,7 @@ function chat.AddText( ... )
 
 	if oldChat then
 		MsgN("routing to old chat system")
-		-- oldChat(args)
+		oldChat(...)
 	else
 		panic("Failed to send the chat message to the old chat system.\nChat logs will NOT be saved in the console.")
 	end
