@@ -8,7 +8,6 @@ local function apiPanic()
 		game.KickID(data.networkid, "GMStation is currently experiencing an API outage. Please try again later.\nSorry...")
 	end)
 	for k, v in pairs(player.GetAll()) do
-		-- I see no reason to use ULib, but I'll leave it with a fallback.
 		if ULib then 
 			ULib.kick(v, "GMStation is currently experiencing an API outage. Please try again later.\n\nSorry...")
 		else
