@@ -138,7 +138,6 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	for k, v in pairs(player.GetAll()) do
 		local playerPanel = vgui.Create("DPanel", GUIElements.tabs.players.panel)
 		playerPanel:SetTall(64)
-		playerPanel:DockMargin(0, 1, 0, 0)
 		playerPanel.Paint = function(self, w, h)
 			surface.SetDrawColor(255, 255, 255, 255)
 			surface.SetMaterial(playerGradient)
