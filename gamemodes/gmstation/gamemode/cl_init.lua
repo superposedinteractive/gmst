@@ -4,12 +4,12 @@ CL_GLOBALS = {}
 CL_GLOBALS.url = "local.loopback/gmstation"
 CL_GLOBALS.money = "0"
 
-if !oldChat then
+if not oldChat then
 	MsgN("[GMST] Overriding chat.AddText")
 	oldChat = chat.AddText
 end
 
-if GUIElements == nil then
+if not GUIElements then
 	GUIElements = {}
 end
 
