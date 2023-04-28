@@ -21,17 +21,8 @@ function apiCall(url, args, callback)
 	end)
 end
 
-net.Receive("gmstation_first_join_done", function()
-	local steamid = net.ReadString() -- LocalPlayer():SteamID64() sometimes player isn't ready yet
-	apiCall("gmstGetPlayerMoney", {steamid = steamid}, function(body, len, headers, code)
-		CL_GLOBALS.money = tonumber(body)
-	end)
-
-	SetupHUD()
-end)
-
 function saveSettings(write)
-	MsgN("[GMST] Applying settings")
+	MsgN("[GMSTBase] Applying settings")
 
 	local settings = {}
 	for k, v in pairs(saveableGlobals) do
@@ -49,13 +40,13 @@ function saveSettings(write)
 	end
 
 	if write then
-		MsgN("[GMST] Saving settings file")
+		MsgN("[GMSTBase] Saving settings file")
 		file.Write("gmstation/settings.json", util.TableToJSON(settings))
 	end
 end
 
 if(file.Exists("gmstation/settings.json", "DATA")) then
-	MsgN("[GMST] Loading settings file")
+	MsgN("[GMSTBase] Loading settings file")
 	local settings = util.JSONToTable(file.Read("gmstation/settings.json", "DATA"))
 	if(settings) then
 		for k, v in pairs(settings) do
@@ -65,7 +56,7 @@ if(file.Exists("gmstation/settings.json", "DATA")) then
 		panic("Failed to load settings file")
 	end
 else
-	MsgN("[GMST] Creating settings file & setting default values")
+	MsgN("[GMSTBase] Creating settings file & setting default values")
 	file.CreateDir("gmstation")
 	saveSettings()
 end

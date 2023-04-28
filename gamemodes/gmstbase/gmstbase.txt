@@ -1,0 +1,5 @@
+"gmstbase" {
+	"base"  "base"
+	"title" "GMStation Base"
+	"menusystem"	"0"
+}

@@ -1,7 +1,7 @@
 util.AddNetworkString("gmstation_map_restart")
 
 function gmstRestartMap(time)
-	MsgN("[GMST] Restarting map in " .. time .. " seconds...")
+	MsgN("[GMSTBase] Restarting map in " .. time .. " seconds...")
 
 	net.Start("gmstation_map_restart")
 		net.WriteFloat(time)
