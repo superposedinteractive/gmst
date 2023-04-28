@@ -77,8 +77,6 @@ function GM:PlayerStartTaunt(ply, actid, len)
 			ply:CrosshairEnable()
 		end
 	end)
-
-	gmstRestartMap(5)
 end
 
 function GM:PlayerConnect(name)
@@ -88,31 +86,4 @@ end
 function GM:PlayerDisconnected(ply)
 	PlayerMessage(nil, ply:Nick() .. " has left the station.")
 	MsgN("[GMSTBase] " .. ply:Nick() .. " left.")
-end
-
-function GM:PlayerSay(ply, text, team)
-	text = string.Trim(text)
-	if text == "" then return "" end
-
-	if(string.sub(text, 1, 1) == "!") then
-		PlayerMessage(ply, "Used a command, not a chat message.")
-		return ""
-	end
-
-	if text == "insptt" then
-		for k, v in pairs(player.GetAll()) do
-			v:KillSilent()
-			v:Spawn()
-			hook.Run("PlayerInitialSpawn", v)
-		end
-		return ""
-	end
-	
-	net.Start("gmstation_chat")
-		net.WriteString(ply:GetNWString("zone") or "Somewhere")
-		net.WriteEntity(ply)
-		net.WriteTable({text})
-	net.Broadcast()
-
-	return ""
 end

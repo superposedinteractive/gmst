@@ -1,22 +1,29 @@
 // GMStation - Camera controls
 
 local scroll = 0
+local realscroll = 0
 local tauntAngle = Angle(0, 0, 0)
 
 net.Receive("gmstation_taunt", function()
 	tauntAngle = LocalPlayer():EyeAngles()
 end)
 
-local function thirdperson(ply, pos, ang)
+local function thirdperson(ply, pos, ang, fov)
+	scroll = Lerp(0.1, scroll, realscroll)
+
 	local view = {}
 
 	if(!LocalPlayer():IsPlayingTaunt()) then
-		view.origin = pos - ang:Forward() * scroll
+		if(scroll < 7) then
+			view.origin = pos - ang:Forward() * scroll
+		else
+			view.origin = pos - ang:Forward() * scroll + ang:Right() * 10 * (scroll/100)
+		end
+
 		view.angles = ang
-		view.fov = fov
-		view.drawviewer = (scroll != 0)
+		view.drawviewer = (scroll > 7)
 	else
-		if(scroll == 0) then
+		if(scroll < 7) then
 			view.origin = pos - ang:Forward() * 100
 		else
 			view.origin = pos - ang:Forward() * scroll
@@ -34,19 +41,20 @@ local function thirdperson(ply, pos, ang)
 	})
 
 	if(tr.Hit) then
-		view.origin = tr.HitPos + tr.HitNormal
+		view.origin = tr.HitPos
 	end
+
 
 	return view
 end
 
 function GM:CalcView(ply, pos, ang, fov)
-	return thirdperson(ply, pos, ang)
+	return thirdperson(ply, pos, ang, fov)
 end
 
 hook.Add("InputMouseApply", "gmstation_zoom", function(cmd, x, y, angle)
 	if (!input.IsMouseDown(MOUSE_LEFT)) then
-		scroll = math.Clamp(scroll - (math.Clamp(math.ceil(cmd:GetMouseWheel()) * 10000, -1, 1) * 5), 0, 100)
+		realscroll = math.Clamp(realscroll - (math.Clamp(math.ceil(cmd:GetMouseWheel()) * 10000, -1, 1) * 5), 0, 100)
 		cmd:SetMouseWheel(0)
 	end
 end)
