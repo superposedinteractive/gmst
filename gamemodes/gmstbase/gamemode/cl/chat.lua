@@ -29,7 +29,6 @@ function chat.AddText( ... )
 	GUIElements.chatbox.box:AppendText( "\n" )
 
 	if oldChat then
-		MsgN("routing to old chat system")
 		oldChat(...)
 	else
 		panic("Failed to send the chat message to the old chat system.\nChat logs will NOT be saved in the console.")

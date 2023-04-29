@@ -63,7 +63,7 @@ function GM:PlayerInitialSpawn(ply)
 
 			ply:Lock()
 
-			timer.Simple(10, function()
+			timer.Simple(1, function()
 				apiCall("gmstRegisterPlayer", {steamid = ply:SteamID64(), password = SV_GLOBALS.password}, function(body, len, headers, code)
 					if body == 0 then
 						MsgN("[GMSTBase] Registered " .. ply:Name())

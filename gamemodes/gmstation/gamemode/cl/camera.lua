@@ -13,37 +13,38 @@ local function thirdperson(ply, pos, ang, fov)
 
 	local view = {}
 
-	if(!LocalPlayer():IsPlayingTaunt()) then
-		if(scroll < 7) then
-			view.origin = pos - ang:Forward() * scroll
+	if(LocalPlayer():Alive()) then
+		if(!LocalPlayer():IsPlayingTaunt()) then
+			if(scroll < 7) then
+				view.origin = pos - ang:Forward() * scroll
+			else
+				view.origin = pos - ang:Forward() * scroll + ang:Right() * 10 * (scroll/100)
+			end
+
+			view.angles = ang
+			view.drawviewer = (scroll > 7)
 		else
-			view.origin = pos - ang:Forward() * scroll + ang:Right() * 10 * (scroll/100)
+			if(scroll < 7) then
+				view.origin = pos - ang:Forward() * 100
+			else
+				view.origin = pos - ang:Forward() * scroll
+			end
+
+			view.angles = ang
+			view.fov = fov
+			view.drawviewer = true
 		end
 
-		view.angles = ang
-		view.drawviewer = (scroll > 7)
-	else
-		if(scroll < 7) then
-			view.origin = pos - ang:Forward() * 100
-		else
-			view.origin = pos - ang:Forward() * scroll
+		local tr = util.TraceLine({
+			start = pos,
+			endpos = view.origin,
+			filter = ply
+		})
+
+		if(tr.Hit) then
+			view.origin = tr.HitPos
 		end
-
-		view.angles = ang
-		view.fov = fov
-		view.drawviewer = true
 	end
-
-	local tr = util.TraceLine({
-		start = pos,
-		endpos = view.origin,
-		filter = ply
-	})
-
-	if(tr.Hit) then
-		view.origin = tr.HitPos
-	end
-
 
 	return view
 end

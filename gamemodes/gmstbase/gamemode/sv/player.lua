@@ -1,6 +1,7 @@
 // GMStation - Player manager
 util.AddNetworkString("gmstation_chat")
 util.AddNetworkString("gmstation_taunt")
+util.AddNetworkString("gmstation_reward")
 
 function PlayerMessage(ply, ...)
 	local args = {...}
@@ -43,6 +44,19 @@ function PlayerInit(ply)
 				return 0
 			end
 		end)
+	end
+
+	function ply:Payout(rewards)
+		local sum = 0
+		for i = 1, #rewards do
+			sum = sum + rewards[i][2]
+		end
+
+		MsgN("[GMSTBase] " .. ply:Nick() .. " has been paid " .. sum .. " credits in " .. #rewards .. " rewards.")
+
+		net.Start("gmstation_reward")
+			net.WriteTable(rewards)
+		net.Send(ply)
 	end
 end
 

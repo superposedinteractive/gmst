@@ -1,362 +1,382 @@
-// GMStation - General UI
+-- GMStation - General UI
 local white = Material("vgui/white")
-local hover_popup = Material("gmstation/ui/hover_popup.png")
 
 local hudExceptions = {
-	["CHudCloseCaption"] = true,
-	["CHudDamageIndicator"] = true,
-	["CHudMessage"] = true,
-	["CHudHintDisplay"] = true,
-	["CHudWeapon"] = true,
-	["CHudGMod"] = true,
-	["CHudCrosshair"] = true,
-	["NetGraph"] = true
+    ["CHudCloseCaption"] = true,
+    ["CHudDamageIndicator"] = true,
+    ["CHudMessage"] = true,
+    ["CHudHintDisplay"] = true,
+    ["CHudWeapon"] = true,
+    ["CHudGMod"] = true,
+    ["CHudCrosshair"] = true,
+    ["NetGraph"] = true
 }
 
-local function m_AlignText( text, font, x, y, xalign, yalign )
-	surface.SetFont( font )
-	local textw, texth = surface.GetTextSize( text )
+local function m_AlignText(text, font, x, y, xalign, yalign)
+    surface.SetFont(font)
+    local textw, texth = surface.GetTextSize(text)
 
-	if ( xalign == TEXT_ALIGN_CENTER ) then
-		x = x - ( textw / 2 )
-	elseif ( xalign == TEXT_ALIGN_RIGHT ) then
-		x = x - textw
-	end
+    if xalign == TEXT_ALIGN_CENTER then
+        x = x - (textw / 2)
+    elseif xalign == TEXT_ALIGN_RIGHT then
+        x = x - textw
+    end
 
-	if ( yalign == TEXT_ALIGN_BOTTOM ) then
-		y = y - texth
-	end
-	return x, y
+    if yalign == TEXT_ALIGN_BOTTOM then
+        y = y - texth
+    end
+
+    return x, y
 end
 
 function draw.LinearGradient(x, y, w, h, stops, horizontal)
-	if #stops == 0 then
-		return
-	elseif #stops == 1 then
-		surface.SetDrawColor(stops[1].color)
-		surface.DrawRect(x, y, w, h)
-		return
-	end
+    if #stops == 0 then
+        return
+    elseif #stops == 1 then
+        surface.SetDrawColor(stops[1].color)
+        surface.DrawRect(x, y, w, h)
 
-	table.SortByMember(stops, "offset", true)
+        return
+    end
 
-	render.SetMaterial(white)
-	mesh.Begin(MATERIAL_QUADS, #stops - 1)
-	for i = 1, #stops - 1 do
-		local offset1 = math.Clamp(stops[i].offset, 0, 1)
-		local offset2 = math.Clamp(stops[i + 1].offset, 0, 1)
-		if offset1 == offset2 then continue end
+    table.SortByMember(stops, "offset", true)
+    render.SetMaterial(white)
+    mesh.Begin(MATERIAL_QUADS, #stops - 1)
 
-		local deltaX1, deltaY1, deltaX2, deltaY2
+    for i = 1, #stops - 1 do
+        local offset1 = math.Clamp(stops[i].offset, 0, 1)
+        local offset2 = math.Clamp(stops[i + 1].offset, 0, 1)
+        if offset1 == offset2 then continue end
+        local deltaX1, deltaY1, deltaX2, deltaY2
+        local color1 = stops[i].color
+        local color2 = stops[i + 1].color
+        local r1, g1, b1, a1 = color1.r, color1.g, color1.b, color1.a
+        local r2, g2, b2, a2
+        local r3, g3, b3, a3 = color2.r, color2.g, color2.b, color2.a
+        local r4, g4, b4, a4
 
-		local color1 = stops[i].color
-		local color2 = stops[i + 1].color
+        if horizontal then
+            r2, g2, b2, a2 = r3, g3, b3, a3
+            r4, g4, b4, a4 = r1, g1, b1, a1
+            deltaX1 = offset1 * w
+            deltaY1 = 0
+            deltaX2 = offset2 * w
+            deltaY2 = h
+        else
+            r2, g2, b2, a2 = r1, g1, b1, a1
+            r4, g4, b4, a4 = r3, g3, b3, a3
+            deltaX1 = 0
+            deltaY1 = offset1 * h
+            deltaX2 = w
+            deltaY2 = offset2 * h
+        end
 
-		local r1, g1, b1, a1 = color1.r, color1.g, color1.b, color1.a
-		local r2, g2, b2, a2
-		local r3, g3, b3, a3 = color2.r, color2.g, color2.b, color2.a
-		local r4, g4, b4, a4
+        mesh.Color(r1, g1, b1, a1)
+        mesh.Position(Vector(x + deltaX1, y + deltaY1))
+        mesh.AdvanceVertex()
+        mesh.Color(r2, g2, b2, a2)
+        mesh.Position(Vector(x + deltaX2, y + deltaY1))
+        mesh.AdvanceVertex()
+        mesh.Color(r3, g3, b3, a3)
+        mesh.Position(Vector(x + deltaX2, y + deltaY2))
+        mesh.AdvanceVertex()
+        mesh.Color(r4, g4, b4, a4)
+        mesh.Position(Vector(x + deltaX1, y + deltaY2))
+        mesh.AdvanceVertex()
+    end
 
-		if horizontal then
-			r2, g2, b2, a2 = r3, g3, b3, a3
-			r4, g4, b4, a4 = r1, g1, b1, a1
-			deltaX1 = offset1 * w
-			deltaY1 = 0
-			deltaX2 = offset2 * w
-			deltaY2 = h
-		else
-			r2, g2, b2, a2 = r1, g1, b1, a1
-			r4, g4, b4, a4 = r3, g3, b3, a3
-			deltaX1 = 0
-			deltaY1 = offset1 * h
-			deltaX2 = w
-			deltaY2 = offset2 * h
-		end
-
-		mesh.Color(r1, g1, b1, a1)
-		mesh.Position(Vector(x + deltaX1, y + deltaY1))
-		mesh.AdvanceVertex()
-
-		mesh.Color(r2, g2, b2, a2)
-		mesh.Position(Vector(x + deltaX2, y + deltaY1))
-		mesh.AdvanceVertex()
-
-		mesh.Color(r3, g3, b3, a3)
-		mesh.Position(Vector(x + deltaX2, y + deltaY2))
-		mesh.AdvanceVertex()
-
-		mesh.Color(r4, g4, b4, a4)
-		mesh.Position(Vector(x + deltaX1, y + deltaY2))
-		mesh.AdvanceVertex()
-	end
-	mesh.End()
+    mesh.End()
 end
 
 function draw.SimpleWavyText(text, font, x, y, color, xalign, yalign, style, intesity)
-	local xalign = xalign or TEXT_ALIGN_LEFT
-	local yalign = yalign or TEXT_ALIGN_TOP
-	local texte = string.Explode( "", text )
+    local xalign = xalign or TEXT_ALIGN_LEFT
+    local yalign = yalign or TEXT_ALIGN_TOP
+    local texte = string.Explode("", text)
+    surface.SetFont(font)
+    local chars_x = 0
+    local x, y = m_AlignText(text, font, x, y, xalign, yalign)
 
-	surface.SetFont( font )
+    for i = 1, #texte do
+        local char = texte[i]
+        local charw, charh = surface.GetTextSize(char)
+        local y_pos = 1
+        local mod = math.sin((RealTime() - (i * 0.1)) * (2 * intesity))
 
-	local chars_x = 0
-	local x, y = m_AlignText( text, font, x, y, xalign, yalign )
+        if style == 1 then
+            y_pos = y_pos - math.abs(mod)
+        elseif style == 2 then
+            y_pos = y_pos + math.abs(mod)
+        else
+            y_pos = y_pos - mod
+        end
 
-	for i = 1, #texte do
-		local char = texte[i]
-		local charw, charh = surface.GetTextSize( char )
-		local y_pos = 1
-		local mod = math.sin( ( RealTime() - ( i * 0.1 ) ) * ( 2 * intesity ) )
-
-		if ( style == 1 ) then
-			y_pos = y_pos - math.abs( mod )
-		elseif ( style == 2 ) then
-			y_pos = y_pos + math.abs( mod )
-		else
-			y_pos = y_pos - mod
-		end
-
-		draw.SimpleText( char, font, x + chars_x, y - ( 5 * y_pos ), color, xalign, yalign )
-		chars_x = chars_x + charw
-	end
+        draw.SimpleText(char, font, x + chars_x, y - (5 * y_pos), color, xalign, yalign)
+        chars_x = chars_x + charw
+    end
 end
 
 function draw.SimpleLinearGradient(x, y, w, h, startColor, endColor, horizontal)
-	draw.LinearGradient(x, y, w, h, { {offset = 0, color = startColor}, {offset = 1, color = endColor} }, horizontal)
+    draw.LinearGradient(x, y, w, h, {
+        {
+            offset = 0,
+            color = startColor
+        },
+        {
+            offset = 1,
+            color = endColor
+        }
+    }, horizontal)
 end
 
 local function createFonts()
-	surface.CreateFont("Trebuchet48", {
-		font = "Trebuchet MS",
-		size = 72,
-		weight = 500,
-		antialias = true,
-		shadow = false
-	})
-	surface.CreateFont("Trebuchet32Bold", {
-		font = "Trebuchet MS",
-		size = 48,
-		weight = 1000,
-		antialias = true,
-		shadow = false
-	})
-	surface.CreateFont("Trebuchet32", {
-		font = "Trebuchet MS",
-		size = 48,
-		weight = 500,
-		antialias = true,
-		shadow = false
-	})
-	surface.CreateFont("Trebuchet24Bold", {
-		font = "Trebuchet MS",
-		size = 36,
-		weight = 1000,
-		antialias = true,
-		shadow = false
-	})
-	surface.CreateFont("Trebuchet16", {
-		font = "Trebuchet MS",
-		size = 24,
-		weight = 500,
-		antialias = true,
-		shadow = false
-	})
-	surface.CreateFont("TrebuchetChat", {
-		font = "Trebuchet MS",
-		size = 18,
-		weight = 1000,
-		antialias = false,
-		shadow = true
-	})
-	surface.CreateFont("Trebuchet16Add", {
-		font = "Trebuchet MS",
-		size = 24,
-		weight = 500,
-		antialias = true,
-		additive = true,
-	})
-	surface.CreateFont("Trebuchet16Bold", {
-		font = "Trebuchet MS",
-		size = 24,
-		weight = 1000,
-		antialias = true,
-		shadow = false
-	})
-	surface.CreateFont("Trebuchet8", {
-		font = "Trebuchet MS",
-		size = 18,
-		weight = 10000,
-		antialias = true,
-		shadow = false
-	})
+    surface.CreateFont("Trebuchet48", {
+        font = "Trebuchet MS",
+        size = 72,
+        weight = 500,
+        antialias = true,
+        shadow = false
+    })
+
+    surface.CreateFont("Trebuchet32Bold", {
+        font = "Trebuchet MS",
+        size = 48,
+        weight = 1000,
+        antialias = true,
+        shadow = false
+    })
+
+    surface.CreateFont("Trebuchet32", {
+        font = "Trebuchet MS",
+        size = 48,
+        weight = 500,
+        antialias = true,
+        shadow = false
+    })
+
+    surface.CreateFont("Trebuchet24Bold", {
+        font = "Trebuchet MS",
+        size = 36,
+        weight = 1000,
+        antialias = true,
+        shadow = false
+    })
+
+    surface.CreateFont("Trebuchet16", {
+        font = "Trebuchet MS",
+        size = 24,
+        weight = 500,
+        antialias = true,
+        shadow = false
+    })
+
+    surface.CreateFont("TrebuchetChat", {
+        font = "Trebuchet MS",
+        size = 18,
+        weight = 1000,
+        antialias = false,
+        shadow = true
+    })
+
+    surface.CreateFont("Trebuchet16Add", {
+        font = "Trebuchet MS",
+        size = 24,
+        weight = 500,
+        antialias = true,
+        additive = true,
+    })
+
+    surface.CreateFont("Trebuchet16Bold", {
+        font = "Trebuchet MS",
+        size = 24,
+        weight = 1000,
+        antialias = true,
+        shadow = false
+    })
+
+    surface.CreateFont("Trebuchet8", {
+        font = "Trebuchet MS",
+        size = 18,
+        weight = 10000,
+        antialias = true,
+        shadow = false
+    })
 end
 
 function SetupHUD()
-	if IsValid(GUIElements.registering) then
-		GUIElements.registering:Remove()
-	end
+    if IsValid(GUIElements.registering) then
+        GUIElements.registering:Remove()
+    end
 
-	if IsValid(GUIElements.quick_hud) then
-		GUIElements.quick_hud:Remove()
-	end
+    if IsValid(GUIElements.quick_hud) then
+        GUIElements.quick_hud:Remove()
+    end
 
-	if IsValid(GUIElements.info_box) then
-		GUIElements.info_box:Remove()
-	end
+    if IsValid(GUIElements.info_box) then
+        GUIElements.info_box:Remove()
+    end
 
-	surface.SetFont("Trebuchet32")
-	local money_w,h = surface.GetTextSize("1000000")
-	
-	GUIElements.quick_hud = vgui.Create("DPanel")
-	GUIElements.quick_hud:SetSize(300, 100)
-	GUIElements.quick_hud:SetPos(32, ScrH() - 100 - 32)
-	GUIElements.quick_hud.Paint = function(self, w, h)
-		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
-		draw.SimpleText("GMStation", "Trebuchet24Bold", 18, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText(CL_GLOBALS.zone or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-		draw.SimpleText(CL_GLOBALS.money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-	end
+    surface.SetFont("Trebuchet32")
+    local money_w, h = surface.GetTextSize("1000000")
+    GUIElements.quick_hud = vgui.Create("DPanel")
+    GUIElements.quick_hud:SetSize(300, 100)
+    GUIElements.quick_hud:SetPos(32, ScrH() - 100 - 32)
 
-	GUIElements.info_box = vgui.Create("DPanel")
-	GUIElements.info_box:SetSize(200, 100)
-	GUIElements.info_box:SetPos(ScrW() - 200, 0)
-	GUIElements.info_box.Paint = function(self, w, h)
-		draw.SimpleText("GMStation", "Trebuchet24Bold", w/2, h / 2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText("PreAlpha", "Trebuchet16Bold", w/1.5, h / 2 + 20, Color(255, 175, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	end
+    GUIElements.quick_hud.Paint = function(self, w, h)
+        draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
+        draw.SimpleText("GMStation", "Trebuchet24Bold", 18, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(CL_GLOBALS.zone or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+        draw.SimpleText(CL_GLOBALS.money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+    end
+
+    GUIElements.info_box = vgui.Create("DPanel")
+    GUIElements.info_box:SetSize(200, 100)
+    GUIElements.info_box:SetPos(ScrW() - 200, 0)
+
+    GUIElements.info_box.Paint = function(self, w, h)
+        draw.SimpleText("GMStation", "Trebuchet24Bold", w / 2, h / 2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("PreAlpha", "Trebuchet16Bold", w / 1.5, h / 2 + 20, Color(255, 175, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
 end
 
 function GM:HUDDrawTargetID()
-	return false
+    return false
 end
 
 function GM:HUDShouldDraw(name)
-	return hudExceptions[name] || false
+    return hudExceptions[name] or false
 end
 
 function GM:OnScreenSizeChanged(w, h)
-	createFonts()
-	if IsValid(GUIElements.quick_hud) then
-		SetupHUD()
-	end
+    createFonts()
+
+    if IsValid(GUIElements.quick_hud) then
+        SetupHUD()
+    end
 end
 
 function displaySpeech(icon, text, name)
-	timer.Remove("gmstation_textbox")
-	if IsValid(GUIElements.speech) then
-		GUIElements.speech:Remove()
-	end
+    timer.Remove("gmstation_textbox")
 
-	local time = math.max(string.len(text) * 0.05, 3)
+    if IsValid(GUIElements.speech) then
+        GUIElements.speech:Remove()
+    end
 
-	if icon == nil then
-		icon = "missigno-cat"
-	end
+    local time = math.max(string.len(text) * 0.05, 3)
 
-	icon = Material("gmstation/ui/textbox/" .. icon .. ".png", "noclamp smooth")
+    if icon == nil then
+        icon = "missigno-cat"
+    end
 
-	local texttext = ""
-	
-	timer.Simple(0.15, function()
-		for i = 1, string.len(text) do
-			timer.Simple(i * 0.025, function()
-				texttext = string.sub(text, 1, i)
-				surface.PlaySound("/gmstation/sfx/chat" .. math.random(1, 2) .. ".wav")
-			end)
-		end
-	end)
+    icon = Material("gmstation/ui/textbox/" .. icon .. ".png", "noclamp smooth")
+    local texttext = ""
 
-	GUIElements.speech = vgui.Create("DPanel")
-	GUIElements.speech:SetSize(math.min(ScrW() - 64, 750), 132)
-	GUIElements.speech:CenterHorizontal()
-	GUIElements.speech:SetY(ScrH())
-	GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH() - 100 - 64, 0.5, 0, 0.5)
-	GUIElements.speech.Paint = function(self, w, h)
-		draw.RoundedBox(4, 0, 32, w, h - 32, Color(0, 0, 0, 200))
-		draw.RoundedBox(4, 16, 16, w / 4, 32, Color(0, 0, 0))
-		draw.SimpleText(name || "Missingno", "Trebuchet16", w / 7, 32, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		surface.SetDrawColor(255, 255, 255)
-		surface.SetMaterial(icon)
-		surface.DrawTexturedRectRotated(48, h/2 + 22, 64, 64, math.sin(CurTime() * 2) * 5)
-		draw.DrawText(texttext, "Trebuchet16", 96, 24 + 32, Color(255, 255, 255), TEXT_ALIGN_TOP)
-	end
+    timer.Simple(0.15, function()
+        for i = 1, string.len(text) do
+            timer.Simple(i * 0.025, function()
+                texttext = string.sub(text, 1, i)
+                surface.PlaySound("/gmstation/sfx/chat" .. math.random(1, 2) .. ".wav")
+            end)
+        end
+    end)
 
-	timer.Create("gmstation_textbox", time, 1, function()
-		if IsValid(GUIElements.speech) then
-			GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH(), 0.5, 0, 0.5, function()
-				GUIElements.speech:Remove()
-			end)
-		end
-	end)
+    GUIElements.speech = vgui.Create("DPanel")
+    GUIElements.speech:SetSize(math.min(ScrW() - 64, 750), 132)
+    GUIElements.speech:CenterHorizontal()
+    GUIElements.speech:SetY(ScrH())
+    GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH() - 100 - 64, 0.5, 0, 0.5)
+
+    GUIElements.speech.Paint = function(self, w, h)
+        draw.RoundedBox(4, 0, 32, w, h - 32, Color(0, 0, 0, 200))
+        draw.RoundedBox(4, 16, 16, w / 4, 32, Color(0, 0, 0))
+        draw.SimpleText(name or "Missingno", "Trebuchet16", w / 7, 32, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        surface.SetDrawColor(255, 255, 255)
+        surface.SetMaterial(icon)
+        surface.DrawTexturedRectRotated(48, h / 2 + 22, 64, 64, math.sin(CurTime() * 2) * 5)
+        draw.DrawText(texttext, "Trebuchet16", 96, 24 + 32, Color(255, 255, 255), TEXT_ALIGN_TOP)
+    end
+
+    timer.Create("gmstation_textbox", time, 1, function()
+        if IsValid(GUIElements.speech) then
+            GUIElements.speech:MoveTo(GUIElements.speech:GetX(), ScrH(), 0.5, 0, 0.5, function()
+                GUIElements.speech:Remove()
+            end)
+        end
+    end)
 end
 
-// Check if player has CS:S by loading a CS:S texture
+-- Check if player has CS:S by loading a CS:S texture
 local css = Material("de_nuke/radwarning")
-if css:IsError() then
-	GUIElements.css = vgui.Create("DPanel")
-	GUIElements.css:SetSize(math.min(ScrW() - 64, 750), 116)
-	GUIElements.css:CenterHorizontal()
-	GUIElements.css:SetY(ScrH() - 116 - 32)
-	GUIElements.css.Paint = function(self, w, h)
-		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
-		draw.SimpleText("Content Warning", "Trebuchet32Bold", w / 2, 32, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.DrawText("You appear to be missing Counter-Strike: Source.\nExpect Missing textures and models!", "Trebuchet16", w / 2, 55, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText("Click to dismiss", "Trebuchet8", w - 8, h - 4, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
-	end
 
-	local dismiss = vgui.Create("DButton", GUIElements.css)
-	dismiss:Dock(FILL)
-	dismiss:SetText("")
-	dismiss.Paint = function(self, w, h)
-	end
-	dismiss.DoClick = function()
-		GUIElements.css:Remove()
-	end
+if css:IsError() then
+    GUIElements.css = vgui.Create("DPanel")
+    GUIElements.css:SetSize(math.min(ScrW() - 64, 750), 116)
+    GUIElements.css:CenterHorizontal()
+    GUIElements.css:SetY(ScrH() - 116 - 32)
+
+    GUIElements.css.Paint = function(self, w, h)
+        draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
+        draw.SimpleText("Content Warning", "Trebuchet32Bold", w / 2, 32, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.DrawText("You appear to be missing Counter-Strike: Source.\nExpect Missing textures and models!", "Trebuchet16", w / 2, 55, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("Click to dismiss", "Trebuchet8", w - 8, h - 4, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+    end
+
+    local dismiss = vgui.Create("DButton", GUIElements.css)
+    dismiss:Dock(FILL)
+    dismiss:SetText("")
+    dismiss.Paint = function(self, w, h) end
+
+    dismiss.DoClick = function()
+        GUIElements.css:Remove()
+    end
 end
 
 net.Receive("gmstation_first_join", function()
-	if IsValid(GUIElements.registering) then
-		GUIElements.registering:Remove()
-	end
+    if IsValid(GUIElements.registering) then
+        GUIElements.registering:Remove()
+    end
 
-	GUIElements.registering = vgui.Create("DPanel")
-	GUIElements.registering:SetSize(ScrW(), ScrH())
-	GUIElements.registering.Paint = function(self, w, h)
-		draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 250))
-		draw.SimpleText("Please wait while we register you...", "Trebuchet32", w/2, h/2 - 16, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText("This may take a few seconds.", "Trebuchet16", w/2, h/2 + 16, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	end
+    GUIElements.registering = vgui.Create("DPanel")
+    GUIElements.registering:SetSize(ScrW(), ScrH())
+
+    GUIElements.registering.Paint = function(self, w, h)
+        draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 250))
+        draw.SimpleText("Please wait while we register you...", "Trebuchet32", w / 2, h / 2 - 16, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("This may take a few seconds.", "Trebuchet16", w / 2, h / 2 + 16, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
 end)
 
 net.Receive("gmstation_map_restart", function()
-	local time = net.ReadFloat()
+    local time = net.ReadFloat()
 
-	if IsValid(GUIElements.restarting) then
-		GUIElements.restarting:Remove()
-	end
+    if IsValid(GUIElements.restarting) then
+        GUIElements.restarting:Remove()
+    end
 
-	timer.Create("gmstation_map_restart", time, 1, function() end)
+    timer.Create("gmstation_map_restart", time, 1, function() end)
+    GUIElements.restarting = vgui.Create("DPanel")
+    GUIElements.restarting:SetSize(300, 100)
+    GUIElements.restarting:SetPos(ScrW() / 2 - GUIElements.restarting:GetWide() / 2, ScrH() / 2 - GUIElements.restarting:GetTall() / 2 + 32)
 
-	GUIElements.restarting = vgui.Create("DPanel")
-	GUIElements.restarting:SetSize(300, 100)
-	GUIElements.restarting:SetPos(ScrW() / 2 - GUIElements.restarting:GetWide() / 2, ScrH() / 2 - GUIElements.restarting:GetTall() / 2 + 32)
-	GUIElements.restarting.Paint = function(self, w, h)
-		local time = string.ToMinutesSeconds(timer.TimeLeft("gmstation_map_restart"))
+    GUIElements.restarting.Paint = function(self, w, h)
+        local time = string.ToMinutesSeconds(timer.TimeLeft("gmstation_map_restart"))
+        draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w / 2 + 1, h / 2 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w / 2, h / 2, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(time, "Trebuchet8", w / 2 + 1, h / 2 + 20 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+        draw.SimpleText(time, "Trebuchet8", w / 2, h / 2 + 20, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+    end
+end)
 
-		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w/2 + 1, h/2 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w/2, h/2, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText(time, "Trebuchet8", w/2 + 1, h/2 + 20 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText(time, "Trebuchet8", w/2, h/2 + 20, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	end
+net.Receive("gmstation_first_join_done", function()
+    local steamid = net.ReadString() -- LocalPlayer():SteamID64() sometimes player isn't ready yet
+
+    apiCall("gmstGetPlayerMoney", {
+        steamid = steamid
+    }, function(body, len, headers, code)
+        CL_GLOBALS.money = tonumber(body)
+    end)
+
+    SetupHUD()
 end)
 
 createFonts()
-
-net.Receive("gmstation_first_join_done", function()
-	local steamid = net.ReadString() -- LocalPlayer():SteamID64() sometimes player isn't ready yet
-	apiCall("gmstGetPlayerMoney", {steamid = steamid}, function(body, len, headers, code)
-		CL_GLOBALS.money = tonumber(body)
-	end)
-
-	SetupHUD()
-end)
+timer.Stop("gmstation_payout_timer")
