@@ -7,3 +7,5 @@ for k, v in ipairs(file.Find("gmstbase/gamemode/sh/*.lua", "LUA")) do
 	AddCSLuaFile("sh/"..v)
 	include("sh/"..v)
 end
+
+MsgN("GMSTBase Shared Loaded!")

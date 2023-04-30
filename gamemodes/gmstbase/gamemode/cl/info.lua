@@ -36,7 +36,7 @@ function saveSettings(write)
 	end
 	
 	if CL_GLOBALS.currentSound then
-		CL_GLOBALS.currentSound:ChangeVolume(CL_GLOBALS.volume * CL_GLOBALS.ogVolume)
+		CL_GLOBALS.currentSound:ChangeVolume(CL_GLOBALS.volume * (CL_GLOBALS.ogVolume || 1))
 	end
 
 	if write then

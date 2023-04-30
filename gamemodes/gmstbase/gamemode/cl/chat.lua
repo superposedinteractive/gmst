@@ -39,9 +39,13 @@ net.Receive("gmstation_chat", function()
 	local zone = net.ReadString()
 	local ply = net.ReadEntity()
 	local msg = net.ReadTable()
-	
+
 	if IsValid(ply) then
-		chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg[1])
+		if zone != "" then 
+			chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg[1])
+		else
+			chat.AddText(ply, ": ", Color(255, 255, 255), msg[1])
+		end
 	else
 		chat.AddText(msg)
 	end

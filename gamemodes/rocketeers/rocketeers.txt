@@ -1,0 +1,7 @@
+"rocketeers" {
+	"base"  "gmstbase"
+	"title" "Rocketeers"
+	"category"  "other"
+	"menusystem"	"1"
+	"maps"		"^rckt_"
+}

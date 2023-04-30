@@ -26,9 +26,10 @@ function apiCall(url, args, callback)
 	MsgN(SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
 
 	http.Fetch(SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
+		MsgN("[GMSTBase] API Response: " .. body)
 		body = tonumber(body)
 
-		if body == -1 || body == -6 || body == nil then
+		if body == -6 || body == nil then
 			MsgN("[GMSTBase] API Error!")
 			for i = 1, 6000, 1 do
 				timer.Simple(i / 60, function()

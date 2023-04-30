@@ -52,11 +52,22 @@ function PlayerInit(ply)
 			sum = sum + rewards[i][2]
 		end
 
-		MsgN("[GMSTBase] " .. ply:Nick() .. " has been paid " .. sum .. " credits in " .. #rewards .. " rewards.")
+		MsgN("[GMSTBase] " .. ply:Nick() .. " has been paid " .. sum .. " cc in " .. #rewards .. " rewards.")
 
 		net.Start("gmstation_reward")
 			net.WriteTable(rewards)
 		net.Send(ply)
+
+		ply:MoneyAdd(sum)
+	end
+
+	function ply:MoneyAdd(amount)
+		apiCall("gmstAddPlayerMoney", {["steamid"] = ply:SteamID64(), ["money"] = amount, ["password"] = SV_GLOBALS.password}, function(body)
+			MsgN("[GMSTBase] " .. ply:Nick() .. " has been given " .. amount .. " cc.")
+			net.Start("gmstation_first_join_done")
+				net.WriteString(ply:SteamID64())
+			net.Send(ply)
+		end)
 	end
 end
 
@@ -70,14 +81,6 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 	end
 	return false
 end
-
-timer.Create("gmstation_globalheal", 0.25, 0, function()
-	for k, v in pairs(player.GetAll()) do
-		if(v:Health() < v:GetMaxHealth() && v:Alive()) then
-			v:SetHealth(v:Health() + 1)
-		end
-	end
-end)
 
 function GM:PlayerStartTaunt(ply, actid, len)
 	ply:CrosshairDisable()

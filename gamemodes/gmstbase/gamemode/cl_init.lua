@@ -17,7 +17,6 @@ if not table.IsEmpty(GUIElements or {}) then
 	for v in pairs(GUIElements) do
 		GUIElements[v]:Remove()
 		MsgN("[GMSTBase] Removing "..v)
-		chat.AddText(Color(255, 0, 0), "[GMSTBase] Removing "..v)
 	end
 end
 

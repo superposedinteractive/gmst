@@ -19,16 +19,26 @@ function GM:PlayerSay(ply, text, team)
 	if text == "pyytt" then
 		for k, v in pairs(player.GetAll()) do
 			local rewards = {
-				{"Test reward", 100},
-				{"Test reward", 200},
-				{"Test reward", 300},
-				{"Test reward", 400},
-				{"Test reward", 500},
-				{"Test reward", 600},
-				{"Test reward", 700},
-				{"Test reward", 800},
-				{"Test reward", 900},
-				{"Test reward", 1000},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
+				{"mon", 100},
 			}
 			v:Payout(rewards)
 		end

@@ -46,3 +46,5 @@ for k, v in ipairs(file.Find("gmstbase/gamemode/sv/*.lua", "LUA")) do
 end
 
 MsgN("GMSTBase Server Loaded!")
+
+resource.AddWorkshop("2966581862")
