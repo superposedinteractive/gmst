@@ -26,15 +26,6 @@ function SetupHUD()
         draw.SimpleText(CL_GLOBALS.zone or "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
         draw.SimpleText(CL_GLOBALS.money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
     end
-
-    GUIElements.info_box = vgui.Create("DPanel")
-    GUIElements.info_box:SetSize(200, 100)
-    GUIElements.info_box:SetPos(ScrW() - 200, 0)
-
-    GUIElements.info_box.Paint = function(self, w, h)
-        draw.SimpleText("GMStation", "Trebuchet24Bold", w / 2, h / 2, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        draw.SimpleText("PreAlpha", "Trebuchet16Bold", w / 1.5, h / 2 + 20, Color(255, 175, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-    end
 end
 
 function GM:OnScreenSizeChanged(w, h)
