@@ -134,6 +134,13 @@ function draw.SimpleLinearGradient(x, y, w, h, startColor, endColor, horizontal)
 end
 
 local function createFonts()
+    surface.CreateFont("Trebuchet48Bold", {
+        font = "Trebuchet MS",
+        size = 72,
+        weight = 1000,
+        antialias = true,
+        shadow = false
+    })
     surface.CreateFont("Trebuchet48", {
         font = "Trebuchet MS",
         size = 72,
@@ -141,7 +148,6 @@ local function createFonts()
         antialias = true,
         shadow = false
     })
-
     surface.CreateFont("Trebuchet32Bold", {
         font = "Trebuchet MS",
         size = 48,
@@ -210,7 +216,19 @@ end
 net.Receive("gmstation_reward", function()
     timer.Stop("gmstation_payout_timer")
     local rewards = net.ReadTable()
+    local sum = 0
     local i = 1
+
+    for k, v in pairs(rewards) do
+        sum = sum + v[2]
+    end
+
+    for i = 1, #rewards do
+        MsgN("⎸ " .. i .. " " .. rewards[i][1] .. " | " .. rewards[i][2])
+    end
+    MsgN("⎸")
+    MsgN("⎸ Total: " .. sum)
+    MsgN("\\__________________________")
 
     if IsValid(GUIElements.reward) then
         GUIElements.reward:Remove()
@@ -254,11 +272,6 @@ net.Receive("gmstation_reward", function()
         else
             reward:SetTall(64)
             reward:SetY(ScrH() - reward:GetTall() - (i - 1) * 32)
-            local sum = 0
-
-            for k, v in pairs(rewards) do
-                sum = sum + v[2]
-            end
 
             local totaltext = vgui.Create("DLabel", reward)
             totaltext:Dock(FILL)

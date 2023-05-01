@@ -8,7 +8,7 @@ local textColor = Color(255, 255, 255, 255)
 local textColor2 = Color(255, 255, 255, 100)
 
 local blurscreen = Material("pp/blurscreen")
-local playerGradient = Material("gmstation/ui/ply_gradient.png")
+local playerGradient = Material("gmstation/ui/gradients/hoz.png")
 
 local optionTypes = {
 	["SLIDER"] = 1,
@@ -139,7 +139,12 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		local playerPanel = vgui.Create("DPanel", GUIElements.tabs.players.panel)
 		playerPanel:SetTall(64)
 		playerPanel.Paint = function(self, w, h)
-			surface.SetDrawColor(255, 255, 255, 255)
+			if v:Team() != 0 then
+				surface.SetDrawColor(team.GetColor(v:Team()))
+			else
+				surface.SetDrawColor(rowColor1)
+			end
+			
 			surface.SetMaterial(playerGradient)
 			surface.DrawTexturedRect(0, 0, w, h)
 		end

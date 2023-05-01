@@ -1,4 +1,5 @@
 util.AddNetworkString("rocketeers_damage")
+util.AddNetworkString("rocketeers_death")
 
 hook.Add("PlayerSpawn", "rocketeers_spawn", function(ply)
 	timer.Simple(0.1, function()
@@ -13,11 +14,9 @@ function GM:PlayerCanPickupWeapon(ply, wep)
 		return true
 	end
 
-	if wep:GetClass() == "weapon_rpg" then
-		if ply:GetAmmoCount("RPG_Round") < 5 then
-			ply:GiveAmmo(1, "RPG_Round")
-			wep:Remove()
-		end
+	if wep:GetClass() == "weapon_rpg" && ply:GetAmmoCount("RPG_Round") < 5 then
+		ply:GiveAmmo(1, "RPG_Round")
+		wep:Remove()
 	end
 
 	return false
@@ -30,13 +29,13 @@ function GM:OnDamagedByExplosion(ply, dmginfo)
 end
 
 function GM:EntityTakeDamage(ent, dmginfo)
-	if ent:IsPlayer() and dmginfo:IsExplosionDamage() then
+	if ent:IsPlayer() && dmginfo:IsExplosionDamage() then
 
 		local dmgforce = dmginfo:GetDamageForce()
 		local newforce = dmgforce
 
 		dmginfo:SetDamageForce(newforce)
-		dmginfo:ScaleDamage(0.05)
+		dmginfo:ScaleDamage(0.1)
 
 		if ent:KeyDown(IN_DUCK) then
 			ent:SetVelocity(newforce / 35)
@@ -58,12 +57,20 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	wep:SetPos(ply:GetPos() + Vector(0, 0, 10))
 	wep:SetVelocity(VectorRand() * 100)
 
-	timer.Simple(3, function()
+	net.Start("rocketeers_death")
+		net.WriteEntity(attacker)
+	net.Send(ply)
+
+	timer.Simple(5, function()
 		ply:Spawn()
 	end)
 end
 
 function GM:PlayerDeathThink(ply)
+	return false
+end
+
+function GM:PlayerDeathSound()
 	return false
 end
 

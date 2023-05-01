@@ -19,10 +19,16 @@ function chat.AddText( ... )
 			continue
 		elseif obj:IsPlayer() then
 			local col = obj:GetPlayerColor() * 255
+
+			if obj:Team() != 0 then
+				col = team.GetColor( obj:Team() )
+				MsgN("Using team color")
+			end
+
 			GUIElements.chatbox.box:InsertColorChange( col.r, col.g, col.b, 255 )
 			GUIElements.chatbox.box:AppendText( obj:Nick() )
 			GUIElements.chatbox.box:InsertColorChange( 255, 255, 255, 255 )
-			continue 
+			continue
 		end
 	end
 
@@ -41,7 +47,7 @@ net.Receive("gmstation_chat", function()
 	local msg = net.ReadTable()
 
 	if IsValid(ply) then
-		if zone != "" then 
+		if zone != "" then
 			chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg[1])
 		else
 			chat.AddText(ply, ": ", Color(255, 255, 255), msg[1])

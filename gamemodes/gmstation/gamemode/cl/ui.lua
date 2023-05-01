@@ -169,5 +169,4 @@ net.Receive("gmstation_first_join_done", function()
     SetupHUD()
 end)
 
-createFonts()
 timer.Stop("gmstation_payout_timer")
