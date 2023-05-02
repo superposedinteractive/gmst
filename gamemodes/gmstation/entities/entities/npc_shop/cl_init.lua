@@ -1,42 +1,41 @@
-include("shared.lua")
+﻿include("shared.lua")
 
 local test_elements = {
 	{
-		["name"] = "Bench",
-		["desc"] = "A nice bench to sit on.",
-		["model"] = "models/props_c17/bench01a.mdl",
-		["price"] = 100
+		[ "name" ] = "Bench",
+		[ "desc" ] = "A nice bench to sit on.",
+		[ "model" ] = "models/props_c17/bench01a.mdl",
+		[ "price" ] = 100
 	},
 	{
-		["name"] = "Table",
-		["desc"] = "A nice table to put things on.",
-		["model"] = "models/props_c17/furnituretable002a.mdl",
-		["price"] = 100
+		[ "name" ] = "Table",
+		[ "desc" ] = "A nice table to put things on.",
+		[ "model" ] = "models/props_c17/furnituretable002a.mdl",
+		[ "price" ] = 100
 	}
 }
 
 function ENT:Initialize()
 	self:SetModel("models/humans/group01/female_02.mdl")
-
-	self:SetSolid( SOLID_BBOX )
-	self:SetMoveType( MOVETYPE_STEP )
+	self:SetSolid(SOLID_BBOX)
+	self:SetMoveType(MOVETYPE_STEP)
 end
 
 net.Receive("gmstation_store", function()
 	local type = net.ReadString()
 	local message = net.ReadString()
 	local exitMessage = net.ReadString()
-
 	displaySpeech(nil, message)
 
-	if GUIElements.store then GUIElements.store:Remove() end
+	if GUIElements.store then
+		GUIElements.store:Remove()
+	end
 
 	if CL_GLOBALS.currentSound then
 		CL_GLOBALS.currentSound:ChangeVolume(0.01, 0.5)
 	end
 
 	local music = CreateSound(LocalPlayer(), "gmstation/music/store.mp3")
-
 	music:Stop()
 	music:PlayEx(CL_GLOBALS.volume, 100)
 
@@ -50,15 +49,19 @@ net.Receive("gmstation_store", function()
 	GUIElements.store:SetX(ScrW())
 	GUIElements.store:MoveTo(ScrW() - GUIElements.store:GetWide(), 0, 0.5, 0, 0.5, function() end)
 	GUIElements.store:MakePopup()
+
 	GUIElements.store.close = function()
 		hook.Remove("Think", "gmstation_store_close")
 		gui.HideGameUI()
+
 		GUIElements.store:MoveTo(ScrW(), 0, 0.5, 0, 0.5, function()
 			GUIElements.store:Remove()
 		end)
+
 		timer.Remove("gmstation_store_music")
 		displaySpeech(nil, exitMessage)
 		music:FadeOut(1)
+
 		if CL_GLOBALS.currentSound then
 			CL_GLOBALS.currentSound:ChangeVolume(CL_GLOBALS.volume * CL_GLOBALS.ogVolume)
 		end
@@ -73,7 +76,8 @@ net.Receive("gmstation_store", function()
 		item:Dock(TOP)
 		item:DockMargin(0, 0, 0, 5)
 		item:SetTall(128)
-		item.Paint = function(self, w ,h)
+
+		item.Paint = function(self, w, h)
 			draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
 		end
 
@@ -85,20 +89,17 @@ net.Receive("gmstation_store", function()
 		model:SetLookAt(Vector(0, 0, 0))
 		model:SetFOV(40)
 		model:SetAnimSpeed(20)
-
 		local buy = vgui.Create("DButton", item)
 		buy:Dock(BOTTOM)
 		buy:DockMargin(8, 8, 8, 8)
 		buy:SetWide(64)
 		buy:SetText(k.price .. "cc")
-
 		local name = vgui.Create("DLabel", item)
 		name:Dock(TOP)
 		name:DockMargin(16, 16, 0, 0)
 		name:SetText(k.name)
 		name:SetFont("Trebuchet32")
 		name:SetTall(32)
-
 		local desc = vgui.Create("DLabel", item)
 		desc:Dock(TOP)
 		desc:DockMargin(16, 2, 0, 0)
@@ -109,19 +110,18 @@ net.Receive("gmstation_store", function()
 	local titlebar = vgui.Create("DPanel", GUIElements.store)
 	titlebar:SetSize(GUIElements.store:GetWide(), 48)
 	titlebar:Dock(TOP)
-
 	local title = vgui.Create("DLabel", titlebar)
 	title:Dock(LEFT)
 	title:DockMargin(16, 0, 0, 0)
 	title:SetFont("Trebuchet32")
 	title:SetText("Store")
 	title:SizeToContents()
-
 	local closebutton = vgui.Create("DImageButton", titlebar)
 	closebutton:Dock(RIGHT)
 	closebutton:SetWide(32)
 	closebutton:DockMargin(0, 8, 8, 8)
 	closebutton:SetImage("icon16/cross.png")
+
 	closebutton.DoClick = function()
 		GUIElements.store.close()
 	end

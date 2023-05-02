@@ -1,4 +1,4 @@
-local gradient_h = Material("gmstation/ui/gradients/hoz.png", "smooth")
+﻿local gradient_h = Material("gmstation/ui/gradients/hoz.png", "smooth")
 local gradient_v = Material("gmstation/ui/gradients/vert.png", "smooth")
 local cur_ammo = 3
 
@@ -69,7 +69,7 @@ GUIElements.timer.Paint = function(self, w, h)
 end
 
 function GM:PlayerAmmoChanged(ply, ammo, oldcount, newcount)
-	if ammo ~= game.GetAmmoID("RPG_Round") then return end
+	if ammo != game.GetAmmoID("RPG_Round") then return end
 	cur_ammo = newcount
 
 	if newcount > oldcount && ammo == game.GetAmmoID("RPG_Round") then
@@ -90,7 +90,6 @@ function GM:PlayerAmmoChanged(ply, ammo, oldcount, newcount)
 
 	if newcount == 0 && LocalPlayer():Alive() then
 		surface.PlaySound("buttons/button10.wav")
-
 		local hudglow = vgui.Create("DPanel")
 		hudglow:SetSize(600, 24)
 		hudglow:SetPos(0, ScrH() - GUIElements.HUD:GetTall() + 36)
@@ -111,16 +110,9 @@ net.Receive("rocketeers_damage", function()
 	local dmg = net.ReadFloat()
 	local attacker = net.ReadEntity()
 	local victim = net.ReadEntity()
-
 	dmg = math.Round(dmg)
-
-	if !IsValid(victim) || !victim:IsPlayer() then
-		return false
-	end
-
-	if !victim:Alive() then
-		return false
-	end
+	if !IsValid(victim) || !victim:IsPlayer() then return false end
+	if !victim:Alive() then return false end
 
 	if victim == LocalPlayer() then
 		local go = 0
@@ -149,6 +141,7 @@ net.Receive("rocketeers_damage", function()
 		local hitnumber = vgui.Create("DPanel")
 		hitnumber:SetSize(128, 32)
 		hitnumber:SetPos(victim:GetPos():ToScreen().x - 64, victim:GetPos():ToScreen().y - 64)
+
 		hitnumber.Paint = function(self, w, h)
 			draw.SimpleText(dmg, "Trebuchet32Bold", w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		end
@@ -163,7 +156,6 @@ end)
 
 net.Receive("rocketeers_death", function()
 	surface.PlaySound("rocketeers/death.ogg")
-
 	local attacker = net.ReadEntity()
 	local nick
 
@@ -182,6 +174,7 @@ net.Receive("rocketeers_death", function()
 			GUIElements.death:Remove()
 		end)
 	end)
+
 	GUIElements.death = vgui.Create("DPanel")
 	GUIElements.death:SetSize(ScrW(), ScrH())
 
@@ -201,14 +194,13 @@ net.Receive("rocketeers_death", function()
 end)
 
 net.Receive("rocketeers_20sec", function()
--- timer.Simple(2, function()
+	// timer.Simple(2, function()
 	if CL_GLOBALS.currentSound then
 		CL_GLOBALS.currentSound:Stop()
 	end
 
 	CL_GLOBALS.currentSound = CreateSound(LocalPlayer(), "rocketeers/20sec.ogg")
 	CL_GLOBALS.currentSound:PlayEx(CL_GLOBALS.volume, 100)
-
 	local text = "20"
 	local font = "countdown1"
 	local intensity = 2
@@ -220,6 +212,7 @@ net.Receive("rocketeers_20sec", function()
 	GUIElements.alert = vgui.Create("DPanel")
 	GUIElements.alert:SetSize(ScrW(), ScrH())
 	GUIElements.alert:Center()
+
 	GUIElements.alert.Paint = function(self, w, h)
 		draw.SimpleText(text, font, w / 2 + math.random(-intensity, intensity), h / 2 + math.random(-intensity, intensity), Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
@@ -232,6 +225,7 @@ net.Receive("rocketeers_20sec", function()
 		text = "SECONDS"
 		font = "countdown2"
 		intensity = 4
+
 		timer.Simple(0.36, function()
 			text = "LEFT"
 			font = "countdown3"

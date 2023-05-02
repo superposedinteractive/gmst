@@ -1,20 +1,19 @@
-local function IsGameInProgress()
-    if !timer.Exists("rocketeers_timer") then return false end
+﻿local function IsGameInProgress()
+	if !timer.Exists("rocketeers_timer") then return false end
 
-    return true
+	return true
 end
 
 local function GetGameTime()
-    if !timer.Exists("rocketeers_timer") then return false end
+	if !timer.Exists("rocketeers_timer") then return false end
 
-    return timer.TimeLeft("rocketeers_timer")
+	return timer.TimeLeft("rocketeers_timer")
 end
 
 local function CanStartGame()
-    return !IsGameInProgress()
+	return !IsGameInProgress()
 end
 
 local function CanEndGame()
-    return IsGameInProgress()
+	return IsGameInProgress()
 end
-

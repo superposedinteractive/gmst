@@ -1,4 +1,4 @@
-util.AddNetworkString("rocketeers_damage")
+﻿util.AddNetworkString("rocketeers_damage")
 util.AddNetworkString("rocketeers_death")
 
 hook.Add("PlayerSpawn", "rocketeers_spawn", function(ply)
@@ -10,9 +10,7 @@ hook.Add("PlayerSpawn", "rocketeers_spawn", function(ply)
 end)
 
 function GM:PlayerCanPickupWeapon(ply, wep)
-	if !ply:HasWeapon("weapon_rpg") then
-		return true
-	end
+	if !ply:HasWeapon("weapon_rpg") then return true end
 
 	if wep:GetClass() == "weapon_rpg" && ply:GetAmmoCount("RPG_Round") < 5 then
 		ply:GiveAmmo(1, "RPG_Round")
@@ -30,10 +28,8 @@ end
 
 function GM:EntityTakeDamage(ent, dmginfo)
 	if ent:IsPlayer() && dmginfo:IsExplosionDamage() then
-
 		local dmgforce = dmginfo:GetDamageForce()
 		local newforce = dmgforce
-
 		dmginfo:SetDamageForce(newforce)
 		dmginfo:ScaleDamage(0.1)
 
@@ -45,9 +41,10 @@ function GM:EntityTakeDamage(ent, dmginfo)
 	end
 
 	net.Start("rocketeers_damage")
-		net.WriteFloat(dmginfo:GetDamage())
-		net.WriteEntity(dmginfo:GetAttacker())
-		net.WriteEntity(ent)
+	net.WriteFloat(dmginfo:GetDamage())
+	net.WriteEntity(dmginfo:GetAttacker())
+	net.WriteEntity(ent)
+
 	net.Send({dmginfo:GetAttacker(), ent})
 end
 
@@ -56,9 +53,8 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	wep:Spawn()
 	wep:SetPos(ply:GetPos() + Vector(0, 0, 10))
 	wep:SetVelocity(VectorRand() * 100)
-
 	net.Start("rocketeers_death")
-		net.WriteEntity(attacker)
+	net.WriteEntity(attacker)
 	net.Send(ply)
 
 	timer.Simple(5, function()

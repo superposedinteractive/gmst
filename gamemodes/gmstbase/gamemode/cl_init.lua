@@ -1,31 +1,31 @@
-include("shared.lua")
+﻿include("shared.lua")
 
-if not CL_GLOBALS then
+if !CL_GLOBALS then
 	CL_GLOBALS = {}
 end
 
 CL_GLOBALS.url = "https://superposed.xyz/gmstation"
 CL_GLOBALS.money = 0
 
-if not oldChat then
+if !oldChat then
 	MsgN("[GMSTBase] Overriding chat.AddText")
 	oldChat = chat.AddText
 end
 
-if not GUIElements then
+if !GUIElements then
 	GUIElements = {}
 end
 
-if not table.IsEmpty(GUIElements or {}) then
+if !table.IsEmpty(GUIElements || {}) then
 	for v in pairs(GUIElements) do
-		GUIElements[v]:Remove()
-		MsgN("[GMSTBase] Removing "..v)
+		GUIElements[ v ]:Remove()
+		MsgN("[GMSTBase] Removing " .. v)
 	end
 end
 
 for k, v in ipairs(file.Find("gmstbase/gamemode/cl/*.lua", "LUA")) do
-	MsgN("[GMSTBase] Loading "..v)
-	include("cl/"..v)
+	MsgN("[GMSTBase] Loading " .. v)
+	include("cl/" .. v)
 end
 
 MsgN("GMSTBase Client Loaded!")
