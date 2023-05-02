@@ -2,6 +2,6 @@
 	"prettyprint_indentation": "\t",
 	"lint_profanity": false,
 	"prettyprint_spaceBetweenParens": false,
-	"prettyprint_spaceBetweenBrackets": true,
+	"prettyprint_spaceBetweenBrackets": false,
 	"prettyprint_cStyle": true
 }

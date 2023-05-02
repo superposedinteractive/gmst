@@ -9,8 +9,8 @@ local blurscreen = Material("pp/blurscreen")
 local playerGradient = Material("gmstation/ui/gradients/hoz.png")
 
 local optionTypes = {
-	[ "SLIDER" ] = 1,
-	[ "CHECKBOX" ] = 2,
+	["SLIDER"] = 1,
+	["CHECKBOX"] = 2,
 }
 
 local tabs = {"Players", "Settings", "Achievements", "Credits"}
@@ -30,11 +30,11 @@ local credits = {
 local settingOrder = {"Music Volume", "sep", "Scoreboard Waves*", "Scoreboard Blur", "Blur Strength",}
 
 local settings = {
-	[ "sep" ] = {"seperator"},
-	[ "Music Volume" ] = {"volume", optionTypes[ "SLIDER" ], 0, 100},
-	[ "Scoreboard Waves*" ] = {"tabWaves", optionTypes[ "CHECKBOX" ]},
-	[ "Scoreboard Blur" ] = {"tabBlur", optionTypes[ "CHECKBOX" ]},
-	[ "Blur Strength" ] = {"blurStrength", optionTypes[ "SLIDER" ], 1, 10}
+	["sep"] = {"seperator"},
+	["Music Volume"] = {"volume", optionTypes["SLIDER"], 0, 100},
+	["Scoreboard Waves*"] = {"tabWaves", optionTypes["CHECKBOX"]},
+	["Scoreboard Blur"] = {"tabBlur", optionTypes["CHECKBOX"]},
+	["Blur Strength"] = {"blurStrength", optionTypes["SLIDER"], 1, 10}
 }
 
 function Derma_DrawBackgroundBlurInside(panel)
@@ -84,13 +84,13 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 				}
 
 				for ii = 0, w / 16 do
-					verts[ #verts + 1 ] = {
+					verts[#verts + 1] = {
 						x = ii * 16,
 						y = h / 2 + math.sin(CurTime() + (ii * i) / w * 60) * h / 16 + (i * (w / 32))
 					}
 				end
 
-				verts[ #verts + 1 ] = {
+				verts[#verts + 1] = {
 					x = w,
 					y = h
 				}
@@ -198,8 +198,8 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs.settings.list.title:Dock(TOP)
 
 	for i = 1, #settingOrder do
-		local k = settingOrder[ i ]
-		local v = settings[ settingOrder[ i ] ]
+		local k = settingOrder[i]
+		local v = settings[settingOrder[i]]
 		// Lua, why lua WHYYYYYYYYYYYYY
 		local setting = vgui.Create("DPanel", GUIElements.tabs.settings.list)
 		setting:Dock(TOP)
@@ -225,34 +225,34 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		setting.name:Dock(LEFT)
 		setting.name:SizeToContentsX()
 
-		if v[ 2 ] == optionTypes[ "SLIDER" ] then
+		if v[2] == optionTypes["SLIDER"] then
 			setting.slider = vgui.Create("DNumSlider", setting)
 			setting.slider:SetWide(200)
 			setting.slider:SetMin(0)
-			setting.slider:SetMin(v[ 3 ])
-			setting.slider:SetMax(v[ 4 ])
+			setting.slider:SetMin(v[3])
+			setting.slider:SetMax(v[4])
 			setting.slider:SetDecimals(0)
-			setting.slider:SetValue(CL_GLOBALS[ v[ 1 ] ] * 100 || 0)
+			setting.slider:SetValue(CL_GLOBALS[v[1]] * 100 || 0)
 			setting.slider:Dock(FILL)
 			setting.slider:DockMargin(0, 0, 0, 0)
 
 			setting.slider.OnValueChanged = function(self, value)
-				CL_GLOBALS[ v[ 1 ] ] = value / 100
+				CL_GLOBALS[v[1]] = value / 100
 				saveSettings()
 			end
 
 			continue
-		elseif v[ 2 ] == optionTypes[ "CHECKBOX" ] then
+		elseif v[2] == optionTypes["CHECKBOX"] then
 			setting.checkbox = vgui.Create("DCheckBoxLabel", setting)
 			setting.checkbox:SetWide(200)
 			setting.checkbox:SetText("")
-			setting.checkbox:SetValue(CL_GLOBALS[ v[ 1 ] ])
+			setting.checkbox:SetValue(CL_GLOBALS[v[1]])
 			setting.checkbox:Dock(RIGHT)
 			setting.checkbox:DockMargin(0, 0, 0, 0)
 			setting.checkbox:SetTextColor(textColor)
 
 			setting.checkbox.OnChange = function(self, value)
-				CL_GLOBALS[ v[ 1 ] ] = value
+				CL_GLOBALS[v[1]] = value
 				saveSettings()
 			end
 
@@ -302,18 +302,18 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		panel.Paint = function(self, w, h) end
 		panel:Dock(TOP)
 
-		if v[ 1 ] != nil then
+		if v[1] != nil then
 			local name = vgui.Create("DLabel", panel)
 			name:SetFont("Trebuchet16")
-			name:SetText(v[ 1 ])
+			name:SetText(v[1])
 			name:SizeToContents()
 			name:Dock(LEFT)
 
-			if v[ 2 ] != nil then
+			if v[2] != nil then
 				local position = vgui.Create("DLabel", panel)
 				position:SetFont("Trebuchet16")
 				position:SetColor(textColor2)
-				position:SetText(v[ 2 ])
+				position:SetText(v[2])
 				position:SizeToContents()
 				position:SetContentAlignment(6)
 				position:Dock(RIGHT)
@@ -353,7 +353,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 				v:SetVisible(false)
 			end
 
-			GUIElements.tabs[ v:lower() ]:SetVisible(true)
+			GUIElements.tabs[v:lower()]:SetVisible(true)
 		end
 	end
 

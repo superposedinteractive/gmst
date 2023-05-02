@@ -1,8 +1,8 @@
 ﻿local saveableGlobals = {
-	[ "volume" ] = 0.5,
-	[ "tabWaves" ] = true,
-	[ "tabBlur" ] = true,
-	[ "blurStrength" ] = 0.5
+	["volume"] = 0.5,
+	["tabWaves"] = true,
+	["tabBlur"] = true,
+	["blurStrength"] = 0.5
 }
 
 function apiCall(url, args, callback)
@@ -28,13 +28,13 @@ function saveSettings(write)
 	local settings = {}
 
 	for k, v in pairs(saveableGlobals) do
-		if CL_GLOBALS[ k ] != nil then
-			settings[ k ] = CL_GLOBALS[ k ]
+		if CL_GLOBALS[k] != nil then
+			settings[k] = CL_GLOBALS[k]
 		else
-			settings[ k ] = saveableGlobals[ k ]
+			settings[k] = saveableGlobals[k]
 		end
 
-		CL_GLOBALS[ k ] = settings[ k ]
+		CL_GLOBALS[k] = settings[k]
 	end
 
 	// funny CSoundPatch quirk
@@ -56,7 +56,7 @@ if file.Exists("gmstation/settings.json", "DATA") then
 
 	if settings then
 		for k, v in pairs(settings) do
-			CL_GLOBALS[ k ] = v
+			CL_GLOBALS[k] = v
 		end
 	else
 		panic("Failed to load settings file")

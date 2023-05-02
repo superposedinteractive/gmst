@@ -2,8 +2,8 @@
 function chat.AddText(...)
 	local args = {...}
 
-	if #args == 1 && type(args[ 1 ]) == "table" then
-		args = args[ 1 ]
+	if #args == 1 && type(args[1]) == "table" then
+		args = args[1]
 	end
 
 	GUIElements.chatbox.box:InsertColorChange(255, 255, 255, 255)
@@ -47,9 +47,9 @@ net.Receive("gmstation_chat", function()
 
 	if IsValid(ply) then
 		if zone != "" then
-			chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg[ 1 ])
+			chat.AddText(Color(100, 100, 100), zone .. " | ", ply, ": ", Color(255, 255, 255), msg[1])
 		else
-			chat.AddText(ply, ": ", Color(255, 255, 255), msg[ 1 ])
+			chat.AddText(ply, ": ", Color(255, 255, 255), msg[1])
 		end
 	else
 		chat.AddText(msg)

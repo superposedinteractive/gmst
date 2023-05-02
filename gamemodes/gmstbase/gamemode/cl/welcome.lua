@@ -32,8 +32,8 @@ function panic(msg)
 end
 
 concommand.Add("gms_panic", function(ply, cmd, args)
-	if args[ 1 ] then
-		panic(args[ 1 ])
+	if args[1] then
+		panic(args[1])
 	else
 		panic("Test error")
 	end

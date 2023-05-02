@@ -1,12 +1,12 @@
 ﻿local hudExceptions = {
-	[ "CHudCloseCaption" ] = true,
-	[ "CHudDamageIndicator" ] = true,
-	[ "CHudMessage" ] = true,
-	[ "CHudHintDisplay" ] = true,
-	[ "CHudWeapon" ] = true,
-	[ "CHudGMod" ] = true,
-	[ "CHudCrosshair" ] = true,
-	[ "NetGraph" ] = true
+	["CHudCloseCaption"] = true,
+	["CHudDamageIndicator"] = true,
+	["CHudMessage"] = true,
+	["CHudHintDisplay"] = true,
+	["CHudWeapon"] = true,
+	["CHudGMod"] = true,
+	["CHudCrosshair"] = true,
+	["NetGraph"] = true
 }
 
 function GM:HUDDrawTargetID()
@@ -14,7 +14,7 @@ function GM:HUDDrawTargetID()
 end
 
 function GM:HUDShouldDraw(name)
-	return hudExceptions[ name ] || false
+	return hudExceptions[name] || false
 end
 
 local function m_AlignText(text, font, x, y, xalign, yalign)
@@ -38,7 +38,7 @@ function draw.LinearGradient(x, y, w, h, stops, horizontal)
 	if #stops == 0 then
 		return
 	elseif #stops == 1 then
-		surface.SetDrawColor(stops[ 1 ].color)
+		surface.SetDrawColor(stops[1].color)
 		surface.DrawRect(x, y, w, h)
 
 		return
@@ -49,12 +49,12 @@ function draw.LinearGradient(x, y, w, h, stops, horizontal)
 	mesh.Begin(MATERIAL_QUADS, #stops - 1)
 
 	for i = 1, #stops - 1 do
-		local offset1 = math.Clamp(stops[ i ].offset, 0, 1)
-		local offset2 = math.Clamp(stops[ i + 1 ].offset, 0, 1)
+		local offset1 = math.Clamp(stops[i].offset, 0, 1)
+		local offset2 = math.Clamp(stops[i + 1].offset, 0, 1)
 		if offset1 == offset2 then continue end
 		local deltaX1, deltaY1, deltaX2, deltaY2
-		local color1 = stops[ i ].color
-		local color2 = stops[ i + 1 ].color
+		local color1 = stops[i].color
+		local color2 = stops[i + 1].color
 		local r1, g1, b1, a1 = color1.r, color1.g, color1.b, color1.a
 		local r2, g2, b2, a2
 		local r3, g3, b3, a3 = color2.r, color2.g, color2.b, color2.a
@@ -102,7 +102,7 @@ function draw.SimpleWavyText(text, font, x, y, color, xalign, yalign, style, int
 	local x, y = m_AlignText(text, font, x, y, xalign, yalign)
 
 	for i = 1, #texte do
-		local char = texte[ i ]
+		local char = texte[i]
 		local charw, charh = surface.GetTextSize(char)
 		local y_pos = 1
 		local mod = math.sin((RealTime() - (i * 0.1)) * (2 * intesity))
@@ -329,11 +329,11 @@ net.Receive("gmstation_reward", function()
 	local i = 1
 
 	for k, v in pairs(rewards) do
-		sum = sum + v[ 2 ]
+		sum = sum + v[2]
 	end
 
 	for i = 1, #rewards do
-		MsgN("⎸ " .. i .. " " .. rewards[ i ][ 1 ] .. " | " .. rewards[ i ][ 2 ])
+		MsgN("⎸ " .. i .. " " .. rewards[i][1] .. " | " .. rewards[i][2])
 	end
 
 	MsgN("⎸")
@@ -363,14 +363,14 @@ net.Receive("gmstation_reward", function()
 			text:DockMargin(8, 0, 8, 0)
 			text:SetContentAlignment(4)
 			text:SetFont("Trebuchet8")
-			text:SetText(rewards[ i ][ 1 ])
+			text:SetText(rewards[i][1])
 			text:SizeToContents()
 			local moneytext = vgui.Create("DLabel", reward)
 			moneytext:Dock(RIGHT)
 			moneytext:DockMargin(8, 0, 8, 0)
 			moneytext:SetContentAlignment(4)
 			moneytext:SetFont("Trebuchet24Bold")
-			moneytext:SetText(rewards[ i ][ 2 ] .. "cc")
+			moneytext:SetText(rewards[i][2] .. "cc")
 			moneytext:SizeToContents()
 			local ii = i
 

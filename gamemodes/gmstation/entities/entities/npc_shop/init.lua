@@ -12,7 +12,7 @@ function ENT:Initialize()
 end
 
 function ENT:KeyValue(key, value)
-	self[ key ] = value
+	self[key] = value
 	MsgN("GMStation: ", key, " = ", value)
 end
 

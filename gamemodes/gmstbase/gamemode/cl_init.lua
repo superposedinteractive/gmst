@@ -18,7 +18,7 @@ end
 
 if !table.IsEmpty(GUIElements || {}) then
 	for v in pairs(GUIElements) do
-		GUIElements[ v ]:Remove()
+		GUIElements[v]:Remove()
 		MsgN("[GMSTBase] Removing " .. v)
 	end
 end

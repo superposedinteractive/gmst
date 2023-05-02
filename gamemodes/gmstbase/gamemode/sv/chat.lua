@@ -62,7 +62,7 @@
 	for k, v in pairs(words) do
 		for word, replacement in pairs(bad_words) do
 			if string.match(string.lower(v), string.lower(word)) then
-				words[ k ] = replacement
+				words[k] = replacement
 				hook.Run("gmstation_chat_bad_word", ply, word)
 			end
 		end

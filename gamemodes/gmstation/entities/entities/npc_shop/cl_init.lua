@@ -2,16 +2,16 @@
 
 local test_elements = {
 	{
-		[ "name" ] = "Bench",
-		[ "desc" ] = "A nice bench to sit on.",
-		[ "model" ] = "models/props_c17/bench01a.mdl",
-		[ "price" ] = 100
+		["name"] = "Bench",
+		["desc"] = "A nice bench to sit on.",
+		["model"] = "models/props_c17/bench01a.mdl",
+		["price"] = 100
 	},
 	{
-		[ "name" ] = "Table",
-		[ "desc" ] = "A nice table to put things on.",
-		[ "model" ] = "models/props_c17/furnituretable002a.mdl",
-		[ "price" ] = 100
+		["name"] = "Table",
+		["desc"] = "A nice table to put things on.",
+		["model"] = "models/props_c17/furnituretable002a.mdl",
+		["price"] = 100
 	}
 }
 

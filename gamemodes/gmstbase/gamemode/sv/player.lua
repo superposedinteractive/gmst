@@ -45,7 +45,7 @@ function PlayerInit(ply)
 		local sum = 0
 
 		for i = 1, #rewards do
-			sum = sum + rewards[ i ][ 2 ]
+			sum = sum + rewards[i][2]
 		end
 
 		net.Start("gmstation_reward")
@@ -56,9 +56,9 @@ function PlayerInit(ply)
 
 	function ply:MoneyAdd(amount)
 		apiCall("gmstAddPlayerMoney", {
-			[ "steamid" ] = ply:SteamID64(),
-			[ "money" ] = amount,
-			[ "password" ] = SV_GLOBALS.password
+			["steamid"] = ply:SteamID64(),
+			["money"] = amount,
+			["password"] = SV_GLOBALS.password
 		}, function(body)
 			MsgN("[GMSTBase] " .. ply:Nick() .. " has been given " .. amount .. " cc.")
 			net.Start("gmstation_first_join_done")
