@@ -35,7 +35,10 @@ function saveSettings(write)
 		CL_GLOBALS[k] = settings[k]
 	end
 	
-	if CL_GLOBALS.currentSound then
+	// funny CSoundPatch quirk
+	CL_GLOBALS.volume = math.max(CL_GLOBALS.volume, 0.01)
+
+	if CL_GLOBALS.currentSound && CL_GLOBALS.currentSound:IsPlaying() then
 		CL_GLOBALS.currentSound:ChangeVolume(CL_GLOBALS.volume * (CL_GLOBALS.ogVolume || 1))
 	end
 

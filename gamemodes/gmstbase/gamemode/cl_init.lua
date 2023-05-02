@@ -1,8 +1,11 @@
 include("shared.lua")
 
-CL_GLOBALS = {}
+if not CL_GLOBALS then
+	CL_GLOBALS = {}
+end
+
 CL_GLOBALS.url = "https://superposed.xyz/gmstation"
-CL_GLOBALS.money = "0"
+CL_GLOBALS.money = 0
 
 if not oldChat then
 	MsgN("[GMSTBase] Overriding chat.AddText")

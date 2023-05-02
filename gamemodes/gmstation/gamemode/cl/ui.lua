@@ -86,32 +86,6 @@ function displaySpeech(icon, text, name)
     end)
 end
 
--- Check if player has CS:S by loading a CS:S texture
-local css = Material("de_nuke/radwarning")
-
-if css:IsError() then
-    GUIElements.css = vgui.Create("DPanel")
-    GUIElements.css:SetSize(math.min(ScrW() - 64, 750), 116)
-    GUIElements.css:CenterHorizontal()
-    GUIElements.css:SetY(ScrH() - 116 - 32)
-
-    GUIElements.css.Paint = function(self, w, h)
-        draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
-        draw.SimpleText("Content Warning", "Trebuchet32Bold", w / 2, 32, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        draw.DrawText("You appear to be missing Counter-Strike: Source.\nExpect Missing textures and models!", "Trebuchet16", w / 2, 55, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-        draw.SimpleText("Click to dismiss", "Trebuchet8", w - 8, h - 4, Color(255, 255, 255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
-    end
-
-    local dismiss = vgui.Create("DButton", GUIElements.css)
-    dismiss:Dock(FILL)
-    dismiss:SetText("")
-    dismiss.Paint = function(self, w, h) end
-
-    dismiss.DoClick = function()
-        GUIElements.css:Remove()
-    end
-end
-
 net.Receive("gmstation_first_join", function()
     if IsValid(GUIElements.registering) then
         GUIElements.registering:Remove()

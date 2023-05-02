@@ -2,6 +2,7 @@
 util.AddNetworkString("gmstation_chat")
 util.AddNetworkString("gmstation_taunt")
 util.AddNetworkString("gmstation_reward")
+util.AddNetworkString("gmstation_achievement")
 
 function PlayerMessage(ply, ...)
 	local args = {...}
@@ -38,11 +39,7 @@ function PlayerInit(ply)
 
 	function ply:GetMoney()
 		apiCall("gmstGetPlayerMoney", ply:SteamID64(), function(body)
-			if !string.StartsWith(body, "-") then
-				return tonumber(body)
-			else
-				return 0
-			end
+			return tonumber(body)
 		end)
 	end
 
@@ -51,8 +48,6 @@ function PlayerInit(ply)
 		for i = 1, #rewards do
 			sum = sum + rewards[i][2]
 		end
-
-		MsgN("[GMSTBase] " .. ply:Nick() .. " has been paid " .. sum .. " cc in " .. #rewards .. " rewards.")
 
 		net.Start("gmstation_reward")
 			net.WriteTable(rewards)
@@ -68,6 +63,18 @@ function PlayerInit(ply)
 				net.WriteString(ply:SteamID64())
 			net.Send(ply)
 		end)
+	end
+
+	function ply:Achievement(name, desc, image, reward)
+		net.Start("gmstation_achievement")
+			net.WriteString(name)
+			net.WriteString(desc)
+			net.WriteString(image)
+			net.WriteInt(100, 21)
+			net.WriteEntity(ply)
+		net.Broadcast()
+
+		ply:MoneyAdd(reward)
 	end
 end
 

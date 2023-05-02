@@ -45,6 +45,13 @@ function GM:PlayerSay(ply, text, team)
 		return ""
 	end
 
+	if text == "ahchh" then
+		for k, v in pairs(player.GetAll()) do
+			v:Achievement("test", "test", "test", 100)
+		end
+		return ""
+	end
+
 	local words = string.Explode(" ", text)
 
 	for k, v in pairs(words) do

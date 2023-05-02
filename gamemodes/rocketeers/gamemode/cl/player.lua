@@ -186,7 +186,7 @@ net.Receive("rocketeers_death", function()
 	GUIElements.death:SetSize(ScrW(), ScrH())
 
 	GUIElements.death.Paint = function(self, w, h)
-		local time = timer.TimeLeft("rocketeers_respawn") or 0
+		local time = timer.TimeLeft("rocketeers_respawn") || 0
 		surface.SetMaterial(gradient_v)
 		surface.SetDrawColor(0, 0, 0, 300)
 		surface.DrawTexturedRect(0, 0, w, h)
@@ -200,8 +200,8 @@ net.Receive("rocketeers_death", function()
 	end
 end)
 
--- net.Receive("rocketeers_20sec", function()
-timer.Simple(2, function()
+net.Receive("rocketeers_20sec", function()
+-- timer.Simple(2, function()
 	if CL_GLOBALS.currentSound then
 		CL_GLOBALS.currentSound:Stop()
 	end
@@ -211,24 +211,39 @@ timer.Simple(2, function()
 
 	local text = "20"
 	local font = "countdown1"
+	local intensity = 2
 
-	local alert = vgui.Create("DPanel")
-	alert:SetSize(ScrW(), ScrH())
-	alert:Center()
-	alert.Paint = function(self, w, h)
-		draw.SimpleText(text, font, w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	if GUIElements.alert then
+		GUIElements.alert:Remove()
 	end
 
-	alert:MoveTo(-ScrW(), alert:GetY(), 0.5, 1, 10, function()
-		alert:Remove()
+	GUIElements.alert = vgui.Create("DPanel")
+	GUIElements.alert:SetSize(ScrW(), ScrH())
+	GUIElements.alert:Center()
+	GUIElements.alert.Paint = function(self, w, h)
+		draw.SimpleText(text, font, w / 2 + math.random(-intensity, intensity), h / 2 + math.random(-intensity, intensity), Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+
+	GUIElements.alert:MoveTo(-ScrW(), GUIElements.alert:GetY(), 0.5, 1, 10, function()
+		GUIElements.alert:Remove()
 	end)
 
 	timer.Simple(0.36, function()
 		text = "SECONDS"
 		font = "countdown2"
+		intensity = 4
 		timer.Simple(0.36, function()
 			text = "LEFT"
 			font = "countdown3"
+			intensity = 6
 		end)
 	end)
+
+	if timer.Exists("rocketeers_timer") then
+		timer.Adjust("rocketeers_timer", 20, 1)
+	else
+		panic("rocketeers timer not found")
+	end
 end)
+
+timer.Remove("rocketeers_timer")

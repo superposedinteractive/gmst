@@ -17,7 +17,23 @@ local optionTypes = {
 
 local tabs = {
 	"Players",
-	"Settings"
+	"Settings",
+	"Achievements",
+	"Credits"
+}
+
+local credits = {
+	{"fgor", "Designer, Lead \"Scream at his team\" guy"},
+	{"japannt", "Lead developer"},
+	{"Dark", "Mapping"},
+	{},
+	{"Michu", "Server hosting & Contributions"},
+	{"Bartkk", "API Development & Contributions"},
+	{""},
+	{"Special thanks to"},
+	{"Our whole community for supporting us and you for playing!"},
+	{},
+	{"© superposed 2023"}
 }
 
 local settingOrder = {
@@ -144,7 +160,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			else
 				surface.SetDrawColor(rowColor1)
 			end
-			
+
 			surface.SetMaterial(playerGradient)
 			surface.DrawTexturedRect(0, 0, w, h)
 		end
@@ -170,7 +186,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		playerPanel.location:DockMargin(0, 0, 0, 10)
 
 		timer.Create("gmstation_scoreboard_" .. v:SteamID(), 0.5, 0, function()
-			if(IsValid(playerPanel.location)) then
+			if IsValid(playerPanel.location) then
 				playerPanel.location:SetText(v:GetNWString("zone") or "Somewhere")
 			end
 		end)
@@ -216,7 +232,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 				surface.SetDrawColor(textColor2)
 				surface.DrawTexturedRect(0, 0, w, h)
 			end
-			
+
 			continue
 		end
 
@@ -255,6 +271,78 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 				saveSettings()
 			end
 			continue
+		end
+	end
+
+	GUIElements.tabs.achievements = vgui.Create("DPanel", GUIElements.tabs)
+	GUIElements.tabs.achievements:Dock(FILL)
+	GUIElements.tabs.achievements:SetVisible(false)
+	GUIElements.tabs.achievements:DockMargin(16, 16, 16, 16)
+	GUIElements.tabs.achievements.Paint = function(self, w, h)
+		draw.SimpleText("TODO", "Trebuchet16Bold", w / 2, h / 2, textColor2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+
+	GUIElements.tabs.credits = vgui.Create("DPanel", GUIElements.tabs)
+	GUIElements.tabs.credits:Dock(FILL)
+	GUIElements.tabs.credits:SetVisible(false)
+	GUIElements.tabs.credits:DockMargin(16, 16, 16, 16)
+	GUIElements.tabs.credits.Paint = function(self, w, h)
+	end
+
+	GUIElements.tabs.credits.scroll = vgui.Create("DScrollPanel", GUIElements.tabs.credits)
+	GUIElements.tabs.credits.scroll:Dock(FILL)
+	GUIElements.tabs.credits.scroll.Paint = function(self, w, h)
+	end
+
+	local title = vgui.Create("DLabel", GUIElements.tabs.credits.scroll)
+	title:SetFont("Trebuchet48")
+	title:SetText("GMStation")
+	title:SizeToContents()
+	title:Dock(TOP)
+
+	local subtitle = vgui.Create("DLabel", GUIElements.tabs.credits.scroll)
+	subtitle:SetFont("Trebuchet16")
+	subtitle:SetText("A Garry's Mod experience by superposed")
+	subtitle:SizeToContents()
+	subtitle:Dock(TOP)
+
+	local spacer = vgui.Create("DPanel", GUIElements.tabs.credits.scroll)
+	spacer:SetTall(8)
+	spacer:Dock(TOP)
+	spacer.Paint = function(self, w, h)
+	end
+
+	local title2 = vgui.Create("DLabel", GUIElements.tabs.credits.scroll)
+	title2:SetFont("Trebuchet32")
+	title2:SetText("Credits")
+	title2:SizeToContents()
+	title2:Dock(TOP)
+
+	for _, v in pairs(credits) do
+		local panel = vgui.Create("DPanel", GUIElements.tabs.credits.scroll)
+		panel.Paint = function(self, w, h)
+		end
+		panel:Dock(TOP)
+
+		if v[1] != nil then
+			local name = vgui.Create("DLabel", panel)
+			name:SetFont("Trebuchet16")
+			name:SetText(v[1])
+			name:SizeToContents()
+			name:Dock(LEFT)
+
+			if v[2] != nil then
+				local position = vgui.Create("DLabel", panel)
+				position:SetFont("Trebuchet16")
+				position:SetColor(textColor2)
+				position:SetText(v[2])
+				position:SizeToContents()
+				position:SetContentAlignment(6)
+				position:Dock(RIGHT)
+			else
+				name:Dock(FILL)
+				name:SetContentAlignment(5)
+			end
 		end
 	end
 
