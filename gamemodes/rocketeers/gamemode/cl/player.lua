@@ -104,6 +104,23 @@ function GM:PlayerAmmoChanged(ply, ammo, oldcount, newcount)
 			hudglow:Remove()
 		end)
 	end
+
+	if newcount == 1 then
+		surface.PlaySound("common/warning.wav")
+		local hudglow = vgui.Create("DPanel")
+		hudglow:SetSize(600, 24)
+		hudglow:SetPos(0, ScrH() - GUIElements.HUD:GetTall() + 36)
+
+		hudglow.Paint = function(self, w, h)
+			surface.SetMaterial(gradient_h)
+			surface.SetDrawColor(255, 150, 0)
+			surface.DrawTexturedRect(0, 0, w, h)
+		end
+
+		hudglow:AlphaTo(0, 1, 0, function()
+			hudglow:Remove()
+		end)
+	end
 end
 
 net.Receive("rocketeers_damage", function()
@@ -193,8 +210,8 @@ net.Receive("rocketeers_death", function()
 	end
 end)
 
-net.Receive("rocketeers_20sec", function()
-	// timer.Simple(2, function()
+-- net.Receive("rocketeers_20sec", function()
+timer.Simple(5, function()
 	if CL_GLOBALS.currentSound then
 		CL_GLOBALS.currentSound:Stop()
 	end

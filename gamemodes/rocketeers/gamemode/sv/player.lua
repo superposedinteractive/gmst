@@ -6,6 +6,7 @@ hook.Add("PlayerSpawn", "rocketeers_spawn", function(ply)
 		ply:StripWeapons()
 		ply:Give("weapon_rpg")
 		ply:SetAmmo(3, "RPG_Round")
+		ply:SetHealth(200)
 	end)
 end)
 
