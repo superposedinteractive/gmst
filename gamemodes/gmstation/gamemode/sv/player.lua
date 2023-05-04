@@ -21,6 +21,8 @@ hook.Add("gmstation_chat_bad_word", "gmstbadword", function(ply, msg)
 		d:SetDamage(100000)
 		d:SetDamageType(DMG_DISSOLVE)
 		d:SetDamageForce(Vector(0, 0, -10000000))
+		d:SetAttacker(ply)
+		d:SetInflictor(ply)
 		ply:EmitSound("npc/scanner/cbot_energyexplosion1.wav")
 		ply:TakeDamageInfo(d)
 	end

@@ -13,14 +13,14 @@ local optionTypes = {
 	["CHECKBOX"] = 2,
 }
 
-local tabs = {"Players", "Settings", "Achievements", "Credits"}
+local tabs = {"Players", "Settings", "Awards", "Credits"}
 
 local credits = {
 	{"fgor", "Designer, Lead \"Scream at his team\" guy"},
 	{"japannt", "Lead developer"},
 	{"Dark", "Mapping"},
-	{}, {"Michu", "Server hosting & Contributions"},
-	{"Bartkk", "API Development & Contributions"},
+	{}, {"Bartkk", "API Development & Contributions"},
+	{"Michu", "Server hosting & Contributions"},
 	{""},
 	{"Special thanks to"},
 	{"Our whole community for supporting us and you for playing!"},
@@ -260,12 +260,12 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		end
 	end
 
-	GUIElements.tabs.achievements = vgui.Create("DPanel", GUIElements.tabs)
-	GUIElements.tabs.achievements:Dock(FILL)
-	GUIElements.tabs.achievements:SetVisible(false)
-	GUIElements.tabs.achievements:DockMargin(16, 16, 16, 16)
+	GUIElements.tabs.awards = vgui.Create("DPanel", GUIElements.tabs)
+	GUIElements.tabs.awards:Dock(FILL)
+	GUIElements.tabs.awards:SetVisible(false)
+	GUIElements.tabs.awards:DockMargin(16, 16, 16, 16)
 
-	GUIElements.tabs.achievements.Paint = function(self, w, h)
+	GUIElements.tabs.awards.Paint = function(self, w, h)
 		draw.SimpleText("TODO", "Trebuchet16Bold", w / 2, h / 2, textColor2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 

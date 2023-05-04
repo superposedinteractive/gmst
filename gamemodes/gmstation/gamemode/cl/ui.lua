@@ -125,10 +125,10 @@ end)
 net.Receive("gmstation_first_join_done", function()
 	local steamid = net.ReadString() // LocalPlayer():SteamID64() sometimes player isn't ready yet
 
-	apiCall("gmstGetPlayerMoney", {
+	apiCall("player_info", {
 		steamid = steamid
 	}, function(body, len, headers, code)
-		CL_GLOBALS.money = tonumber(body)
+		CL_GLOBALS.money = body["money"] || "ERROR"
 	end)
 
 	SetupHUD()

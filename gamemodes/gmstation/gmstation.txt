@@ -1,4 +1,4 @@
-"gmstation" {
+"gmstlobby" {
 	"base"  "gmstbase"
 	"title" "GMStation"
 	"category"  "other"

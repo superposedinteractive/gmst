@@ -247,26 +247,29 @@ net.Receive("gmstation_achievement", function()
 		GUIElements.achievement:SetX(ScrW())
 		GUIElements.achievement:SetY(32)
 		GUIElements.achievement:MoveTo(ScrW() - GUIElements.achievement:GetWide() - 32, 32, 0.5, 0, 0.5)
+
+		local bg = vgui.Create("DPanel", GUIElements.achievement)
+		bg:SetSize(GUIElements.achievement:GetWide(), GUIElements.achievement:GetTall())
+		bg.Paint = function(self, w, h)
+			draw.SimpleText(money .. "cc", "Trebuchet48Bold", w - 32, h / 2, Color(255, 200, 0, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+		end
+
 		local icon = vgui.Create("DImage", GUIElements.achievement)
 		icon:SetSize(64, 64)
 		icon:SetPos(16, 16)
 		image_load(icon, image)
+
 		local title = vgui.Create("DLabel", GUIElements.achievement)
 		title:SetPos(96, 16)
 		title:SetFont("Trebuchet16Bold")
 		title:SetText(name)
 		title:SizeToContents()
+
 		local description = vgui.Create("DLabel", GUIElements.achievement)
 		description:SetPos(96, 32)
 		description:SetFont("Trebuchet16")
 		description:SetText(desc)
 		description:SizeToContents()
-		local reward = vgui.Create("DLabel", GUIElements.achievement)
-		reward:SetPos(96, 48)
-		reward:SetFont("Trebuchet16")
-		reward:SetText(money .. "cc")
-		reward:SizeToContents()
-		reward:SetColor(Color(255, 200, 0))
 
 		timer.Simple(5, function()
 			if IsValid(GUIElements.achievement) then

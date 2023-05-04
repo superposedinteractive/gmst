@@ -38,7 +38,7 @@ function PlayerInit(ply)
 	PlayerMessage(nil, ply:Nick() .. " has entered the station.")
 
 	function ply:GetMoney()
-		apiCall("gmstGetPlayerMoney", ply:SteamID64(), function(body) return tonumber(body) end)
+		apiCall("player_info", ply:SteamID64(), function(body) return body["money"] end)
 	end
 
 	function ply:Payout(rewards)
@@ -55,7 +55,7 @@ function PlayerInit(ply)
 	end
 
 	function ply:MoneyAdd(amount)
-		apiCall("gmstAddPlayerMoney", {
+		apiCall("player_addmoney", {
 			["steamid"] = ply:SteamID64(),
 			["money"] = amount,
 			["password"] = SV_GLOBALS.password
