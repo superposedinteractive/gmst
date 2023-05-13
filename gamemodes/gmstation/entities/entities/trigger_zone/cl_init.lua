@@ -76,8 +76,7 @@ function PlaySound(snd, loop)
 
 			timer.Create("gmstation_looping_music", dur - 3, 0, function()
 				CL_GLOBALS.currentSound:Stop()
-				CL_GLOBALS.currentSound:PlayEx(0, 100)
-				CL_GLOBALS.currentSound:ChangeVolume(volume)
+				CL_GLOBALS.currentSound:PlayEx(volume, 100)
 			end)
 		end
 

@@ -1,4 +1,4 @@
-﻿local hudExceptions = {
+local hudExceptions = {
 	["CHudCloseCaption"] = true,
 	["CHudDamageIndicator"] = true,
 	["CHudMessage"] = true,
@@ -8,6 +8,12 @@
 	["CHudCrosshair"] = true,
 	["NetGraph"] = true
 }
+
+GUIElements.notifications = vgui.Create("DPanel")
+GUIElements.notifications:SetSize(ScrW(), ScrH())
+GUIElements.notifications.Paint = function() end
+
+GUIElements.notifications.list = {}
 
 function GM:HUDDrawTargetID()
 	return false
@@ -234,7 +240,7 @@ net.Receive("gmstation_achievement", function()
 	local money = net.ReadInt(21)
 	local who = net.ReadEntity()
 	chat.AddText(who, Color(255, 255, 255), " has earned ", Color(255, 200, 0), name, Color(255, 255, 255), "!")
-	ParticleEffectAttach("achieved", PATTACH_POINT_FOLLOW, who, who:LookupAttachment("none"))
+	who:CreateParticleEffect("achieved", 0, {["entity"] = who, ["attachtype"] = PATTACH_ABSORIGIN_FOLLOW})
 	who:EmitSound("misc/achievement_earned.wav")
 
 	if IsValid(who) && who == LocalPlayer() then
@@ -273,9 +279,7 @@ net.Receive("gmstation_achievement", function()
 
 		timer.Simple(5, function()
 			if IsValid(GUIElements.achievement) then
-				GUIElements.achievement:MoveTo(ScrW(), 32, 0.5, 0, 1.5)
-
-				timer.Simple(0.5, function()
+				GUIElements.achievement:MoveTo(ScrW(), 32, 0.5, 0, 1.5, function()
 					if IsValid(GUIElements.achievement) then
 						GUIElements.achievement:Remove()
 					end
@@ -323,6 +327,72 @@ if css:IsError() || tf2:IsError() then
 	dismiss.DoClick = function()
 		GUIElements.css:Remove()
 	end
+end
+
+function GMSTNotification(title_text, text_text, icon_uri)
+	local notif = vgui.Create("DPanel", GUIElements.notifications)
+	local y = 0
+
+	for i = 1, #GUIElements.notifications.list do
+		y = y + GUIElements.notifications.list[i]:GetTall() + 8
+	end
+
+	table.insert(GUIElements.notifications.list, notif)
+	local rawtext = ""
+
+	for i = 1, #text_text do
+		if type(text_text[i]) == "string" then
+			rawtext = rawtext .. text_text[i]
+		end
+	end
+
+	surface.SetFont("Trebuchet8")
+	local w, h = surface.GetTextSize(rawtext)
+
+	local icon = vgui.Create("DImage", notif)
+	if icon_uri then
+		icon:Dock(LEFT)
+		local pad = notif:GetTall() * 1.3341
+		icon:DockMargin(8, padd, 8, pad)
+		icon:SetWide(32)
+		icon:SetImage(icon_uri)
+	end
+
+	local title = vgui.Create("DLabel", notif)
+	title:SetFont("Trebuchet16Bold")
+	title:SetText(title_text)
+	title:SizeToContents()
+	title:Dock(TOP)
+	title:DockMargin(0, 8, 0, 0)
+
+	if !icon then
+		title:DockMargin(8, 8, 8, 0)
+	end
+
+	local text = vgui.Create("RichText", notif)
+	text:Dock(FILL)
+	text:SetVerticalScrollbarEnabled(false)
+	text.PerformLayout = function(self)
+		self:SetFontInternal("Trebuchet8")
+	end
+	for i = 1, #text_text do
+		if type(text_text[i]) == "string" then
+			text:AppendText(text_text[i])
+		elseif type(text_text[i]) == "table" then
+			text:InsertColorChange(text_text[i].r, text_text[i].g, text_text[i].b, text_text[i].a)
+		end
+	end
+
+	surface.PlaySound("buttons/lightswitch2.wav")
+
+	notif:SetSize(math.min(w + 128, ScrW()), h + 64)
+	notif:SetPos(ScrW(), ScrH() - 32 - notif:GetTall() - y - 32)
+	notif:MoveTo(ScrW() - notif:GetWide(), notif:GetY(), 0.5, 0, 0.5, function()
+		notif:MoveTo(ScrW(), notif:GetY(), 0.5, 5, 1.5, function()
+			table.RemoveByValue(GUIElements.notifications.list, notif)
+			notif:Remove()
+		end)
+	end)
 end
 
 net.Receive("gmstation_reward", function()
@@ -413,6 +483,75 @@ net.Receive("gmstation_reward", function()
 	end)
 end)
 
+net.Receive("gmstation_map_restart", function()
+	local time = net.ReadFloat()
+
+	if IsValid(GUIElements.restarting) then
+		GUIElements.restarting:Remove()
+	end
+
+	timer.Create("gmstation_map_restart", time, 1, function() end)
+	GUIElements.restarting = vgui.Create("DPanel")
+	GUIElements.restarting:SetSize(300, 100)
+	GUIElements.restarting:SetPos(ScrW() / 2 - GUIElements.restarting:GetWide() / 2, ScrH() / 2 - GUIElements.restarting:GetTall() / 2 + 32)
+
+	GUIElements.restarting.Paint = function(self, w, h)
+		local time = string.ToMinutesSeconds(timer.TimeLeft("gmstation_map_restart"))
+		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w / 2 + 1, h / 2 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w / 2, h / 2, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(time, "Trebuchet8", w / 2 + 1, h / 2 + 20 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.SimpleText(time, "Trebuchet8", w / 2, h / 2 + 20, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+end)
+
+local last_timeout_think = 0
+local last_bad_timeout = 0
+
+hook.Add("Think", "gmstation_timeout_think", function()
+	if SysTime() - (last_timeout_think || 0) > 1 then
+		local timing = GetTimeoutInfo()
+
+		if timing then
+			if !IsValid(GUIElements.timeout) then
+				last_bad_timeout = SysTime()
+
+				timeout_music = CreateSound(LocalPlayer(), "gmstation/music/timing.mp3")
+
+				GUIElements.timeout = vgui.Create("DPanel")
+				GUIElements.timeout:SetSize(ScrW(), ScrH())
+				GUIElements.timeout.Paint = function(self, w, h)
+					draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 220))
+					draw.SimpleText("Aw shucks!", "Trebuchet32Bold", w / 2, h / 2 - 24, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+					draw.DrawText("The server is currently experiencing some technical difficulties,\nor you're just having a bad connection...\n\nPlease wait while we try to plug you back in.\nYou've been timing out for " .. math.Round(SysTime() - last_bad_timeout) .. " seconds.", "Trebuchet16", w / 2, h / 2, Color(255, 255, 255), TEXT_ALIGN_CENTER)
+				end
+
+				if CL_GLOBALS.currentSound then
+					CL_GLOBALS.currentSound:ChangeVolume(0.01, 0)
+				end
+
+				timeout_music:PlayEx(1, CL_GLOBALS.volume * 100)
+				gui.EnableScreenClicker(true)
+			end
+		else
+			if IsValid(GUIElements.timeout) then
+				GMSTNotification("Welcome back!", {"You've been reconnected to the server."})
+
+				GUIElements.timeout:Remove()
+				timeout_music:Stop()
+				timeout_music = nil
+
+				if CL_GLOBALS.currentSound then
+					CL_GLOBALS.currentSound:ChangeVolume(CL_GLOBALS.volume * CL_GLOBALS.ogVolume, 0)
+				end
+
+				gui.EnableScreenClicker(false)
+			end
+		end
+
+		last_timeout_think = SysTime()
+	end
+end)
+
 local last_commit_hash = file.Read("addons/gmstation/.git/refs/heads/master", "GAME") || "failed to read .git repo"
 local sfile = file.Read("addons/gmstation/.superposed", "GAME") || "failed to read .superposed file"
 local stringified_globals = ""
@@ -428,6 +567,8 @@ hook.Add("HUDPaint", "gmstation_draw_info", function()
 	end
 
 	draw.SimpleText("cataclysm alpha testing", "Trebuchet48Bold", ScrW() * 0.9, ScrH() * 0.9, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
-	draw.DrawText(text, "TrebuchetChat", 0, 0, Color(255, 255, 255), TEXT_ALIGN_LEFT)
-	draw.DrawText(stringified_globals, "TrebuchetChat", 0, height, Color(255, 255, 255), TEXT_ALIGN_LEFT)
+	draw.DrawText(text, "TrebuchetChat", ScrW(), 0, Color(255, 255, 255), TEXT_ALIGN_RIGHT)
+	draw.DrawText(stringified_globals, "TrebuchetChat", ScrW(), height, Color(255, 255, 255), TEXT_ALIGN_RIGHT)
 end)
+
+timer.Stop("gmstation_payout_timer")

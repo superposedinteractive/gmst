@@ -1,7 +1,9 @@
 ﻿// GMStation - General UI
-local white = Material("vgui/white")
+local hoz = Material("gmstation/ui/gradients/hoz.png", "noclamp smooth")
 
 function SetupHUD()
+	local money = 0
+
 	if IsValid(GUIElements.registering) then
 		GUIElements.registering:Remove()
 	end
@@ -15,16 +17,19 @@ function SetupHUD()
 	end
 
 	surface.SetFont("Trebuchet32")
-	local money_w, h = surface.GetTextSize("1000000")
 	GUIElements.quick_hud = vgui.Create("DPanel")
-	GUIElements.quick_hud:SetSize(300, 100)
-	GUIElements.quick_hud:SetPos(32, ScrH() - 100 - 32)
+	GUIElements.quick_hud:SetSize(ScrW(), 100)
+	GUIElements.quick_hud:SetPos(0, ScrH() - 100 - 32)
 
 	GUIElements.quick_hud.Paint = function(self, w, h)
-		draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 200))
-		draw.SimpleText("GMStation", "Trebuchet24Bold", 18, 28, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText(CL_GLOBALS.zone || "Somewhere", "Trebuchet16Add", w - 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
-		draw.SimpleText(CL_GLOBALS.money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		money = math.ceil(Lerp(FrameTime() * 4, money, CL_GLOBALS.money || 0))
+
+		surface.SetDrawColor(0, 0, 0)
+		surface.SetMaterial(hoz)
+		surface.DrawTexturedRect(0, 0, 300, h)
+
+		draw.SimpleText(CL_GLOBALS.zone || "Somewhere", "Trebuchet24Bold", 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 end
 
@@ -86,6 +91,12 @@ function displaySpeech(icon, text, name)
 	end)
 end
 
+function GM:OnReloaded()
+	if CL_GLOBALS.steamid != nil then
+		FetchInfo()
+	end
+end
+
 net.Receive("gmstation_first_join", function()
 	if IsValid(GUIElements.registering) then
 		GUIElements.registering:Remove()
@@ -101,37 +112,29 @@ net.Receive("gmstation_first_join", function()
 	end
 end)
 
-net.Receive("gmstation_map_restart", function()
-	local time = net.ReadFloat()
-
-	if IsValid(GUIElements.restarting) then
-		GUIElements.restarting:Remove()
-	end
-
-	timer.Create("gmstation_map_restart", time, 1, function() end)
-	GUIElements.restarting = vgui.Create("DPanel")
-	GUIElements.restarting:SetSize(300, 100)
-	GUIElements.restarting:SetPos(ScrW() / 2 - GUIElements.restarting:GetWide() / 2, ScrH() / 2 - GUIElements.restarting:GetTall() / 2 + 32)
-
-	GUIElements.restarting.Paint = function(self, w, h)
-		local time = string.ToMinutesSeconds(timer.TimeLeft("gmstation_map_restart"))
-		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w / 2 + 1, h / 2 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w / 2, h / 2, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText(time, "Trebuchet8", w / 2 + 1, h / 2 + 20 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-		draw.SimpleText(time, "Trebuchet8", w / 2, h / 2 + 20, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
-	end
-end)
-
-net.Receive("gmstation_first_join_done", function()
-	local steamid = net.ReadString() // LocalPlayer():SteamID64() sometimes player isn't ready yet
-
+function FetchInfo()
+	MsgN("[GMST] Fetching info...")
 	apiCall("player_info", {
-		steamid = steamid
+		steamid = CL_GLOBALS.steamid
 	}, function(body, len, headers, code)
+		MsgN("[GMST] Info received, updated global variables")
 		CL_GLOBALS.money = body["money"] || "ERROR"
 	end)
+end
 
-	SetupHUD()
+net.Receive("gmstation_first_join_done", function()
+	CL_GLOBALS.steamid = net.ReadString() // LocalPlayer():SteamID64() sometimes player isn't ready yet
+	if GUIElements.registering != nil then
+		GUIElements.registering:Remove()
+	end
+	FetchInfo()
 end)
 
-timer.Stop("gmstation_payout_timer")
+net.Receive("gmstation_update", function()
+	MsgN("[GMST] Update received, updating...")
+	FetchInfo()
+end)
+
+SetupHUD()
+
+Derma_Message("Welcome to GMStation!\nThis is a very early version of the gamemode, so expect bugs and missing features.\nIf you find any bugs, please report them on the Discord (https://discord.gg/EnadGnaAGm).\n\nHave fun!", "GMStation", "Sounds neat.")

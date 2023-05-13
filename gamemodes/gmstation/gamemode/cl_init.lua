@@ -5,4 +5,4 @@ for k, v in ipairs(file.Find("gmstation/gamemode/cl/*.lua", "LUA")) do
 	include("cl/" .. v)
 end
 
-MsgN("GMStation Client Loaded!")
+MsgN("[GMST] Client Loaded!")

@@ -26,7 +26,7 @@ function apiCall(url, args, callback)
 	end
 
 	get = string.sub(get, 1, string.len(get) - 1)
-	MsgN(SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
+	MsgN("[GMSTBase] Requesting: " .. SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
 
 	http.Fetch(SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
 		MsgN("[GMSTBase] API Response: " .. body)

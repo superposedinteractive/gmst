@@ -8,7 +8,7 @@ net.Receive("gmstation_taunt", function()
 end)
 
 local function thirdperson(ply, pos, ang, fov)
-	scroll = Lerp(0.1, scroll, realscroll)
+	scroll = Lerp(FrameTime() * 10, scroll, realscroll)
 	local view = {}
 
 	if LocalPlayer():Alive() then

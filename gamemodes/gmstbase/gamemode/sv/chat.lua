@@ -21,26 +21,12 @@
 	if text == "pyytt" then
 		for k, v in pairs(player.GetAll()) do
 			local rewards = {
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
-				{"mon", 100},
+				{"mon", 10000},
+				{"mon", 10000},
+				{"mon", 10000},
+				{"mon", 10000},
+				{"mon", 10000},
+				{"mon", 10000},
 			}
 
 			v:Payout(rewards)

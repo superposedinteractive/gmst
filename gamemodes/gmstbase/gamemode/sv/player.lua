@@ -3,6 +3,7 @@ util.AddNetworkString("gmstation_chat")
 util.AddNetworkString("gmstation_taunt")
 util.AddNetworkString("gmstation_reward")
 util.AddNetworkString("gmstation_achievement")
+util.AddNetworkString("gmstation_update")
 
 function PlayerMessage(ply, ...)
 	local args = {...}
@@ -57,12 +58,11 @@ function PlayerInit(ply)
 	function ply:MoneyAdd(amount)
 		apiCall("player_addmoney", {
 			["steamid"] = ply:SteamID64(),
-			["money"] = amount,
+			["amount"] = amount,
 			["password"] = SV_GLOBALS.password
 		}, function(body)
 			MsgN("[GMSTBase] " .. ply:Nick() .. " has been given " .. amount .. " cc.")
-			net.Start("gmstation_first_join_done")
-			net.WriteString(ply:SteamID64())
+			net.Start("gmstation_update")
 			net.Send(ply)
 		end)
 	end

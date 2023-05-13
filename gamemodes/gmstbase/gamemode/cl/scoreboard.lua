@@ -22,9 +22,10 @@ local credits = {
 	{}, {"Bartkk", "API Development & Contributions"},
 	{"Michu", "Server hosting & Contributions"},
 	{""},
-	{"Special thanks to"},
+	{"Special thanks to :"},
+	{"PixelTail Games for the original GMTower concept."},
+	{"The folks over at TCF for the GMTower revival."},
 	{"Our whole community for supporting us and you for playing!"},
-	{}, {"© superposed 2023"}
 }
 
 local settingOrder = {"Music Volume", "sep", "Scoreboard Waves*", "Scoreboard Blur", "Blur Strength",}
@@ -157,6 +158,16 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		playerPanel.avatar:Dock(LEFT)
 		playerPanel.avatar:DockMargin(8, 8, 8, 8)
 		playerPanel.avatar:SetSize(48, 48)
+		local button = vgui.Create("DButton", playerPanel.avatar)
+		button:SetSize(48, 48)
+		button:SetText("")
+		button.Paint = function(self, w, h) end
+		button.DoClick = function()
+			if IsValid(v) then
+				v:ShowProfile()
+			end
+		end
+
 		playerPanel.name = vgui.Create("DLabel", playerPanel)
 		playerPanel.name:SetFont("Trebuchet16")
 		playerPanel.name:SetText(v:Nick())
@@ -266,7 +277,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs.awards:DockMargin(16, 16, 16, 16)
 
 	GUIElements.tabs.awards.Paint = function(self, w, h)
-		draw.SimpleText("TODO", "Trebuchet16Bold", w / 2, h / 2, textColor2, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		draw.DrawText("Work in progress...\nDon't worry your already collected achievements are safe!", "Trebuchet16Bold", w / 2, h / 2 - 32, textColor2, TEXT_ALIGN_CENTER)
 	end
 
 	GUIElements.tabs.credits = vgui.Create("DPanel", GUIElements.tabs)

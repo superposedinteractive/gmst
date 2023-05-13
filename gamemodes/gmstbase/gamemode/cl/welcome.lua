@@ -40,3 +40,4 @@ concommand.Add("gms_panic", function(ply, cmd, args)
 end)
 
 RunConsoleCommand("mat_bloomscale", 0.35)
+RunConsoleCommand("cl_timeout", 9999)
