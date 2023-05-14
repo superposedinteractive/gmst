@@ -530,7 +530,29 @@ hook.Add("Think", "gmstation_timeout_think", function()
 				end
 
 				timeout_music:PlayEx(1, CL_GLOBALS.volume * 100)
+
 				gui.EnableScreenClicker(true)
+			end
+
+			if SysTime() - last_bad_timeout > 30 then
+				if IsValid(GUIElements.timeout.label) then return end
+
+				GUIElements.timeout.label = vgui.Create("DLabel", GUIElements.timeout)
+				label:SetY(ScrH() / 1.55)
+				label:SetSize(ScrW(), 64)
+				label:CenterHorizontal()
+				label:SetContentAlignment(5)
+				label:SetFont("Trebuchet16")
+				label:SetText("You've been timing out for quite a while now.\nYou can try to reconnect and see if you will be able to play again.")
+
+				GUIElements.timeout.reconnect = vgui.Create("DButton", GUIElements.timeout)
+				reconnect:SetSize(ScrW() / 1.5, 64)
+				reconnect:SetPos(ScrW() / 2 - reconnect:GetWide() / 2, ScrH() / 1.5 + 64)
+				reconnect:SetText("Reconnect")
+				reconnect:SetFont("Trebuchet16Bold")
+				reconnect.DoClick = function()
+					RunConsoleCommand("retry")
+				end
 			end
 		else
 			if IsValid(GUIElements.timeout) then
