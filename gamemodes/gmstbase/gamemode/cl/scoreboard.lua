@@ -17,8 +17,8 @@ local tabs = {"Players", "Settings", "Awards", "Credits"}
 
 local credits = {
 	{"fgor", "Designer, Lead \"Scream at his team\" guy"},
-	{"japannt", "Lead developer"},
-	{"Dark", "Mapping"},
+	{"japannt", "Lead Developer"},
+	{"Dark", "Mapper, Composer & SFX"},
 	{}, {"Bartkk", "API Development & Contributions"},
 	{"Michu", "Server hosting & Contributions"},
 	{""},

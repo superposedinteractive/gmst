@@ -103,7 +103,6 @@ GUIElements.chatbox.text.OnKeyCodeTyped = function(self, key)
 		self:SetText("")
 		GUIElements.chatbox.close()
 		gui.HideGameUI()
-		GMSTNotification("bala bala", {"JOIFJEWIOFJEWOJFOEWIJFOIEWFJ\nEOIJFOIJFIOJIO!!!!"}, "icon16/accept.png")
 	end
 
 	if key == KEY_ENTER then

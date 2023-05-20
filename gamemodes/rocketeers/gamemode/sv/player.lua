@@ -2,12 +2,15 @@
 util.AddNetworkString("rocketeers_death")
 
 hook.Add("PlayerSpawn", "rocketeers_spawn", function(ply)
-	timer.Simple(0.1, function()
-		ply:StripWeapons()
-		ply:Give("weapon_rpg")
-		ply:SetAmmo(3, "RPG_Round")
-		ply:SetHealth(200)
-	end)
+	if !IsGameInProgress() then
+		ply:SetTeam(1)
+	end
+
+	ply:StripWeapons()
+	ply:StripAmmo()
+	ply:Give("weapon_rpg")
+	ply:SetAmmo(3, "RPG_Round")
+	ply:SetHealth(200)
 end)
 
 function GM:PlayerCanPickupWeapon(ply, wep)

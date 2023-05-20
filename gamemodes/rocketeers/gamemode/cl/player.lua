@@ -1,5 +1,7 @@
 ﻿local gradient_h = Material("gmstation/ui/gradients/hoz.png", "smooth")
 local gradient_v = Material("gmstation/ui/gradients/vert.png", "smooth")
+local gradient_c = Material("gmstation/ui/gradients/center.png", "smooth")
+
 local cur_ammo = 3
 
 surface.CreateFont("countdown1", {
@@ -31,6 +33,32 @@ function GM:CreateMove(uc)
 			uc:SetButtons(bit.band(uc:GetButtons(), bit.bnot(IN_JUMP)))
 		end
 	end
+end
+
+function rk_notice(text)
+	surface.PlaySound("buttons/blip2.wav")
+
+	local notice = vgui.Create("DPanel")
+	notice:SetSize(ScrW(), 64)
+
+	local y = ScrH() / 1.5 - notice:GetTall() / 2
+
+	notice:SetPos(ScrW(), y)
+
+	notice.Paint = function(self, w, h)
+		surface.SetMaterial(gradient_c)
+		surface.SetDrawColor(0, 0, 0)
+		surface.DrawTexturedRect(0, 0, w, h)
+		draw.SimpleText(text, "Trebuchet32", w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	end
+
+	notice:MoveTo(ScrW() / 2 - notice:GetWide() / 2, y, 0.5, 0, 0.25, function()
+		timer.Simple(1, function()
+			notice:MoveTo(-ScrW(), y, 0.5, 0, 10.25, function()
+				notice:Remove()
+			end)
+		end)
+	end)
 end
 
 GUIElements.HUD = vgui.Create("DPanel")
@@ -160,14 +188,16 @@ net.Receive("rocketeers_damage", function()
 		hitnumber:SetPos(victim:GetPos():ToScreen().x - 64, victim:GetPos():ToScreen().y - 64)
 
 		hitnumber.Paint = function(self, w, h)
-			draw.SimpleText(dmg, "Trebuchet32Bold", w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+			draw.SimpleText(dmg, "Trebuchet16", w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		end
 
-		hitnumber:AlphaTo(0, 0.5, 0, function()
+		hitnumber:AlphaTo(0, 1, 0, function()
 			hitnumber:Remove()
 		end)
 
-		hitnumber:MoveTo(hitnumber:GetX(), hitnumber:GetY() - 64, 0.5, 0, 1)
+		hitnumber:MoveTo(hitnumber:GetX(), hitnumber:GetY() - 64, 0.5, 0, 0.5, function()
+			hitnumber:MoveTo(hitnumber:GetX(), hitnumber:GetY() + 32, 0.5, 0, 1.5)
+		end)
 	end
 end)
 
@@ -210,8 +240,8 @@ net.Receive("rocketeers_death", function()
 	end
 end)
 
-net.Receive("rocketeers_20sec", function()
--- timer.Simple(5, function()
+-- net.Receive("rocketeers_20sec", function()
+timer.Simple(5, function()
 	if CL_GLOBALS.currentSound then
 		CL_GLOBALS.currentSound:Stop()
 	end
@@ -258,3 +288,7 @@ net.Receive("rocketeers_20sec", function()
 end)
 
 timer.Remove("rocketeers_timer")
+
+timer.Simple(1, function()
+	rk_notice("deez nuts in yo mouth")
+end)
