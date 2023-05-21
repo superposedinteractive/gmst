@@ -1,4 +1,5 @@
-﻿util.AddNetworkString("gmstation_first_join")
+﻿util.AddNetworkString("gmstation_terms")
+util.AddNetworkString("gmstation_first_join")
 util.AddNetworkString("gmstation_first_join_done")
 
 local function apiPanic()
@@ -64,31 +65,22 @@ function apiCall(url, args, callback)
 end
 
 function GM:PlayerInitialSpawn(ply)
+	ply:Freeze(true)
+
 	apiCall("player_exists", {
 		steamid = ply:SteamID64()
 	}, function(body, len, headers, code)
 		if body["exists"] == false then
-			MsgN("[GMSTBase] Player " .. ply:Name() .. " is not registered, registering...")
-			net.Start("gmstation_first_join")
+			MsgN("[GMSTBase] Player " .. ply:Name() .. " has not accepted ToS yet, sending...")
+			net.Start("gmstation_terms")
 			net.Send(ply)
-			ply:Lock()
 
-			timer.Simple(1, function()
-				apiCall("player_register", {
-					steamid = ply:SteamID64(),
-					password = SV_GLOBALS.password
-				}, function(body, len, headers, code)
-					MsgN("[GMSTBase] Registered " .. ply:Name())
-					net.Start("gmstation_first_join_done")
-					net.WriteString(ply:SteamID64())
-					net.Send(ply)
-					ply:UnLock()
-				end)
-			end)
 		else
 			net.Start("gmstation_first_join_done")
-			net.WriteString(ply:SteamID64())
+				net.WriteString(ply:SteamID64())
 			net.Send(ply)
+
+			ply:Freeze(false)
 		end
 	end)
 
@@ -100,6 +92,27 @@ function GM:PlayerInitialSpawn(ply)
 
 	PlayerInit(ply)
 end
+
+net.Receive("gmstation_terms", function(_, ply)
+	MsgN("[GMSTBase] Player " .. ply:Name() .. " accepted ToS, registering...")
+
+	net.Start("gmstation_first_join")
+	net.Send(ply)
+	ply:Freeze(true)
+
+	timer.Simple(1, function()
+		apiCall("player_register", {
+			steamid = ply:SteamID64(),
+			password = SV_GLOBALS.password
+		}, function(body, len, headers, code)
+			MsgN("[GMSTBase] Registered " .. ply:Name())
+			net.Start("gmstation_first_join_done")
+				net.WriteString(ply:SteamID64())
+			net.Send(ply)
+			ply:Freeze(false)
+		end)
+	end)
+end)
 
 timer.Simple(5, function()
 	apiCall("hello", {}, function(body, len, headers, code)

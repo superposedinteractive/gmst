@@ -98,6 +98,10 @@ function GM:OnReloaded()
 end
 
 net.Receive("gmstation_first_join", function()
+	if IsValid(GUIElements.terms) then
+		GUIElements.terms:Remove()
+	end
+
 	if IsValid(GUIElements.registering) then
 		GUIElements.registering:Remove()
 	end
@@ -122,11 +126,48 @@ function FetchInfo()
 	end)
 end
 
+net.Receive("gmstation_terms", function()
+	GUIElements.terms = vgui.Create("DPanel")
+	GUIElements.terms:SetSize(ScrW(), ScrH())
+	GUIElements.terms:MakePopup()
+
+	GUIElements.terms.html = vgui.Create("DHTML", GUIElements.terms)
+	GUIElements.terms.html:SetSize(ScrW(), ScrH())
+	GUIElements.terms.html:OpenURL("https://superposed.xyz/gmstation/terms")
+
+	GUIElements.terms.accept = vgui.Create("DButton", GUIElements.terms)
+	GUIElements.terms.accept:SetSize(ScrW() / 4, 64)
+	GUIElements.terms.accept:SetX(ScrW() / 1.5 - GUIElements.terms.accept:GetWide() / 2)
+	GUIElements.terms.accept:SetY(ScrH() - 64 - 32)
+	GUIElements.terms.accept:SetText("I accept the terms and conditions")
+
+	GUIElements.terms.deny = vgui.Create("DButton", GUIElements.terms)
+	GUIElements.terms.deny:SetSize(ScrW() / 4, 64)
+	GUIElements.terms.deny:SetX(ScrW() / 4 - GUIElements.terms.deny:GetWide() / 2)
+	GUIElements.terms.deny:SetY(ScrH() - 64 - 32)
+	GUIElements.terms.deny:SetText("I do not accept the terms and conditions\n(Disconnect)")
+
+	GUIElements.terms.accept.DoClick = function()
+		net.Start("gmstation_terms")
+		net.SendToServer()
+		GUIElements.terms:Remove()
+	end
+
+	GUIElements.terms.deny.DoClick = function()
+		RunConsoleCommand("disconnect")
+	end
+end)
+
 net.Receive("gmstation_first_join_done", function()
 	CL_GLOBALS.steamid = net.ReadString() // LocalPlayer():SteamID64() sometimes player isn't ready yet
-	if GUIElements.registering != nil then
+	if IsValid(GUIElements.terms) then
+		GUIElements.terms:Remove()
+	end
+
+	if IsValid(GUIElements.registering) then
 		GUIElements.registering:Remove()
 	end
+
 	FetchInfo()
 end)
 
@@ -136,5 +177,3 @@ net.Receive("gmstation_update", function()
 end)
 
 SetupHUD()
-
-Derma_Message("Welcome to GMStation!\nThis is a very early version of the gamemode, so expect bugs and missing features.\nIf you find any bugs, please report them on the Discord (https://discord.gg/EnadGnaAGm).\n\nHave fun!", "GMStation", "Sounds neat.")

@@ -28,4 +28,9 @@ for k, v in ipairs(file.Find("gmstbase/gamemode/cl/*.lua", "LUA")) do
 	include("cl/" .. v)
 end
 
+function GM:ForceDermaSkin()
+	MsgN("Forcing GMStation skin...")
+	return "GMStation"
+end
+
 MsgN("[GMSTBase] Client Loaded!")
