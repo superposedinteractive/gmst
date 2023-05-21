@@ -94,6 +94,20 @@ function GM:PlayerInitialSpawn(ply)
 end
 
 net.Receive("gmstation_terms", function(_, ply)
+	// check if player is already registered
+	apiCall("player_exists", {
+		steamid = ply:SteamID64()
+	}, function(body, len, headers, code)
+		if body["exists"] == true then
+			MsgN("[GMSTBase] Player " .. ply:Name() .. " has already accepted ToS, skipping...")
+			net.Start("gmstation_first_join_done")
+				net.WriteString(ply:SteamID64())
+			net.Send(ply)
+			ply:Freeze(false)
+			return
+		end
+	end)
+
 	MsgN("[GMSTBase] Player " .. ply:Name() .. " accepted ToS, registering...")
 
 	net.Start("gmstation_first_join")

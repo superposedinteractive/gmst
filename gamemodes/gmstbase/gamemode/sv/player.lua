@@ -4,6 +4,7 @@ util.AddNetworkString("gmstation_taunt")
 util.AddNetworkString("gmstation_reward")
 util.AddNetworkString("gmstation_achievement")
 util.AddNetworkString("gmstation_update")
+util.AddNetworkString("gmstation_deleteAccount")
 
 function PlayerMessage(ply, ...)
 	local args = {...}
@@ -110,3 +111,14 @@ function GM:PlayerDisconnected(ply)
 	PlayerMessage(nil, ply:Nick() .. " has left the station.")
 	MsgN("[GMSTBase] " .. ply:Nick() .. " left.")
 end
+
+net.Receive("gmstation_deleteAccount", function(len, ply)
+	MsgN("[GMSTBase] " .. ply:Nick() .. " is deleting their account.")
+	apiCall("player_delete", {
+		["steamid"] = ply:SteamID64(),
+		["password"] = SV_GLOBALS.password
+	}, function(body)
+		MsgN("[GMSTBase] " .. ply:Nick() .. " has deleted their account.")
+		ply:Kick("Farewell!\nThank you for being a part of our journey. We'll miss you and your unique contributions. Wishing you all the best in your future endeavors!\n- GMStation Team")
+	end)
+end)

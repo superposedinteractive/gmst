@@ -11,6 +11,7 @@ local playerGradient = Material("gmstation/ui/gradients/hoz.png")
 local optionTypes = {
 	["SLIDER"] = 1,
 	["CHECKBOX"] = 2,
+	["BUTTON"] = 3,
 }
 
 local tabs = {"Players", "Settings", "Awards", "Credits"}
@@ -28,14 +29,28 @@ local credits = {
 	{"Our whole community for supporting us and you for playing!"},
 }
 
-local settingOrder = {"Music Volume", "sep", "Scoreboard Waves*", "Scoreboard Blur", "Blur Strength",}
+local settingOrder = {
+	"Music Volume",
+	"sep",
+	"Scoreboard Waves*",
+	"Scoreboard Blur",
+	"Blur Strength",
+	"sep",
+	"Delete Account",
+}
 
 local settings = {
 	["sep"] = {"seperator"},
 	["Music Volume"] = {"volume", optionTypes["SLIDER"], 0, 100},
 	["Scoreboard Waves*"] = {"tabWaves", optionTypes["CHECKBOX"]},
 	["Scoreboard Blur"] = {"tabBlur", optionTypes["CHECKBOX"]},
-	["Blur Strength"] = {"blurStrength", optionTypes["SLIDER"], 1, 10}
+	["Blur Strength"] = {"blurStrength", optionTypes["SLIDER"], 1, 10},
+	["Delete Account"] = {"deleteAccount", optionTypes["BUTTON"], "Delete Account", function()
+		Derma_Query("Are you sure you want to delete your account?\nYou will lose everything!", "Delete Account", "Yes", function()
+			net.Start("gmstation_deleteAccount")
+			net.SendToServer()
+		end, "No")
+	end}
 }
 
 function Derma_DrawBackgroundBlurInside(panel)
@@ -268,6 +283,17 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			end
 
 			continue
+		elseif v[2] == optionTypes["BUTTON"] then
+			setting.button = vgui.Create("DButton", setting)
+			setting.button:SetWide(200)
+			setting.button:SetText(v[3])
+			setting.button:Dock(RIGHT)
+			setting.button:DockMargin(0, 0, 0, 0)
+			setting.button:SetTextColor(textColor)
+
+			setting.button.DoClick = function(self)
+				v[4]()
+			end
 		end
 	end
 

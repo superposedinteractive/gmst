@@ -1,7 +1,30 @@
 ﻿// GMStation - General UI
 local hoz = Material("gmstation/ui/gradients/hoz.png", "noclamp smooth")
 
+function OpenTerms(closebutton)
+	GUIElements.terms = vgui.Create("DPanel")
+	GUIElements.terms:SetSize(ScrW(), ScrH())
+	GUIElements.terms:MakePopup()
+
+	GUIElements.terms.html = vgui.Create("DHTML", GUIElements.terms)
+	GUIElements.terms.html:Dock(FILL)
+	GUIElements.terms.html:OpenURL("https://superposed.xyz/gmstation/terms")
+
+	if closebutton then
+		GUIElements.terms.close = vgui.Create("DButton", GUIElements.terms)
+		GUIElements.terms.close:SetSize(100, 30)
+		GUIElements.terms.close:SetX(ScrW() - GUIElements.terms.close:GetWide() - 32)
+		GUIElements.terms.close:SetY(ScrH() - GUIElements.terms.close:GetTall() - 16)
+		GUIElements.terms.close:SetText("Close")
+		GUIElements.terms.close.DoClick = function()
+			GUIElements.terms:Remove()
+		end
+	end
+end
+
 function SetupHUD()
+	Derma_Message("Welcome to GMStation!\nThis is a very early version of the gamemode, so expect bugs and missing features.\nIf you find any bugs, please report them on the Discord (https://discord.gg/EnadGnaAGm).\n\nHave fun!", "GMStation", "Sounds neat.")
+
 	local money = 0
 
 	if IsValid(GUIElements.registering) then
@@ -93,6 +116,7 @@ end
 
 function GM:OnReloaded()
 	if CL_GLOBALS.steamid != nil then
+		SetupHUD()
 		FetchInfo()
 	end
 end
@@ -127,25 +151,19 @@ function FetchInfo()
 end
 
 net.Receive("gmstation_terms", function()
-	GUIElements.terms = vgui.Create("DPanel")
-	GUIElements.terms:SetSize(ScrW(), ScrH())
-	GUIElements.terms:MakePopup()
-
-	GUIElements.terms.html = vgui.Create("DHTML", GUIElements.terms)
-	GUIElements.terms.html:SetSize(ScrW(), ScrH())
-	GUIElements.terms.html:OpenURL("https://superposed.xyz/gmstation/terms")
+	OpenTerms()
 
 	GUIElements.terms.accept = vgui.Create("DButton", GUIElements.terms)
-	GUIElements.terms.accept:SetSize(ScrW() / 4, 64)
-	GUIElements.terms.accept:SetX(ScrW() / 1.5 - GUIElements.terms.accept:GetWide() / 2)
-	GUIElements.terms.accept:SetY(ScrH() - 64 - 32)
 	GUIElements.terms.accept:SetText("I accept the terms and conditions")
+	GUIElements.terms.accept:SetSize(255, 64)
+	GUIElements.terms.accept:SetX(ScrW() - GUIElements.terms.accept:GetWide() - 32)
+	GUIElements.terms.accept:SetY(ScrH() - 64 - 32)
 
 	GUIElements.terms.deny = vgui.Create("DButton", GUIElements.terms)
-	GUIElements.terms.deny:SetSize(ScrW() / 4, 64)
-	GUIElements.terms.deny:SetX(ScrW() / 4 - GUIElements.terms.deny:GetWide() / 2)
-	GUIElements.terms.deny:SetY(ScrH() - 64 - 32)
-	GUIElements.terms.deny:SetText("I do not accept the terms and conditions\n(Disconnect)")
+	GUIElements.terms.deny:SetText("I do not accept the terms and conditions")
+	GUIElements.terms.deny:SetSize(255, 64)
+	GUIElements.terms.deny:SetX(ScrW() - GUIElements.terms.deny:GetWide() - 32)
+	GUIElements.terms.deny:SetY(ScrH() - 64 - 32 - 64 - 16)
 
 	GUIElements.terms.accept.DoClick = function()
 		net.Start("gmstation_terms")
@@ -168,6 +186,7 @@ net.Receive("gmstation_first_join_done", function()
 		GUIElements.registering:Remove()
 	end
 
+	SetupHUD()
 	FetchInfo()
 end)
 
@@ -175,5 +194,3 @@ net.Receive("gmstation_update", function()
 	MsgN("[GMST] Update received, updating...")
 	FetchInfo()
 end)
-
-SetupHUD()
