@@ -207,9 +207,3 @@ SKIN.Colours.Category.LineAlt.Button_Selected = GWEN.TextureColor(4 + 8 * 25, 50
 SKIN.Colours.TooltipText = GWEN.TextureColor(4 + 8 * 26, 500)
 derma.DefineSkin("GMStation", "The GMStation skin.", SKIN)
 derma.RefreshSkins()
-
-hook.Add("InitPostEntity", "GMStation:LoadSkin", function()
-	function GM:ForceDermaSkin()
-		return "GMStation"
-	end
-end)
