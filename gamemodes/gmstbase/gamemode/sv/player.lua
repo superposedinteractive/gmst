@@ -16,11 +16,13 @@ function PlayerMessage(ply, ...)
 
 	if ply then
 		if IsValid(ply) && ply:IsPlayer() then
+			MsgN("[GMSTBase] Telling " .. ply:Nick() .. " \"" .. args[1] .. "\".")
 			net.Send(ply)
 		else
 			MsgN("[GMSTBase] Invalid player passed to PlayerMessage.")
 		end
 	else
+		MsgN("[GMSTBase] Broadcasting " .. args[1] .. ".")
 		net.Broadcast()
 	end
 end
@@ -78,6 +80,12 @@ function PlayerInit(ply)
 		net.Broadcast()
 		ply:MoneyAdd(reward)
 	end
+
+	function ply:FetchInfo()
+		apiCall("player_info", ply:SteamID64(), function(body)
+			return util.JSONToTable(body)
+		end)
+	end
 end
 
 function GM:GetFallDamage()
@@ -110,6 +118,14 @@ end
 function GM:PlayerDisconnected(ply)
 	PlayerMessage(nil, ply:Nick() .. " has left the station.")
 	MsgN("[GMSTBase] " .. ply:Nick() .. " left.")
+end
+
+function GM:PlayerAuthed(ply, steamid, uniqueid)
+	if ply:SteamID64() != ply:OwnerSteamID64() then
+		MsgN("[GMSTBase] " .. ply:Nick() .. " doesn't own Garry's Mod.")
+		ply:Kick("Sorry, but you need to own Garry's Mod to play on this server. Using a family shared copy is not allowed.")
+		return
+	end
 end
 
 net.Receive("gmstation_deleteAccount", function(len, ply)
