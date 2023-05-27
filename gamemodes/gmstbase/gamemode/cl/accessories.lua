@@ -31,5 +31,6 @@ timer.Create("GMSTBase_GetHats", 10, 0, function()
 		end
 
 		hats[v] = ClientsideModel(GMSTBase_GetItemInfo(v:GetNWString("hat"))["model"], RENDERGROUP_OPAQUE)
+		hats[v]:SetNoDraw(true)
 	end
 end)
