@@ -220,6 +220,14 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	local targetPreviewTarget = Vector(0, 0, 40)
 	local targetPreviewFov = 40
 
+	local hats = {}
+	// all items that type = hat
+	for k, v in pairs(items) do
+		if v.type == "hat" then
+			table.insert(hats, v)
+		end
+	end
+
 	GUIElements.tabs.drip.list.hats = vgui.Create("DLabel", GUIElements.tabs.drip.list)
 	GUIElements.tabs.drip.list.hats:SetFont("Trebuchet24Bold")
 	GUIElements.tabs.drip.list.hats:SetText("Hats")
