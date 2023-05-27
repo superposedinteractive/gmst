@@ -1,20 +1,5 @@
 ﻿include("shared.lua")
 
-local test_elements = {
-	{
-		["name"] = "Bench",
-		["desc"] = "A nice bench to sit on.",
-		["model"] = "models/props_c17/bench01a.mdl",
-		["price"] = 100
-	},
-	{
-		["name"] = "Table",
-		["desc"] = "A nice table to put things on.",
-		["model"] = "models/props_c17/furnituretable002a.mdl",
-		["price"] = 100
-	}
-}
-
 function ENT:Initialize()
 	self:SetModel("models/humans/group01/female_02.mdl")
 	self:SetSolid(SOLID_BBOX)
@@ -89,17 +74,25 @@ net.Receive("gmstation_store", function()
 		model:SetLookAt(Vector(0, 0, 0))
 		model:SetFOV(40)
 		model:SetAnimSpeed(20)
+
 		local buy = vgui.Create("DButton", item)
 		buy:Dock(BOTTOM)
 		buy:DockMargin(8, 8, 8, 8)
 		buy:SetWide(64)
 		buy:SetText(k.price .. "cc")
+		buy.DoClick = function()
+			net.Start("gmstation_store_buy")
+			net.WriteString(k.name)
+			net.SendToServer()
+		end
+
 		local name = vgui.Create("DLabel", item)
 		name:Dock(TOP)
 		name:DockMargin(16, 16, 0, 0)
 		name:SetText(k.name)
 		name:SetFont("Trebuchet32")
 		name:SetTall(32)
+
 		local desc = vgui.Create("DLabel", item)
 		desc:Dock(TOP)
 		desc:DockMargin(16, 2, 0, 0)
