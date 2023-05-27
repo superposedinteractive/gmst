@@ -395,6 +395,44 @@ function GMSTBase_Notification(title_text, text_text, icon_uri)
 	end)
 end
 
+function GMSTBase_HoverPanel(panel, hover_panel)
+	hover_panel:SetVisible(false)
+	panel.OnCursorEntered = function(self)
+		hover_panel:SetVisible(true)
+		hover_panel:MoveToFront()
+
+		hover_panel.Think = function(self)
+			local x, y = gui.MousePos()
+			self:SetPos(x + 16, y + 16)
+		end
+	end
+
+	panel.OnCursorExited = function(self)
+		hover_panel:SetVisible(false)
+		hover_panel.Think = function() end
+	end
+
+	panel.OnRemove = function(self)
+		hover_panel:Remove()
+	end
+end
+
+function GMSTBase_SimpleHover(panel, text)
+	local hover = vgui.Create("DPanel")
+
+	surface.SetFont("Trebuchet8")
+	local w, h = surface.GetTextSize(text)
+
+	hover:SetSize(w + 16, h + 16)
+	local label = vgui.Create("DLabel", hover)
+	label:SetFont("Trebuchet8")
+	label:SetText(text)
+	label:Dock(FILL)
+	label:SetContentAlignment(5)
+
+	GMSTBase_HoverPanel(panel, hover)
+end
+
 net.Receive("gmstation_reward", function()
 	timer.Stop("gmstation_payout_timer")
 	local rewards = net.ReadTable()

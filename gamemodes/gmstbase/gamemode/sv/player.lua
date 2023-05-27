@@ -43,12 +43,13 @@ function PlayerInit(ply)
 
 	function ply:UpdateInfo()
 		MsgN("[GMSTBase] updating " .. ply:Nick() .. " info.")
-		apiCall("player_info", {steamid = ply:SteamID64()}, function(body) 
+		apiCall("player_info", {steamid = ply:SteamID64()}, function(body)
 			for k, v in pairs(body) do
 				ply[k] = v
+				MsgN("[GMSTBase] " .. ply:Nick() .. " " .. k .. " = " .. v)
+				ply:SetNW2String(k, v)
 			end
 		end)
-		ply:SetNWString("hat", ply.hat)
 
 		MsgN("[GMSTBase] updated " .. ply:Nick() .. " info.")
 	end

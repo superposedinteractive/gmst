@@ -191,16 +191,93 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		playerPanel.name:DockMargin(0, 13, 0, 0)
 		playerPanel.location = vgui.Create("DLabel", playerPanel)
 		playerPanel.location:SetFont("Trebuchet16")
-		playerPanel.location:SetText(v:GetNWString("zone") || "Somewhere")
+		playerPanel.location:SetText(v:GetNW2String("zone") || "Somewhere")
 		playerPanel.location:SetTextColor(textColor2)
 		playerPanel.location:Dock(BOTTOM)
 		playerPanel.location:DockMargin(0, 0, 0, 10)
 
 		timer.Create("gmstation_scoreboard_" .. v:SteamID(), 0.5, 0, function()
 			if IsValid(playerPanel.location) then
-				playerPanel.location:SetText(v:GetNWString("zone") || "Somewhere")
+				playerPanel.location:SetText(v:GetNW2String("zone") || "Somewhere")
 			end
 		end)
+	end
+
+	GUIElements.tabs.drip = vgui.Create("DPanel", GUIElements.tabs)
+	GUIElements.tabs.drip:Dock(FILL)
+	GUIElements.tabs.drip:SetVisible(false)
+	GUIElements.tabs.drip:DockMargin(16, 16, 16, 16)
+
+	GUIElements.tabs.drip.Paint = function(self, w, h)
+		draw.SimpleText("Experimental feature!", "Trebuchet16Bold", w - 8, h - 4, textColor2, TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM)
+	end
+
+	GUIElements.tabs.drip.list = vgui.Create("DScrollPanel", GUIElements.tabs.drip)
+	GUIElements.tabs.drip.list:Dock(FILL)
+
+	local items = GMSTBase_GetItems()
+	local targetPreviewPos = Vector(50, 50, 50)
+	local targetPreviewTarget = Vector(0, 0, 40)
+	local targetPreviewFov = 40
+
+	GUIElements.tabs.drip.list.hats = vgui.Create("DLabel", GUIElements.tabs.drip.list)
+	GUIElements.tabs.drip.list.hats:SetFont("Trebuchet24Bold")
+	GUIElements.tabs.drip.list.hats:SetText("Hats")
+	GUIElements.tabs.drip.list.hats:SetTextColor(textColor)
+	GUIElements.tabs.drip.list.hats:SizeToContents()
+	GUIElements.tabs.drip.list.hats:Dock(TOP)
+
+	GUIElements.tabs.drip.list.hatsgrid = vgui.Create("DGrid", GUIElements.tabs.drip.list)
+	GUIElements.tabs.drip.list.hatsgrid:SetCols(6)
+	GUIElements.tabs.drip.list.hatsgrid:SetColWide(64)
+	GUIElements.tabs.drip.list.hatsgrid:SetRowHeight(64)
+	GUIElements.tabs.drip.list.hatsgrid:Dock(TOP)
+	GUIElements.tabs.drip.list.hatsgrid:SetContentAlignment(5)
+	GUIElements.tabs.drip.list.hatsgrid.OnCursorEntered = function(self)
+		targetPreviewPos = Vector(50, 50, 70)
+		targetPreviewTarget = Vector(0, 0, 70)
+		targetPreviewFov = 20
+	end
+
+	GUIElements.tabs.drip.list.pmtitle = vgui.Create("DLabel", GUIElements.tabs.drip.list)
+	GUIElements.tabs.drip.list.pmtitle:SetFont("Trebuchet24Bold")
+	GUIElements.tabs.drip.list.pmtitle:SetText("Playermodels")
+	GUIElements.tabs.drip.list.pmtitle:SetTextColor(textColor)
+	GUIElements.tabs.drip.list.pmtitle:SizeToContents()
+	GUIElements.tabs.drip.list.pmtitle:Dock(TOP)
+
+	GUIElements.tabs.drip.list.pmgrid = vgui.Create("DGrid", GUIElements.tabs.drip.list)
+	GUIElements.tabs.drip.list.pmgrid:SetCols(6)
+	GUIElements.tabs.drip.list.pmgrid:SetColWide(64)
+	GUIElements.tabs.drip.list.pmgrid:SetRowHeight(64)
+	GUIElements.tabs.drip.list.pmgrid:Dock(TOP)
+	GUIElements.tabs.drip.list.pmgrid.OnCursorEntered = function(self)
+		targetPreviewPos = Vector(50, 50, 50)
+		targetPreviewTarget = Vector(0, 0, 40)
+		targetPreviewFov = 40
+	end
+
+	for i = 1, #items do
+		local itemPanel = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.hatsgrid)
+		local item = GMSTBase_GetItemInfo(items[i])
+
+		itemPanel:SetModel(item.model)
+		itemPanel:SetTall(64)
+		itemPanel:SetTooltip(false)
+		GUIElements.tabs.drip.list.hatsgrid:AddItem(itemPanel)
+
+		GMSTBase_SimpleHover(itemPanel, item.description)
+	end
+
+	GUIElements.tabs.drip.preview = vgui.Create("DModelPanel", GUIElements.tabs.drip)
+	GUIElements.tabs.drip.preview:Dock(RIGHT)
+	GUIElements.tabs.drip.preview:SetWide(256)
+	GUIElements.tabs.drip.preview:SetModel(LocalPlayer():GetModel())
+	GUIElements.tabs.drip.preview.LayoutEntity = function(self, ent)
+		GUIElements.tabs.drip.preview:SetCamPos(LerpVector(FrameTime() * 10, GUIElements.tabs.drip.preview:GetCamPos(), targetPreviewPos))
+		GUIElements.tabs.drip.preview:SetFOV(Lerp(FrameTime() * 10, GUIElements.tabs.drip.preview:GetFOV(), targetPreviewFov))
+		GUIElements.tabs.drip.preview:SetLookAt(LerpVector(FrameTime() * 10, GUIElements.tabs.drip.preview:GetLookAt(), targetPreviewTarget))
+		ent:SetAngles(Angle(0, ent:GetAngles().y + FrameTime() * 50, 0))
 	end
 
 	GUIElements.tabs.settings = vgui.Create("DPanel", GUIElements.tabs)

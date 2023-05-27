@@ -11,7 +11,7 @@ timer.Simple(1, function()
 			local item = body[i]
 			items[item.item_id] = {
 				name = item.name,
-				desc = item.desc,
+				description = item.description,
 				type = item.type,
 				info = item.info,
 				unobtainable = item.unobtainable,
@@ -22,6 +22,16 @@ timer.Simple(1, function()
 		end
 	end)
 end)
+
+function GMSTBase_GetItems()
+	MsgN("[GMSTBase] Requested item list")
+	local ids = {}
+	for k, v in pairs(items) do
+		table.insert(ids, k)
+	end
+
+	return ids
+end
 
 function GMSTBase_GetItemInfo(id)
 	MsgN("[GMSTBase] Requested item info for " .. id)

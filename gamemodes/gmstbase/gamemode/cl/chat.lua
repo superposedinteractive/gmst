@@ -83,7 +83,7 @@ GUIElements.chatbox.box:SetContentAlignment(1)
 GUIElements.chatbox.box:SetWrap(true)
 
 GUIElements.chatbox.box.PerformLayout = function(self)
-	self:SetFontInternal("TrebuchetChat")
+	self:SetFontInternal("ChatFont")
 	self:SetFGColor(Color(255, 255, 255))
 	self:SetContentAlignment(1)
 

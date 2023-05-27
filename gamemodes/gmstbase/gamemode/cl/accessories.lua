@@ -1,4 +1,5 @@
 local hats = {}
+local hatids = {}
 
 function GM:PostPlayerDraw(ply)
 	if (!IsValid(ply)) then return end
@@ -21,16 +22,20 @@ function GM:PostPlayerDraw(ply)
 	hat:DrawModel()
 end
 
-timer.Create("GMSTBase_GetHats", 10, 0, function()
+timer.Create("GMSTBase_GetHats", 3, 0, function()
 	for k, v in pairs(player.GetAll()) do
 		if (!IsValid(v)) then continue end
-		if (v:GetNWString("hat") == "") then continue end
+		if (v:GetNW2String("hat") == "") then continue end
 
-		if(IsValid(hats[v])) then
-			hats[v]:Remove()
+		if(v:GetNW2String("hat") != hatids[v]) then
+			MsgN("[GMSTBase] Updating hat for " .. v:Nick())
+			if(IsValid(hats[v])) then
+				hats[v]:Remove()
+			end
+
+			hatids[v] = v:GetNW2String("hat")
+			hats[v] = ClientsideModel(GMSTBase_GetItemInfo(v:GetNW2String("hat"))["model"] || "error", RENDERGROUP_OPAQUE)
+			hats[v]:SetNoDraw(true)
 		end
-
-		hats[v] = ClientsideModel(GMSTBase_GetItemInfo(v:GetNWString("hat"))["model"], RENDERGROUP_OPAQUE)
-		hats[v]:SetNoDraw(true)
 	end
 end)

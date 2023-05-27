@@ -56,7 +56,7 @@
 
 	text = string.Implode(" ", words)
 	net.Start("gmstation_chat")
-	net.WriteString(ply:GetNWString("zone") || "Somewhere")
+	net.WriteString(ply:GetNW2String("zone") || "Somewhere")
 	net.WriteEntity(ply)
 
 	net.WriteTable({text})
