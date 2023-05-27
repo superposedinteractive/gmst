@@ -41,8 +41,24 @@ function PlayerInit(ply)
 	MsgN("[GMSTBase] " .. ply:Nick() .. " joined.")
 	PlayerMessage(nil, ply:Nick() .. " has entered the station.")
 
+	function ply:UpdateInfo()
+		MsgN("[GMSTBase] updating " .. ply:Nick() .. " info.")
+		apiCall("player_info", {steamid = ply:SteamID64()}, function(body) 
+			for k, v in pairs(body) do
+				ply[k] = v
+			end
+		end)
+		ply:SetNWString("hat", ply.hat)
+
+		MsgN("[GMSTBase] updated " .. ply:Nick() .. " info.")
+	end
+
 	function ply:GetMoney()
-		apiCall("player_info", ply:SteamID64(), function(body) return body["money"] end)
+		return ply.money
+	end
+
+	function ply:CanAfford(amount)
+		return ply:GetMoney() >= amount
 	end
 
 	function ply:Payout(rewards)
@@ -82,10 +98,17 @@ function PlayerInit(ply)
 	end
 
 	function ply:FetchInfo()
-		apiCall("player_info", ply:SteamID64(), function(body)
-			return util.JSONToTable(body)
-		end)
+		local info = {}
+		for k, v in pairs(ply) do
+			if type(v) != "function" then
+				info[k] = v
+			end
+		end
 	end
+
+	timer.Simple(1, function()
+		ply:UpdateInfo()
+	end)
 end
 
 function GM:GetFallDamage()

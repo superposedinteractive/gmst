@@ -1,7 +1,7 @@
 ﻿local CATEGORY_NAME = "GMStation"
 
 function ulx.restart(calling_ply, time)
-	GMSTRestartMap(time)
+	GMSTBase_RestartMap(time)
 end
 
 local restart = ulx.command(CATEGORY_NAME, "ulx restartmap", ulx.restart, "!restartmap")

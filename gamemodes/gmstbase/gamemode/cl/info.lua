@@ -8,8 +8,10 @@
 function apiCall(url, args, callback)
 	local get = ""
 
-	for k, v in pairs(args) do
-		get = get .. k .. "=" .. v .. "&"
+	if args then
+		for k, v in pairs(args) do
+			get = get .. k .. "=" .. v .. "&"
+		end
 	end
 
 	get = string.sub(get, 1, string.len(get) - 1)

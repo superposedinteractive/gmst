@@ -12,7 +12,6 @@ local hudExceptions = {
 GUIElements.notifications = vgui.Create("DPanel")
 GUIElements.notifications:SetSize(ScrW(), ScrH())
 GUIElements.notifications.Paint = function() end
-
 GUIElements.notifications.list = {}
 
 function GM:HUDDrawTargetID()
@@ -200,7 +199,7 @@ local function createFonts()
 
 	surface.CreateFont("TrebuchetChat", {
 		font = "Trebuchet MS",
-		size = 18,
+		size = 20,
 		weight = 1000,
 		antialias = false,
 		shadow = true
@@ -363,7 +362,7 @@ function GMSTBase_Notification(title_text, text_text, icon_uri)
 	title:SetText(title_text)
 	title:SizeToContents()
 	title:Dock(TOP)
-	title:DockMargin(0, 8, 0, 0)
+	title:DockMargin(8, 8, 0, 0)
 
 	if !icon then
 		title:DockMargin(8, 8, 8, 0)
@@ -371,6 +370,7 @@ function GMSTBase_Notification(title_text, text_text, icon_uri)
 
 	local text = vgui.Create("RichText", notif)
 	text:Dock(FILL)
+	text:DockMargin(8, 8, 8, 8)
 	text:SetVerticalScrollbarEnabled(false)
 	text.PerformLayout = function(self)
 		self:SetFontInternal("Trebuchet8")
@@ -484,19 +484,21 @@ net.Receive("gmstation_reward", function()
 end)
 
 net.Receive("gmstation_map_restart", function()
+	surface.PlaySound("ui/hitsound_beepo.wav")
+
 	local time = net.ReadFloat()
 
 	if IsValid(GUIElements.restarting) then
 		GUIElements.restarting:Remove()
 	end
 
-	timer.Create("gmstation_map_restart", time, 1, function() end)
+	timer.Create("gmstation_map_restart", time, 1, function() surface.PlaySound("ui/hitsound.wav") end)
 	GUIElements.restarting = vgui.Create("DPanel")
 	GUIElements.restarting:SetSize(300, 100)
 	GUIElements.restarting:SetPos(ScrW() / 2 - GUIElements.restarting:GetWide() / 2, ScrH() / 2 - GUIElements.restarting:GetTall() / 2 + 32)
 
 	GUIElements.restarting.Paint = function(self, w, h)
-		local time = string.ToMinutesSeconds(timer.TimeLeft("gmstation_map_restart"))
+		local time = string.ToMinutesSeconds(timer.TimeLeft("gmstation_map_restart") || 0)
 		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w / 2 + 1, h / 2 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		draw.SimpleText("MAP RESTART", "Trebuchet16Bold", w / 2, h / 2, Color(math.sin(CurTime() * 8) * 64 + 192, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		draw.SimpleText(time, "Trebuchet8", w / 2 + 1, h / 2 + 20 + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -529,7 +531,7 @@ hook.Add("Think", "gmstation_timeout_think", function()
 					CL_GLOBALS.currentSound:ChangeVolume(0.01, 0)
 				end
 
-				timeout_music:PlayEx(1, CL_GLOBALS.volume * 100)
+				timeout_music:PlayEx(CL_GLOBALS.volume * 100, 100)
 
 				gui.EnableScreenClicker(true)
 			end
@@ -538,14 +540,14 @@ hook.Add("Think", "gmstation_timeout_think", function()
 				if IsValid(GUIElements.timeout.label) then return end
 
 				GUIElements.timeout.label = vgui.Create("DLabel", GUIElements.timeout)
-				label:SetY(ScrH() / 1.55)
-				label:SetSize(ScrW(), 64)
-				label:CenterHorizontal()
-				label:SetContentAlignment(5)
-				label:SetFont("Trebuchet16")
-				label:SetText("You've been timing out for quite a while now.\nYou can try to reconnect and see if you will be able to play again.")
+				GUIElements.timeout.label:SetY(ScrH() / 1.55)
+				GUIElements.timeout.label:SetSize(ScrW(), 64)
+				GUIElements.timeout.label:CenterHorizontal()
+				GUIElements.timeout.label:SetFont("Trebuchet16")
+				GUIElements.timeout.label:SetText("You've been timing out for quite a while now.\nYou can try to reconnect and see if you will be able to play again.")
+				GUIElements.timeout.label:SetContentAlignment(5)
 
-				GUIElements.timeout.reconnect = vgui.Create("DButton", GUIElements.timeout)
+				local reconnect = vgui.Create("DButton", GUIElements.timeout)
 				reconnect:SetSize(ScrW() / 1.5, 64)
 				reconnect:SetPos(ScrW() / 2 - reconnect:GetWide() / 2, ScrH() / 1.5 + 64)
 				reconnect:SetText("Reconnect")
@@ -556,7 +558,7 @@ hook.Add("Think", "gmstation_timeout_think", function()
 			end
 		else
 			if IsValid(GUIElements.timeout) then
-				GMSTNotification("Welcome back!", {"You've been reconnected to the server."})
+				GMSTBase_Notification("Welcome back!", {"You've been reconnected to the server."})
 
 				GUIElements.timeout:Remove()
 				timeout_music:Stop()

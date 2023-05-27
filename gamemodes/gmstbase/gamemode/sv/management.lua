@@ -6,7 +6,7 @@ function GMSTBase_RestartMap(time)
 	net.WriteFloat(time)
 	net.Broadcast()
 
-	timer.Create("gmstation_map_restart", time, 1, function()
+	timer.Create("gmstation_map_restart", time + 2, 1, function()
 		RunConsoleCommand("changelevel", game.GetMap())
 	end)
 end

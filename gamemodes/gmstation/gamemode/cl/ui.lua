@@ -146,6 +146,7 @@ function FetchInfo()
 		steamid = CL_GLOBALS.steamid
 	}, function(body, len, headers, code)
 		MsgN("[GMST] Info received, updated global variables")
+		GMSTBase_Notification("Welcome", {"Your profile has been loaded."})
 		CL_GLOBALS.money = body["money"] || "ERROR"
 	end)
 end

@@ -33,6 +33,8 @@ local function regPlayer(ply)
 			net.Start("gmstation_first_join_done")
 				net.WriteString(ply:SteamID64())
 			net.Send(ply)
+
+			PlayerInit(ply)
 			ply:Freeze(false)
 		end)
 	end)
@@ -54,18 +56,6 @@ function apiCall(url, args, callback)
 
 		if body["error"] != nil then
 			MsgN("[GMSTBase] API Error!")
-
-			for i = 1, 6000 do
-				timer.Simple(i / 60, function()
-					local str = "DUMP"
-
-					for i = 1, math.random(1, 100) do
-						str = str .. string.char(math.random(32, 126))
-					end
-
-					PlayerMessage(nil, Color(255, 0, 0), str)
-				end)
-			end
 
 			timer.Simple(240, function()
 				apiPanic()
@@ -100,7 +90,6 @@ function GM:PlayerInitialSpawn(ply)
 				net.Send(ply)
 			else
 				MsgN("[GMSTBase] Player " .. ply:Name() .. " is a bot, skipping ToS...")
-				
 				regPlayer(ply)
 			end
 		else
@@ -108,6 +97,7 @@ function GM:PlayerInitialSpawn(ply)
 				net.WriteString(ply:SteamID64())
 			net.Send(ply)
 
+			PlayerInit(ply)
 			ply:Freeze(false)
 		end
 	end)
@@ -118,8 +108,6 @@ function GM:PlayerInitialSpawn(ply)
 		net.WriteFloat(timer.TimeLeft("gmstation_map_restart"))
 		net.Send(ply)
 	end
-
-	PlayerInit(ply)
 end
 
 net.Receive("gmstation_terms", function(_, ply)

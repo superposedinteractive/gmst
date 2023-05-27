@@ -27,14 +27,15 @@ local Sounds = {
 
 local LoadedSounds = {}
 
-net.Receive("gmstation_zone", function()
-	local zone = net.ReadString()
-	if zone == CL_GLOBALS.zone then return end
-	CL_GLOBALS.zone = zone
+function GMST_Zone(name)
+	if name == CL_GLOBALS.zone then return end
+	CL_GLOBALS.zone = name
 
-	if Sounds[zone] then
-		local snd = Sounds[zone]
+	if Sounds[name] then
+		local snd = Sounds[name]
 		local loop = snd["Loop"] || false
+
+		MsgN("[GMST] Playing sound for zone " .. name .. ", " .. tostring(snd["Sounds"][1]))
 
 		if IsValid(LocalPlayer()) then
 			PlaySound(snd, loop)
@@ -44,10 +45,16 @@ net.Receive("gmstation_zone", function()
 			end)
 		end
 	else
-		if CL_GLOBALS.currentSound != nil && zone != CL_GLOBALS.zone then
+		MsgN("[GMST] No sound for zone " .. name .. "!")
+		if CL_GLOBALS.currentSound != nil && name != CL_GLOBALS.zone then
 			CL_GLOBALS.currentSound:FadeOut(3)
 		end
 	end
+end
+
+net.Receive("gmstation_zone", function()
+	local zone = net.ReadString()
+	GMST_Zone(zone)
 end)
 
 function PlaySound(snd, loop)
@@ -87,3 +94,14 @@ function PlaySound(snd, loop)
 		end)
 	end
 end
+
+concommand.Add("gmst_zone", function(ply, cmd, args)
+	local zone = args[1]
+	if zone == nil then 
+		MsgN("[GMST] No zone specified")
+		return
+	end
+
+	MsgN("[GMST] Changing zone to " .. zone)
+	GMST_Zone(zone)
+end, nil, "Change the zone")
