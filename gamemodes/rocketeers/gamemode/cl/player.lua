@@ -240,8 +240,8 @@ net.Receive("rocketeers_death", function()
 	end
 end)
 
--- net.Receive("rocketeers_20sec", function()
-timer.Simple(5, function()
+net.Receive("rocketeers_20sec", function()
+-- timer.Simple(5, function()
 	if CL_GLOBALS.currentSound then
 		CL_GLOBALS.currentSound:Stop()
 	end

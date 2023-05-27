@@ -84,7 +84,7 @@ function apiCall(url, args, callback)
 end
 
 function GM:PlayerInitialSpawn(ply)
-	if IsValid(GMSTInitialSpawn) then
+	if GMSTInitialSpawn then
 		GMSTInitialSpawn(ply)
 	end
 	

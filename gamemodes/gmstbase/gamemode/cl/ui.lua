@@ -329,7 +329,7 @@ if css:IsError() || tf2:IsError() then
 	end
 end
 
-function GMSTNotification(title_text, text_text, icon_uri)
+function GMSTBase_Notification(title_text, text_text, icon_uri)
 	local notif = vgui.Create("DPanel", GUIElements.notifications)
 	local y = 0
 
@@ -567,6 +567,8 @@ hook.Add("Think", "gmstation_timeout_think", function()
 				end
 
 				gui.EnableScreenClicker(false)
+
+				GMSTBase_RequestNetVars()
 			end
 		end
 
