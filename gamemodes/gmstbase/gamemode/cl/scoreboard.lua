@@ -14,7 +14,7 @@ local optionTypes = {
 	["BUTTON"] = 3,
 }
 
-local tabs = {"Players", "Settings", "Awards", "Credits"}
+local tabs = {"Players", "Drip", "Settings", "Awards", "Credits"}
 
 local credits = {
 	{"fgor", "Designer, Lead \"Scream at his team\" guy"},
