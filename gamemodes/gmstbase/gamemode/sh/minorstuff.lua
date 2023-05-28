@@ -1,4 +1,8 @@
-﻿local items = {}
+﻿-- local hatOffsets = {
+-- 	["css_urban"] = 0
+-- }
+
+local items = {}
 game.AddParticles("particles/achievement.pcf")
 PrecacheParticleSystem("achieved")
 MsgN("[GMSTBase] Loading item definitions...")
@@ -22,6 +26,7 @@ timer.Simple(1, function()
 		end
 
 		if CLIENT then
+			UpdatePMs()
 			UpdateHats()
 		end
 	end)

@@ -198,6 +198,8 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		end)
 	end
 
+	local hatmodel = LocalPlayer():GetNW2String("hat", "")
+
 	GUIElements.tabs.drip = vgui.Create("DPanel", GUIElements.tabs)
 	GUIElements.tabs.drip:Dock(FILL)
 	GUIElements.tabs.drip:SetVisible(false)
@@ -245,8 +247,12 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs.drip.list.pmgrid:SetRowHeight(64)
 	GUIElements.tabs.drip.list.pmgrid:Dock(TOP)
 	local model = GMSTBase_GetItemInfo(LocalPlayer():GetNW2String("hat", "none")).model
+	local pm = player_manager.TranslateToPlayerModelName(LocalPlayer():GetModel())
 	local hat = ClientsideModel(model, RENDERGROUP_OPAQUE)
 	hat:SetNoDraw(true)
+	hat:SetModelScale(hatoffsets[pm].s, 0)
+	hat:SetupBones()
+	
 	local nohat = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.hatsgrid)
 	nohat:SetModel("models/props_c17/streetsign004e.mdl")
 	nohat:SetTall(64)
@@ -257,7 +263,12 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		net.Start("gmstation_hatchange")
 		net.WriteString("")
 		net.SendToServer()
-		hat:SetModel("")
+		hat:SetModel("error.mdl")
+		hat:SetModelScale(hatoffsets[pm].s, 0)
+		hat:SetupBones()
+
+		hatmodel = ""
+
 		targetPreviewPos = Vector(50, 50, 50)
 		targetPreviewTarget = Vector(0, 0, 40)
 		targetPreviewFov = 40
@@ -277,6 +288,11 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			net.WriteString(items[i])
 			net.SendToServer()
 			hat:SetModel(item.model)
+			hat:SetModelScale(hatoffsets[pm].s, 0)
+			hat:SetupBones()
+
+			hatmodel = item.model
+
 			targetPreviewPos = Vector(50, 50, 70)
 			targetPreviewTarget = Vector(0, 0, 70)
 			targetPreviewFov = 20
@@ -328,21 +344,23 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	end
 
 	GUIElements.tabs.drip.preview.PostDrawModel = function(self, ent)
-		hat:SetModel(LocalPlayer():GetNW2String("hat", ""))
+		if hatmodel == "" then return end
+
 		local bone = ent:LookupBone("ValveBiped.Bip01_Head1")
 		if !bone then return end
+
 		local pos, ang = ent:GetBonePosition(bone)
 		if !pos then return end
-		hat:SetPos(pos + ang:Forward() * 2)
-		ang:RotateAroundAxis(ang:Up(), 90)
-		ang:RotateAroundAxis(ang:Forward(), 90)
-		hat:SetAngles(ang)
-		hat:SetModelScale(1.2, 0)
-		hat:SetupBones()
 
-		if LocalPlayer():GetNW2String("hat", "") != "" then
-			hat:DrawModel()
-		end
+		ang:RotateAroundAxis(ang:Forward(), 90)
+		ang:RotateAroundAxis(ang:Right(), -90)
+
+		hat:SetPos(pos + ang:Forward() * 0.5 + ang:Up() * 0.5)
+		hat:SetPos(hat:GetPos() + ang:Forward() * -hatoffsets[pm].x + ang:Up() * hatoffsets[pm].y)
+
+		hat:SetAngles(ang)
+
+		hat:DrawModel()
 	end
 
 	GUIElements.tabs.settings = vgui.Create("DPanel", GUIElements.tabs)

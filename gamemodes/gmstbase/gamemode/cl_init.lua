@@ -6,7 +6,6 @@ end
 
 CL_GLOBALS.url = "https://superposed.xyz/gmstation"
 CL_GLOBALS.money = 0
-
 if !oldChat then
 	MsgN("[GMSTBase] Overriding chat.AddText")
 	oldChat = chat.AddText

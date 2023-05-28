@@ -6,6 +6,7 @@ util.AddNetworkString("gmstation_achievement")
 util.AddNetworkString("gmstation_update")
 util.AddNetworkString("gmstation_deleteAccount")
 util.AddNetworkString("gmstation_hatchange")
+util.AddNetworkString("gmstation_pmchange")
 
 function PlayerMessage(ply, ...)
 	local args = {...}

@@ -1,19 +1,30 @@
 ﻿local hats = {}
+hatoffsets = {
+	css_urban = {x = 1, y = 1, s = 1.2},
+	alyx = {x = -0.25, y = -1.25, s = 1},
+}
 
 function GM:PostPlayerDraw(ply)
-	if !IsValid(ply) then return end
 	local hat = hats[ply]
+	if !IsValid(ply) then return end
 	if !IsValid(hat) then return end
+
 	local bone = ply:LookupBone("ValveBiped.Bip01_Head1")
 	if !bone then return end
+
 	local pos, ang = ply:GetBonePosition(bone)
 	if !pos then return end
-	hat:SetPos(pos + ang:Forward() * 2)
+
+	local pm = player_manager.TranslateToPlayerModelName(ply:GetModel())
+
+	ang:RotateAroundAxis(ang:Forward(), 90)
 	ang:RotateAroundAxis(ang:Right(), -90)
-	ang:RotateAroundAxis(ang:Up(), 90)
+
+	hat:SetModelScale(hatoffsets[pm].s, 0)
+	hat:SetPos(pos + ang:Forward() * 0.5 + ang:Up() * 0.5)
+	hat:SetPos(hat:GetPos() + ang:Forward() * -hatoffsets[pm].x + ang:Up() * hatoffsets[pm].y)
 	hat:SetAngles(ang)
-	hat:SetModelScale(1.2, 0)
-	hat:SetupBones()
+
 	hat:DrawModel()
 end
 
@@ -25,9 +36,10 @@ net.Receive("gmstation_hatchange", function()
 		ply:EmitSound("replay/rendercomplete.wav", 50, 100, 1, CHAN_AUTO)
 	end
 
+	if !IsValid(ply) then return end
 	MsgN("[GMSTBase] Updating hat for " .. ply:Nick() .. " to " .. hat)
 	local model = GMSTBase_GetItemInfo(hat).model
-	if !IsValid(ply) then return end
+	local pm = player_manager.TranslateToPlayerModelName(ply:GetModel())
 
 	if hat == "" then
 		if IsValid(hats[ply]) then
@@ -37,28 +49,31 @@ net.Receive("gmstation_hatchange", function()
 	else
 		if !IsValid(hats[ply]) then
 			hats[ply] = ClientsideModel(model, RENDERGROUP_OPAQUE)
-			hats[ply]:SetNoDraw(true)
 		else
 			hats[ply]:SetModel(model)
 		end
+		hats[ply]:SetNoDraw(true)
+	
+		hats[ply]:SetModelScale(hatoffsets[pm].s, 0)
+		hats[ply]:SetupBones()
 	end
 end)
 
 function UpdateHats()
 	MsgN("[GMSTBase] Updating hats...")
-	local model = GMSTBase_GetItemInfo(LocalPlayer():GetNW2String("hat", "")).model
-	MsgN("[GMSTBase] Hat model: " .. model)
 
 	for _, ply in pairs(player.GetAll()) do
 		local hat = ply:GetNW2String("hat", "")
 		if hat == "" then continue end
 		local model = GMSTBase_GetItemInfo(hat).model
+		local pm = player_manager.TranslateToPlayerModelName(ply:GetModel())
 
 		if !IsValid(hats[ply]) then
 			hats[ply] = ClientsideModel(model, RENDERGROUP_OPAQUE)
-			hats[ply]:SetNoDraw(true)
 		else
 			hats[ply]:SetModel(model)
 		end
+		hats[ply]:SetNoDraw(true)
+		hats[ply]:SetupBones()
 	end
 end
