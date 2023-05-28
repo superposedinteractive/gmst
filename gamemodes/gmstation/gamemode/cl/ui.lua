@@ -23,6 +23,8 @@ function OpenTerms(closebutton)
 end
 
 function SetupHUD()
+	GMSTBase_Notification("Welcome", {"Your profile has been loaded."})
+
 	Derma_Message("Welcome to GMStation!\nThis is a very early version of the gamemode, so expect bugs and missing features.\nIf you find any bugs, please report them on the Discord (https://discord.gg/EnadGnaAGm).\n\nHave fun!", "GMStation", "Sounds neat.")
 	local money = 0
 
@@ -49,7 +51,7 @@ function SetupHUD()
 		surface.SetMaterial(hoz)
 		surface.DrawTexturedRect(0, 0, 300, h)
 		draw.SimpleText(CL_GLOBALS.zone || "Somewhere", "Trebuchet24Bold", 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText(money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(string.Comma(money) .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 end
 
@@ -112,6 +114,7 @@ function displaySpeech(icon, text, name)
 end
 
 function GM:OnReloaded()
+	GMSTBase_RetreiveItems()
 	if CL_GLOBALS.steamid != nil then
 		SetupHUD()
 		FetchInfo()
@@ -144,8 +147,6 @@ function FetchInfo()
 		steamid = CL_GLOBALS.steamid
 	}, function(body, len, headers, code)
 		MsgN("[GMST] Info received, updated global variables")
-
-		GMSTBase_Notification("Welcome", {"Your profile has been loaded."})
 
 		CL_GLOBALS.money = body["money"] || "ERROR"
 	end)

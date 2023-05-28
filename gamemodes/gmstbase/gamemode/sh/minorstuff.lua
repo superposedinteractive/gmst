@@ -5,9 +5,13 @@
 local items = {}
 game.AddParticles("particles/achievement.pcf")
 PrecacheParticleSystem("achieved")
-MsgN("[GMSTBase] Loading item definitions...")
 
-timer.Simple(1, function()
+hook.Add("PlayerConnect", "GMSTBase_LoadItems", function()
+	GMSTBase_RetreiveItems()
+end)
+
+function GMSTBase_RetreiveItems()
+	MsgN("[GMSTBase] Loading item definitions...")
 	apiCall("item_list", {}, function(body)
 		for i = 1, #body do
 			local item = body[i]
@@ -26,11 +30,16 @@ timer.Simple(1, function()
 		end
 
 		if CLIENT then
-			UpdatePMs()
 			UpdateHats()
 		end
 	end)
-end)
+end
+
+if CLIENT then
+	hook.Add("InitPostEntity", "GMSTBase_LoadItems", function()
+		GMSTBase_RetreiveItems()
+	end)
+end
 
 function GMSTBase_GetItems()
 	MsgN("[GMSTBase] Requested item list")
@@ -66,3 +75,7 @@ end
 concommand.Add("gmst_itemdump", function()
 	PrintTable(items)
 end, nil, "Dumps all item definitions to console", FCVAR_CHEAT)
+
+concommand.Add("gmst_refreshitems", function()
+	GMSTBase_RetreiveItems()
+end, nil, "Refreshes the item definitions")

@@ -152,6 +152,12 @@ end
 function GM:PlayerDisconnected(ply)
 	PlayerMessage(nil, ply:Nick() .. " has left the station.")
 	MsgN("[GMSTBase] " .. ply:Nick() .. " left.")
+	apiCall("player_leave", {
+		["steamid"] = ply:SteamID64(),
+		["password"] = SV_GLOBALS.password
+	}, function(body)
+		MsgN("[GMSTBase] Updated last seen.")
+	end)
 end
 
 function GM:PlayerAuthed(ply, steamid, uniqueid)
@@ -205,4 +211,12 @@ net.Receive("gmstation_hatchange", function(len, ply)
 			MsgN("[GMSTBase] " .. ply:Nick() .. " failed to change their hat to " .. hat .. ".")
 		end
 	end)
+end)
+
+
+net.Receive("gmstation_pmchange", function(len, ply)
+	local model = net.ReadString()
+
+	ply:SetModel(model)
+	ply:SetupHands()	
 end)

@@ -307,28 +307,83 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		fancyhoverlabel:SetTextColor(textColor)
 		fancyhoverlabel:SizeToContents()
 		fancyhoverlabel:Dock(TOP)
-		fancyhoverlabel:DockMargin(16, 8, 8, 0)
+		fancyhoverlabel:DockMargin(12, 2, 8, 0)
 		local fancyhoverdesc = vgui.Create("DLabel", fancyhover)
 		fancyhoverdesc:SetFont("Trebuchet8")
 		fancyhoverdesc:SetText(item.description)
-		fancyhoverdesc:SizeToContents()
 		fancyhoverdesc:Dock(TOP)
-		fancyhoverdesc:DockMargin(16, 0, 8, 4)
+		fancyhoverdesc:SetWrap(true)
+		fancyhoverdesc:SetAutoStretchVertical(true)
+		fancyhoverdesc:DockMargin(8, 0, 8, 4)
 		local fancyhoverprice = vgui.Create("DLabel", fancyhover)
 		fancyhoverprice:SetFont("Trebuchet8")
 		fancyhoverprice:SetText("Price: " .. item.price .. "cc")
 		fancyhoverprice:SizeToContents()
-		fancyhoverprice:Dock(BOTTOM)
-		fancyhoverprice:DockMargin(8, 8, 8, 8)
-		fancyhoverprice:SetContentAlignment(6)
+		fancyhoverprice:SetContentAlignment(9)
+		fancyhoverprice:SetPos(0, 14)
+		fancyhoverprice:SetWide(fancyhover:GetWide() - 16)
+
+		local tagsh = 0
 
 		if item.unobtainable then
-			local fancyhoverunobtainable = GMSTBase_tag(fancyhover, Color(255, 50, 0), "Unobtainable")
+			local fancyhoverunobtainable = GMSTBase_tag(fancyhover, Color(50, 0, 190), "Event Item")
 			fancyhoverunobtainable:Dock(TOP)
-			fancyhoverunobtainable:DockMargin(8, 0, 8, 0)
+			fancyhoverunobtainable:DockMargin(8, 0, 8, 2)
+			tagsh = tagsh + fancyhoverunobtainable:GetTall()
 		end
 
+		if !item.tradeable then
+			local fancyhoveruntradeable = GMSTBase_tag(fancyhover, Color(255, 0, 0), "Untradeable")
+			fancyhoveruntradeable:Dock(TOP)
+			fancyhoveruntradeable:DockMargin(8, 0, 8, 2)
+			tagsh = tagsh + fancyhoveruntradeable:GetTall()
+		end
+
+		if !item.vip then
+			local fancyhovervip = GMSTBase_tag(fancyhover, Color(255, 0, 255), "VIP")
+			fancyhovervip:Dock(TOP)
+			fancyhovervip:DockMargin(8, 0, 8, 0)
+			tagsh = tagsh + fancyhovervip:GetTall()
+		end
+
+		surface.SetFont("Trebuchet8")
+		local w, h = surface.GetTextSize(item.description)
+		h = h * math.ceil(w / (fancyhover:GetWide() - 16))
+
+
+		fancyhover:SetTall(fancyhoverlabel:GetTall() + fancyhoverprice:GetTall() + h + tagsh)
+
 		GMSTBase_HoverPanel(itemPanel, fancyhover)
+	end
+
+	local pms = player_manager.AllValidModels()
+
+	for name, model in pairs(pms) do
+		local itemPanel = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.pmgrid)
+		itemPanel:SetModel(model)
+		itemPanel:SetTooltip(false)
+
+		itemPanel.DoClick = function()
+			net.Start("gmstation_pmchange")
+				net.WriteString(model)
+			net.SendToServer()
+
+			GUIElements.tabs.drip.preview:SetModel(model)
+			pm = name
+
+			RunConsoleCommand("cl_playermodel", name)
+
+			hat:SetModelScale(hatoffsets[name].s, 0)
+			hat:SetupBones()
+
+			targetPreviewPos = Vector(50, 50, 50)
+			targetPreviewTarget = Vector(0, 0, 40)
+			targetPreviewFov = 40
+		end
+
+		GUIElements.tabs.drip.list.pmgrid:AddItem(itemPanel)
+
+		GMSTBase_SimpleHover(itemPanel, name .. "\nDefault playermodel.")
 	end
 
 	GUIElements.tabs.drip.preview = vgui.Create("DModelPanel", GUIElements.tabs.drip)

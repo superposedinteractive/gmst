@@ -306,6 +306,8 @@ function GMSTBase_HoverPanel(panel, hover_panel)
 	panel.OnCursorEntered = function(self)
 		hover_panel:SetVisible(true)
 		hover_panel:MoveToFront()
+		hover_panel:SetAlpha(0)
+		hover_panel:AlphaTo(255, 0.1)
 
 		hover_panel.Think = function(self)
 			local x, y = gui.MousePos()
@@ -314,7 +316,10 @@ function GMSTBase_HoverPanel(panel, hover_panel)
 	end
 
 	panel.OnCursorExited = function(self)
-		hover_panel:SetVisible(false)
+		hover_panel:AlphaTo(0, 0.1, 0, function()
+			hover_panel:SetVisible(false)
+		end)
+
 		hover_panel.Think = function() end
 	end
 
