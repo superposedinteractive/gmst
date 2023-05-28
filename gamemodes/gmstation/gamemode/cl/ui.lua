@@ -5,7 +5,6 @@ function OpenTerms(closebutton)
 	GUIElements.terms = vgui.Create("DPanel")
 	GUIElements.terms:SetSize(ScrW(), ScrH())
 	GUIElements.terms:MakePopup()
-
 	GUIElements.terms.html = vgui.Create("DHTML", GUIElements.terms)
 	GUIElements.terms.html:Dock(FILL)
 	GUIElements.terms.html:OpenURL("https://superposed.xyz/gmstation/terms")
@@ -16,6 +15,7 @@ function OpenTerms(closebutton)
 		GUIElements.terms.close:SetX(ScrW() - GUIElements.terms.close:GetWide() - 32)
 		GUIElements.terms.close:SetY(ScrH() - GUIElements.terms.close:GetTall() - 16)
 		GUIElements.terms.close:SetText("Close")
+
 		GUIElements.terms.close.DoClick = function()
 			GUIElements.terms:Remove()
 		end
@@ -24,7 +24,6 @@ end
 
 function SetupHUD()
 	Derma_Message("Welcome to GMStation!\nThis is a very early version of the gamemode, so expect bugs and missing features.\nIf you find any bugs, please report them on the Discord (https://discord.gg/EnadGnaAGm).\n\nHave fun!", "GMStation", "Sounds neat.")
-
 	local money = 0
 
 	if IsValid(GUIElements.registering) then
@@ -46,11 +45,9 @@ function SetupHUD()
 
 	GUIElements.quick_hud.Paint = function(self, w, h)
 		money = math.ceil(Lerp(FrameTime() * 4, money, CL_GLOBALS.money || 0))
-
 		surface.SetDrawColor(0, 0, 0)
 		surface.SetMaterial(hoz)
 		surface.DrawTexturedRect(0, 0, 300, h)
-
 		draw.SimpleText(CL_GLOBALS.zone || "Somewhere", "Trebuchet24Bold", 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(money .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
@@ -142,24 +139,25 @@ end)
 
 function FetchInfo()
 	MsgN("[GMST] Fetching info...")
+
 	apiCall("player_info", {
 		steamid = CL_GLOBALS.steamid
 	}, function(body, len, headers, code)
 		MsgN("[GMST] Info received, updated global variables")
+
 		GMSTBase_Notification("Welcome", {"Your profile has been loaded."})
+
 		CL_GLOBALS.money = body["money"] || "ERROR"
 	end)
 end
 
 net.Receive("gmstation_terms", function()
 	OpenTerms()
-
 	GUIElements.terms.accept = vgui.Create("DButton", GUIElements.terms)
 	GUIElements.terms.accept:SetText("I accept the Terms of Service")
 	GUIElements.terms.accept:SetSize(255, 64)
 	GUIElements.terms.accept:SetX(ScrW() - GUIElements.terms.accept:GetWide() - 32)
 	GUIElements.terms.accept:SetY(ScrH() - 64 - 32)
-
 	GUIElements.terms.deny = vgui.Create("DButton", GUIElements.terms)
 	GUIElements.terms.deny:SetText("I do not accept the Terms of Service")
 	GUIElements.terms.deny:SetSize(255, 64)
@@ -179,6 +177,7 @@ end)
 
 net.Receive("gmstation_first_join_done", function()
 	CL_GLOBALS.steamid = net.ReadString() // LocalPlayer():SteamID64() sometimes player isn't ready yet
+
 	if IsValid(GUIElements.terms) then
 		GUIElements.terms:Remove()
 	end

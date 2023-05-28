@@ -1,1 +1,1 @@
-networkVariables["gamestate"] = 0
+﻿networkVariables["gamestate"] = 0

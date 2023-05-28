@@ -11,10 +11,10 @@ function IsGameInProgress()
 end
 
 local function isEveryoneOn()
-	// API CALL
 	return false
 end
 
+// API CALL
 function GMSTBase_InitialSpawn(ply)
 	MsgN("[Rocketeers] Initialising " .. ply:Nick())
 	ply:Freeze(true)

@@ -7,6 +7,7 @@ end
 local restart = ulx.command(CATEGORY_NAME, "ulx restartmap", ulx.restart, "!restartmap")
 restart:defaultAccess(ULib.ACCESS_ADMIN)
 restart:help("Restarts the map in the given time.")
+
 restart:addParam{
 	type = ULib.cmds.NumArg,
 	min = 10,
@@ -27,9 +28,7 @@ devmode:help("Toggles devmode.")
 
 function ulx.copydiscord(calling_ply)
 	if !calling_ply:IsPlayer() then return end
-
 	calling_ply:SendLua([[SetClipboardText("https://discord.gg/EnadGnaAGm")]])
-
 	PlayerMessage(calling_ply, "Copied discord link to clipboard.")
 end
 

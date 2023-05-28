@@ -1,8 +1,7 @@
-local CATEGORY_NAME = "GMStation"
+﻿local CATEGORY_NAME = "GMStation"
 
 function ulx.terms(calling_ply)
 	if !calling_ply:IsPlayer() then return end
-
 	calling_ply:SendLua("OpenTerms(true)")
 end
 

@@ -1,3 +1,5 @@
+﻿local hoz = Material("gmstation/ui/gradients/hoz.png", "noclamp smooth")
+
 local hudExceptions = {
 	["CHudCloseCaption"] = true,
 	["CHudDamageIndicator"] = true,
@@ -20,122 +22,6 @@ end
 
 function GM:HUDShouldDraw(name)
 	return hudExceptions[name] || false
-end
-
-local function m_AlignText(text, font, x, y, xalign, yalign)
-	surface.SetFont(font)
-	local textw, texth = surface.GetTextSize(text)
-
-	if xalign == TEXT_ALIGN_CENTER then
-		x = x - (textw / 2)
-	elseif xalign == TEXT_ALIGN_RIGHT then
-		x = x - textw
-	end
-
-	if yalign == TEXT_ALIGN_BOTTOM then
-		y = y - texth
-	end
-
-	return x, y
-end
-
-function draw.LinearGradient(x, y, w, h, stops, horizontal)
-	if #stops == 0 then
-		return
-	elseif #stops == 1 then
-		surface.SetDrawColor(stops[1].color)
-		surface.DrawRect(x, y, w, h)
-
-		return
-	end
-
-	table.SortByMember(stops, "offset", true)
-	render.SetMaterial(white)
-	mesh.Begin(MATERIAL_QUADS, #stops - 1)
-
-	for i = 1, #stops - 1 do
-		local offset1 = math.Clamp(stops[i].offset, 0, 1)
-		local offset2 = math.Clamp(stops[i + 1].offset, 0, 1)
-		if offset1 == offset2 then continue end
-		local deltaX1, deltaY1, deltaX2, deltaY2
-		local color1 = stops[i].color
-		local color2 = stops[i + 1].color
-		local r1, g1, b1, a1 = color1.r, color1.g, color1.b, color1.a
-		local r2, g2, b2, a2
-		local r3, g3, b3, a3 = color2.r, color2.g, color2.b, color2.a
-		local r4, g4, b4, a4
-
-		if horizontal then
-			r2, g2, b2, a2 = r3, g3, b3, a3
-			r4, g4, b4, a4 = r1, g1, b1, a1
-			deltaX1 = offset1 * w
-			deltaY1 = 0
-			deltaX2 = offset2 * w
-			deltaY2 = h
-		else
-			r2, g2, b2, a2 = r1, g1, b1, a1
-			r4, g4, b4, a4 = r3, g3, b3, a3
-			deltaX1 = 0
-			deltaY1 = offset1 * h
-			deltaX2 = w
-			deltaY2 = offset2 * h
-		end
-
-		mesh.Color(r1, g1, b1, a1)
-		mesh.Position(Vector(x + deltaX1, y + deltaY1))
-		mesh.AdvanceVertex()
-		mesh.Color(r2, g2, b2, a2)
-		mesh.Position(Vector(x + deltaX2, y + deltaY1))
-		mesh.AdvanceVertex()
-		mesh.Color(r3, g3, b3, a3)
-		mesh.Position(Vector(x + deltaX2, y + deltaY2))
-		mesh.AdvanceVertex()
-		mesh.Color(r4, g4, b4, a4)
-		mesh.Position(Vector(x + deltaX1, y + deltaY2))
-		mesh.AdvanceVertex()
-	end
-
-	mesh.End()
-end
-
-function draw.SimpleWavyText(text, font, x, y, color, xalign, yalign, style, intesity)
-	local xalign = xalign || TEXT_ALIGN_LEFT
-	local yalign = yalign || TEXT_ALIGN_TOP
-	local texte = string.Explode("", text)
-	surface.SetFont(font)
-	local chars_x = 0
-	local x, y = m_AlignText(text, font, x, y, xalign, yalign)
-
-	for i = 1, #texte do
-		local char = texte[i]
-		local charw, charh = surface.GetTextSize(char)
-		local y_pos = 1
-		local mod = math.sin((RealTime() - (i * 0.1)) * (2 * intesity))
-
-		if style == 1 then
-			y_pos = y_pos - math.abs(mod)
-		elseif style == 2 then
-			y_pos = y_pos + math.abs(mod)
-		else
-			y_pos = y_pos - mod
-		end
-
-		draw.SimpleText(char, font, x + chars_x, y - (5 * y_pos), color, xalign, yalign)
-		chars_x = chars_x + charw
-	end
-end
-
-function draw.SimpleLinearGradient(x, y, w, h, startColor, endColor, horizontal)
-	draw.LinearGradient(x, y, w, h, {
-		{
-			offset = 0,
-			color = startColor
-		},
-		{
-			offset = 1,
-			color = endColor
-		}
-	}, horizontal)
 end
 
 local function image_load(dimage, path)
@@ -239,7 +125,12 @@ net.Receive("gmstation_achievement", function()
 	local money = net.ReadInt(21)
 	local who = net.ReadEntity()
 	chat.AddText(who, Color(255, 255, 255), " has earned ", Color(255, 200, 0), name, Color(255, 255, 255), "!")
-	who:CreateParticleEffect("achieved", 0, {["entity"] = who, ["attachtype"] = PATTACH_ABSORIGIN_FOLLOW})
+
+	who:CreateParticleEffect("achieved", 0, {
+		["entity"] = who,
+		["attachtype"] = PATTACH_ABSORIGIN_FOLLOW
+	})
+
 	who:EmitSound("misc/achievement_earned.wav")
 
 	if IsValid(who) && who == LocalPlayer() then
@@ -252,9 +143,9 @@ net.Receive("gmstation_achievement", function()
 		GUIElements.achievement:SetX(ScrW())
 		GUIElements.achievement:SetY(32)
 		GUIElements.achievement:MoveTo(ScrW() - GUIElements.achievement:GetWide() - 32, 32, 0.5, 0, 0.5)
-
 		local bg = vgui.Create("DPanel", GUIElements.achievement)
 		bg:SetSize(GUIElements.achievement:GetWide(), GUIElements.achievement:GetTall())
+
 		bg.Paint = function(self, w, h)
 			draw.SimpleText(money .. "cc", "Trebuchet48Bold", w - 32, h / 2, Color(255, 200, 0, 100), TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		end
@@ -263,13 +154,11 @@ net.Receive("gmstation_achievement", function()
 		icon:SetSize(64, 64)
 		icon:SetPos(16, 16)
 		image_load(icon, image)
-
 		local title = vgui.Create("DLabel", GUIElements.achievement)
 		title:SetPos(96, 16)
 		title:SetFont("Trebuchet16Bold")
 		title:SetText(name)
 		title:SizeToContents()
-
 		local description = vgui.Create("DLabel", GUIElements.achievement)
 		description:SetPos(96, 32)
 		description:SetFont("Trebuchet16")
@@ -347,8 +236,8 @@ function GMSTBase_Notification(title_text, text_text, icon_uri)
 
 	surface.SetFont("Trebuchet8")
 	local w, h = surface.GetTextSize(rawtext)
-
 	local icon = vgui.Create("DImage", notif)
+
 	if icon_uri then
 		icon:Dock(LEFT)
 		local pad = notif:GetTall() * 1.3341
@@ -372,9 +261,11 @@ function GMSTBase_Notification(title_text, text_text, icon_uri)
 	text:Dock(FILL)
 	text:DockMargin(8, 8, 8, 8)
 	text:SetVerticalScrollbarEnabled(false)
+
 	text.PerformLayout = function(self)
 		self:SetFontInternal("Trebuchet8")
 	end
+
 	for i = 1, #text_text do
 		if type(text_text[i]) == "string" then
 			text:AppendText(text_text[i])
@@ -384,9 +275,9 @@ function GMSTBase_Notification(title_text, text_text, icon_uri)
 	end
 
 	surface.PlaySound("buttons/lightswitch2.wav")
-
 	notif:SetSize(math.min(w + 128, ScrW()), h + 64)
 	notif:SetPos(ScrW(), ScrH() - 32 - notif:GetTall() - y - 32)
+
 	notif:MoveTo(ScrW() - notif:GetWide(), notif:GetY(), 0.5, 0, 0.5, function()
 		notif:MoveTo(ScrW(), notif:GetY(), 0.5, 5, 1.5, function()
 			table.RemoveByValue(GUIElements.notifications.list, notif)
@@ -395,8 +286,23 @@ function GMSTBase_Notification(title_text, text_text, icon_uri)
 	end)
 end
 
+function GMSTBase_tag(parent, color, text)
+	local tag = vgui.Create("DPanel", parent)
+	tag:SetSize(96, 16)
+
+	tag.Paint = function(self, w, h)
+		surface.SetDrawColor(color)
+		surface.SetMaterial(hoz)
+		surface.DrawTexturedRect(0, 0, w, h)
+		draw.SimpleText(text, "Trebuchet8", 8, h / 2, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	end
+
+	return tag
+end
+
 function GMSTBase_HoverPanel(panel, hover_panel)
 	hover_panel:SetVisible(false)
+
 	panel.OnCursorEntered = function(self)
 		hover_panel:SetVisible(true)
 		hover_panel:MoveToFront()
@@ -419,17 +325,14 @@ end
 
 function GMSTBase_SimpleHover(panel, text)
 	local hover = vgui.Create("DPanel")
-
 	surface.SetFont("Trebuchet8")
 	local w, h = surface.GetTextSize(text)
-
 	hover:SetSize(w + 16, h + 16)
 	local label = vgui.Create("DLabel", hover)
 	label:SetFont("Trebuchet8")
 	label:SetText(text)
 	label:Dock(FILL)
 	label:SetContentAlignment(5)
-
 	GMSTBase_HoverPanel(panel, hover)
 end
 
@@ -523,14 +426,16 @@ end)
 
 net.Receive("gmstation_map_restart", function()
 	surface.PlaySound("ui/hitsound_beepo.wav")
-
 	local time = net.ReadFloat()
 
 	if IsValid(GUIElements.restarting) then
 		GUIElements.restarting:Remove()
 	end
 
-	timer.Create("gmstation_map_restart", time, 1, function() surface.PlaySound("ui/hitsound.wav") end)
+	timer.Create("gmstation_map_restart", time, 1, function()
+		surface.PlaySound("ui/hitsound.wav")
+	end)
+
 	GUIElements.restarting = vgui.Create("DPanel")
 	GUIElements.restarting:SetSize(300, 100)
 	GUIElements.restarting:SetPos(ScrW() / 2 - GUIElements.restarting:GetWide() / 2, ScrH() / 2 - GUIElements.restarting:GetTall() / 2 + 32)
@@ -554,11 +459,10 @@ hook.Add("Think", "gmstation_timeout_think", function()
 		if timing then
 			if !IsValid(GUIElements.timeout) then
 				last_bad_timeout = SysTime()
-
 				timeout_music = CreateSound(LocalPlayer(), "gmstation/music/timing.mp3")
-
 				GUIElements.timeout = vgui.Create("DPanel")
 				GUIElements.timeout:SetSize(ScrW(), ScrH())
+
 				GUIElements.timeout.Paint = function(self, w, h)
 					draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 220))
 					draw.SimpleText("Aw shucks!", "Trebuchet32Bold", w / 2, h / 2 - 24, Color(255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
@@ -570,13 +474,11 @@ hook.Add("Think", "gmstation_timeout_think", function()
 				end
 
 				timeout_music:PlayEx(CL_GLOBALS.volume * 100, 100)
-
 				gui.EnableScreenClicker(true)
 			end
 
 			if SysTime() - last_bad_timeout > 30 then
 				if IsValid(GUIElements.timeout.label) then return end
-
 				GUIElements.timeout.label = vgui.Create("DLabel", GUIElements.timeout)
 				GUIElements.timeout.label:SetY(ScrH() / 1.55)
 				GUIElements.timeout.label:SetSize(ScrW(), 64)
@@ -584,12 +486,12 @@ hook.Add("Think", "gmstation_timeout_think", function()
 				GUIElements.timeout.label:SetFont("Trebuchet16")
 				GUIElements.timeout.label:SetText("You've been timing out for quite a while now.\nYou can try to reconnect and see if you will be able to play again.")
 				GUIElements.timeout.label:SetContentAlignment(5)
-
 				local reconnect = vgui.Create("DButton", GUIElements.timeout)
 				reconnect:SetSize(ScrW() / 1.5, 64)
 				reconnect:SetPos(ScrW() / 2 - reconnect:GetWide() / 2, ScrH() / 1.5 + 64)
 				reconnect:SetText("Reconnect")
 				reconnect:SetFont("Trebuchet16Bold")
+
 				reconnect.DoClick = function()
 					RunConsoleCommand("retry")
 				end
@@ -607,7 +509,6 @@ hook.Add("Think", "gmstation_timeout_think", function()
 				end
 
 				gui.EnableScreenClicker(false)
-
 				GMSTBase_RequestNetVars()
 			end
 		end
@@ -635,4 +536,5 @@ hook.Add("HUDPaint", "gmstation_draw_info", function()
 	draw.DrawText(stringified_globals, "TrebuchetChat", ScrW(), height, Color(255, 255, 255), TEXT_ALIGN_RIGHT)
 end)
 
+hook.Remove("HUDPaint", "gmstation_draw_info")
 timer.Stop("gmstation_payout_timer")

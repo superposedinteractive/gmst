@@ -29,15 +29,7 @@ local credits = {
 	{"Our whole community for supporting us and you for playing!"},
 }
 
-local settingOrder = {
-	"Music Volume",
-	"sep",
-	"Scoreboard Waves*",
-	"Scoreboard Blur",
-	"Blur Strength",
-	"sep",
-	"Delete Account",
-}
+local settingOrder = {"Music Volume", "sep", "Scoreboard Waves*", "Scoreboard Blur", "Blur Strength", "sep", "Delete Account",}
 
 local settings = {
 	["sep"] = {"seperator"},
@@ -45,12 +37,14 @@ local settings = {
 	["Scoreboard Waves*"] = {"tabWaves", optionTypes["CHECKBOX"]},
 	["Scoreboard Blur"] = {"tabBlur", optionTypes["CHECKBOX"]},
 	["Blur Strength"] = {"blurStrength", optionTypes["SLIDER"], 1, 10},
-	["Delete Account"] = {"deleteAccount", optionTypes["BUTTON"], "Delete Account", function()
-		Derma_Query("Are you sure you want to delete your account?\nYou will lose everything!", "Delete Account", "Yes", function()
-			net.Start("gmstation_deleteAccount")
-			net.SendToServer()
-		end, "No")
-	end}
+	["Delete Account"] = {
+		"deleteAccount", optionTypes["BUTTON"], "Delete Account", function()
+			Derma_Query("Are you sure you want to delete your account?\nYou will lose everything!", "Delete Account", "Yes", function()
+				net.Start("gmstation_deleteAccount")
+				net.SendToServer()
+			end, "No")
+		end
+	}
 }
 
 function Derma_DrawBackgroundBlurInside(panel)
@@ -177,6 +171,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		button:SetSize(48, 48)
 		button:SetText("")
 		button.Paint = function(self, w, h) end
+
 		button.DoClick = function()
 			if IsValid(v) then
 				v:ShowProfile()
@@ -214,14 +209,12 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 
 	GUIElements.tabs.drip.list = vgui.Create("DScrollPanel", GUIElements.tabs.drip)
 	GUIElements.tabs.drip.list:Dock(FILL)
-
 	local items = GMSTBase_GetItems()
 	local targetPreviewPos = Vector(50, 50, 50)
 	local targetPreviewTarget = Vector(0, 0, 40)
 	local targetPreviewFov = 40
-
 	local hats = {}
-	// all items that type = hat
+
 	for k, v in pairs(items) do
 		if v.type == "hat" then
 			table.insert(hats, v)
@@ -234,58 +227,122 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs.drip.list.hats:SetTextColor(textColor)
 	GUIElements.tabs.drip.list.hats:SizeToContents()
 	GUIElements.tabs.drip.list.hats:Dock(TOP)
-
 	GUIElements.tabs.drip.list.hatsgrid = vgui.Create("DGrid", GUIElements.tabs.drip.list)
 	GUIElements.tabs.drip.list.hatsgrid:SetCols(6)
 	GUIElements.tabs.drip.list.hatsgrid:SetColWide(64)
 	GUIElements.tabs.drip.list.hatsgrid:SetRowHeight(64)
 	GUIElements.tabs.drip.list.hatsgrid:Dock(TOP)
 	GUIElements.tabs.drip.list.hatsgrid:SetContentAlignment(5)
-	GUIElements.tabs.drip.list.hatsgrid.OnCursorEntered = function(self)
-		targetPreviewPos = Vector(50, 50, 70)
-		targetPreviewTarget = Vector(0, 0, 70)
-		targetPreviewFov = 20
-	end
-
 	GUIElements.tabs.drip.list.pmtitle = vgui.Create("DLabel", GUIElements.tabs.drip.list)
 	GUIElements.tabs.drip.list.pmtitle:SetFont("Trebuchet24Bold")
 	GUIElements.tabs.drip.list.pmtitle:SetText("Playermodels")
 	GUIElements.tabs.drip.list.pmtitle:SetTextColor(textColor)
 	GUIElements.tabs.drip.list.pmtitle:SizeToContents()
 	GUIElements.tabs.drip.list.pmtitle:Dock(TOP)
-
 	GUIElements.tabs.drip.list.pmgrid = vgui.Create("DGrid", GUIElements.tabs.drip.list)
 	GUIElements.tabs.drip.list.pmgrid:SetCols(6)
 	GUIElements.tabs.drip.list.pmgrid:SetColWide(64)
 	GUIElements.tabs.drip.list.pmgrid:SetRowHeight(64)
 	GUIElements.tabs.drip.list.pmgrid:Dock(TOP)
-	GUIElements.tabs.drip.list.pmgrid.OnCursorEntered = function(self)
+	local model = GMSTBase_GetItemInfo(LocalPlayer():GetNW2String("hat", "none")).model
+	local hat = ClientsideModel(model, RENDERGROUP_OPAQUE)
+	hat:SetNoDraw(true)
+	local nohat = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.hatsgrid)
+	nohat:SetModel("models/props_c17/streetsign004e.mdl")
+	nohat:SetTall(64)
+	nohat:SetTooltip(false)
+	GUIElements.tabs.drip.list.hatsgrid:AddItem(nohat)
+
+	nohat.DoClick = function()
+		net.Start("gmstation_hatchange")
+		net.WriteString("")
+		net.SendToServer()
+		hat:SetModel("")
 		targetPreviewPos = Vector(50, 50, 50)
 		targetPreviewTarget = Vector(0, 0, 40)
 		targetPreviewFov = 40
 	end
 
+	GMSTBase_SimpleHover(nohat, "Take off hat")
+
 	for i = 1, #items do
 		local itemPanel = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.hatsgrid)
 		local item = GMSTBase_GetItemInfo(items[i])
-
 		itemPanel:SetModel(item.model)
 		itemPanel:SetTall(64)
 		itemPanel:SetTooltip(false)
-		GUIElements.tabs.drip.list.hatsgrid:AddItem(itemPanel)
 
-		GMSTBase_SimpleHover(itemPanel, item.description)
+		itemPanel.DoClick = function()
+			net.Start("gmstation_hatchange")
+			net.WriteString(items[i])
+			net.SendToServer()
+			hat:SetModel(item.model)
+			targetPreviewPos = Vector(50, 50, 70)
+			targetPreviewTarget = Vector(0, 0, 70)
+			targetPreviewFov = 20
+		end
+
+		GUIElements.tabs.drip.list.hatsgrid:AddItem(itemPanel)
+		local fancyhover = vgui.Create("DPanel")
+		fancyhover:SetSize(256, 112)
+		local fancyhoverlabel = vgui.Create("DLabel", fancyhover)
+		fancyhoverlabel:SetFont("Trebuchet24Bold")
+		fancyhoverlabel:SetText(item.name)
+		fancyhoverlabel:SetTextColor(textColor)
+		fancyhoverlabel:SizeToContents()
+		fancyhoverlabel:Dock(TOP)
+		fancyhoverlabel:DockMargin(16, 8, 8, 0)
+		local fancyhoverdesc = vgui.Create("DLabel", fancyhover)
+		fancyhoverdesc:SetFont("Trebuchet8")
+		fancyhoverdesc:SetText(item.description)
+		fancyhoverdesc:SizeToContents()
+		fancyhoverdesc:Dock(TOP)
+		fancyhoverdesc:DockMargin(16, 0, 8, 4)
+		local fancyhoverprice = vgui.Create("DLabel", fancyhover)
+		fancyhoverprice:SetFont("Trebuchet8")
+		fancyhoverprice:SetText("Price: " .. item.price .. "cc")
+		fancyhoverprice:SizeToContents()
+		fancyhoverprice:Dock(BOTTOM)
+		fancyhoverprice:DockMargin(8, 8, 8, 8)
+		fancyhoverprice:SetContentAlignment(6)
+
+		if item.unobtainable then
+			local fancyhoverunobtainable = GMSTBase_tag(fancyhover, Color(255, 50, 0), "Unobtainable")
+			fancyhoverunobtainable:Dock(TOP)
+			fancyhoverunobtainable:DockMargin(8, 0, 8, 0)
+		end
+
+		GMSTBase_HoverPanel(itemPanel, fancyhover)
 	end
 
 	GUIElements.tabs.drip.preview = vgui.Create("DModelPanel", GUIElements.tabs.drip)
 	GUIElements.tabs.drip.preview:Dock(RIGHT)
 	GUIElements.tabs.drip.preview:SetWide(256)
 	GUIElements.tabs.drip.preview:SetModel(LocalPlayer():GetModel())
+
 	GUIElements.tabs.drip.preview.LayoutEntity = function(self, ent)
 		GUIElements.tabs.drip.preview:SetCamPos(LerpVector(FrameTime() * 10, GUIElements.tabs.drip.preview:GetCamPos(), targetPreviewPos))
 		GUIElements.tabs.drip.preview:SetFOV(Lerp(FrameTime() * 10, GUIElements.tabs.drip.preview:GetFOV(), targetPreviewFov))
 		GUIElements.tabs.drip.preview:SetLookAt(LerpVector(FrameTime() * 10, GUIElements.tabs.drip.preview:GetLookAt(), targetPreviewTarget))
 		ent:SetAngles(Angle(0, ent:GetAngles().y + FrameTime() * 50, 0))
+	end
+
+	GUIElements.tabs.drip.preview.PostDrawModel = function(self, ent)
+		hat:SetModel(LocalPlayer():GetNW2String("hat", ""))
+		local bone = ent:LookupBone("ValveBiped.Bip01_Head1")
+		if !bone then return end
+		local pos, ang = ent:GetBonePosition(bone)
+		if !pos then return end
+		hat:SetPos(pos + ang:Forward() * 2)
+		ang:RotateAroundAxis(ang:Up(), 90)
+		ang:RotateAroundAxis(ang:Forward(), 90)
+		hat:SetAngles(ang)
+		hat:SetModelScale(1.2, 0)
+		hat:SetupBones()
+
+		if LocalPlayer():GetNW2String("hat", "") != "" then
+			hat:DrawModel()
+		end
 	end
 
 	GUIElements.tabs.settings = vgui.Create("DPanel", GUIElements.tabs)

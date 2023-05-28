@@ -18,8 +18,10 @@ function apiCall(url, args, callback)
 
 	http.Fetch(CL_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
 		body = util.JSONToTable(body)
+
 		if code != 200 || !body || body["error"] != nil then
 			panic("API error: " .. url .. "?" .. get .. "\nResponse: " .. code .. "\n" .. tostring(body))
+
 			return
 		end
 

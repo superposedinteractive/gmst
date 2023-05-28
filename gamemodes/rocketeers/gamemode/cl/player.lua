@@ -1,7 +1,6 @@
 ﻿local gradient_h = Material("gmstation/ui/gradients/hoz.png", "smooth")
 local gradient_v = Material("gmstation/ui/gradients/vert.png", "smooth")
 local gradient_c = Material("gmstation/ui/gradients/center.png", "smooth")
-
 local cur_ammo = 3
 
 surface.CreateFont("countdown1", {
@@ -37,12 +36,9 @@ end
 
 function rk_notice(text)
 	surface.PlaySound("buttons/blip2.wav")
-
 	local notice = vgui.Create("DPanel")
 	notice:SetSize(ScrW(), 64)
-
 	local y = ScrH() / 1.5 - notice:GetTall() / 2
-
 	notice:SetPos(ScrW(), y)
 
 	notice.Paint = function(self, w, h)
@@ -241,7 +237,7 @@ net.Receive("rocketeers_death", function()
 end)
 
 net.Receive("rocketeers_20sec", function()
--- timer.Simple(5, function()
+	// timer.Simple(5, function()
 	if CL_GLOBALS.currentSound then
 		CL_GLOBALS.currentSound:Stop()
 	end

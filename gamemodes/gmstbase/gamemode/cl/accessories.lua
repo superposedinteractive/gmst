@@ -1,41 +1,64 @@
-local hats = {}
-local hatids = {}
+﻿local hats = {}
 
 function GM:PostPlayerDraw(ply)
-	if (!IsValid(ply)) then return end
-
+	if !IsValid(ply) then return end
 	local hat = hats[ply]
-	if (!IsValid(hat)) then return end
-
+	if !IsValid(hat) then return end
 	local bone = ply:LookupBone("ValveBiped.Bip01_Head1")
-	if (!bone) then return end
-
+	if !bone then return end
 	local pos, ang = ply:GetBonePosition(bone)
-	if (!pos) then return end
-
+	if !pos then return end
 	hat:SetPos(pos + ang:Forward() * 2)
 	ang:RotateAroundAxis(ang:Right(), -90)
 	ang:RotateAroundAxis(ang:Up(), 90)
 	hat:SetAngles(ang)
-	hat:SetModelScale(1.1, 0)
+	hat:SetModelScale(1.2, 0)
 	hat:SetupBones()
 	hat:DrawModel()
 end
 
-timer.Create("GMSTBase_GetHats", 3, 0, function()
-	for k, v in pairs(player.GetAll()) do
-		if (!IsValid(v)) then continue end
-		if (v:GetNW2String("hat") == "") then continue end
+net.Receive("gmstation_hatchange", function()
+	local ply = net.ReadEntity()
+	local hat = net.ReadString()
 
-		if(v:GetNW2String("hat") != hatids[v]) then
-			MsgN("[GMSTBase] Updating hat for " .. v:Nick())
-			if(IsValid(hats[v])) then
-				hats[v]:Remove()
-			end
+	if ply != LocalPlayer() then
+		ply:EmitSound("replay/rendercomplete.wav", 50, 100, 1, CHAN_AUTO)
+	end
 
-			hatids[v] = v:GetNW2String("hat")
-			hats[v] = ClientsideModel(GMSTBase_GetItemInfo(v:GetNW2String("hat"))["model"] || "error", RENDERGROUP_OPAQUE)
-			hats[v]:SetNoDraw(true)
+	MsgN("[GMSTBase] Updating hat for " .. ply:Nick() .. " to " .. hat)
+	local model = GMSTBase_GetItemInfo(hat).model
+	if !IsValid(ply) then return end
+
+	if hat == "" then
+		if IsValid(hats[ply]) then
+			hats[ply]:Remove()
+			hats[ply] = nil
+		end
+	else
+		if !IsValid(hats[ply]) then
+			hats[ply] = ClientsideModel(model, RENDERGROUP_OPAQUE)
+			hats[ply]:SetNoDraw(true)
+		else
+			hats[ply]:SetModel(model)
 		end
 	end
 end)
+
+function UpdateHats()
+	MsgN("[GMSTBase] Updating hats...")
+	local model = GMSTBase_GetItemInfo(LocalPlayer():GetNW2String("hat", "")).model
+	MsgN("[GMSTBase] Hat model: " .. model)
+
+	for _, ply in pairs(player.GetAll()) do
+		local hat = ply:GetNW2String("hat", "")
+		if hat == "" then continue end
+		local model = GMSTBase_GetItemInfo(hat).model
+
+		if !IsValid(hats[ply]) then
+			hats[ply] = ClientsideModel(model, RENDERGROUP_OPAQUE)
+			hats[ply]:SetNoDraw(true)
+		else
+			hats[ply]:SetModel(model)
+		end
+	end
+end

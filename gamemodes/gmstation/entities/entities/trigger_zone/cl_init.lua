@@ -34,7 +34,6 @@ function GMST_Zone(name)
 	if Sounds[name] then
 		local snd = Sounds[name]
 		local loop = snd["Loop"] || false
-
 		MsgN("[GMST] Playing sound for zone " .. name .. ", " .. tostring(snd["Sounds"][1]))
 
 		if IsValid(LocalPlayer()) then
@@ -46,6 +45,7 @@ function GMST_Zone(name)
 		end
 	else
 		MsgN("[GMST] No sound for zone " .. name .. "!")
+
 		if CL_GLOBALS.currentSound != nil && name != CL_GLOBALS.zone then
 			CL_GLOBALS.currentSound:FadeOut(3)
 		end
@@ -97,8 +97,10 @@ end
 
 concommand.Add("gmst_zone", function(ply, cmd, args)
 	local zone = args[1]
-	if zone == nil then 
+
+	if zone == nil then
 		MsgN("[GMST] No zone specified")
+
 		return
 	end
 

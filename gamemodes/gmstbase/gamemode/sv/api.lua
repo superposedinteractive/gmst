@@ -31,9 +31,8 @@ local function regPlayer(ply)
 		}, function(body, len, headers, code)
 			MsgN("[GMSTBase] Registered " .. ply:Name())
 			net.Start("gmstation_first_join_done")
-				net.WriteString(ply:SteamID64())
+			net.WriteString(ply:SteamID64())
 			net.Send(ply)
-
 			PlayerInit(ply)
 			ply:Freeze(false)
 		end)
@@ -77,7 +76,7 @@ function GM:PlayerInitialSpawn(ply)
 	if GMSTInitialSpawn then
 		GMSTInitialSpawn(ply)
 	end
-	
+
 	ply:Freeze(true)
 
 	apiCall("player_exists", {
@@ -94,14 +93,12 @@ function GM:PlayerInitialSpawn(ply)
 			end
 		else
 			net.Start("gmstation_first_join_done")
-				net.WriteString(ply:SteamID64())
+			net.WriteString(ply:SteamID64())
 			net.Send(ply)
-
 			PlayerInit(ply)
 			ply:Freeze(false)
 		end
 	end)
-
 
 	if timer.Exists("gmstation_map_restart") then
 		net.Start("gmstation_map_restart")
@@ -117,20 +114,18 @@ net.Receive("gmstation_terms", function(_, ply)
 		if body["exists"] == true then
 			MsgN("[GMSTBase] Player " .. ply:Name() .. " has already accepted ToS, skipping...")
 			net.Start("gmstation_first_join_done")
-				net.WriteString(ply:SteamID64())
+			net.WriteString(ply:SteamID64())
 			net.Send(ply)
 			ply:Freeze(false)
+
 			return
 		end
 	end)
 
 	MsgN("[GMSTBase] Player " .. ply:Name() .. " accepted ToS, registering...")
-
 	regPlayer(ply)
 end)
 
-timer.Simple(5, function()
-	apiCall("hello", {}, function(body, len, headers, code)
-		MsgN("[GMSTBase] API Ok")
-	end)
+apiCall("hello", {}, function(body, len, headers, code)
+	MsgN("[GMSTBase] API Ok")
 end)

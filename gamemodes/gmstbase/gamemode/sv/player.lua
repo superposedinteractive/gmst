@@ -5,6 +5,7 @@ util.AddNetworkString("gmstation_reward")
 util.AddNetworkString("gmstation_achievement")
 util.AddNetworkString("gmstation_update")
 util.AddNetworkString("gmstation_deleteAccount")
+util.AddNetworkString("gmstation_hatchange")
 
 function PlayerMessage(ply, ...)
 	local args = {...}
@@ -42,16 +43,23 @@ function PlayerInit(ply)
 	PlayerMessage(nil, ply:Nick() .. " has entered the station.")
 
 	function ply:UpdateInfo()
-		MsgN("[GMSTBase] updating " .. ply:Nick() .. " info.")
-		apiCall("player_info", {steamid = ply:SteamID64()}, function(body)
+		MsgN("[GMSTBase] Updating " .. ply:Nick() .. " info.")
+
+		apiCall("player_info", {
+			steamid = ply:SteamID64()
+		}, function(body)
 			for k, v in pairs(body) do
-				ply[k] = v
 				MsgN("[GMSTBase] " .. ply:Nick() .. " " .. k .. " = " .. v)
 				ply:SetNW2String(k, v)
 			end
-		end)
 
-		MsgN("[GMSTBase] updated " .. ply:Nick() .. " info.")
+			MsgN("[GMSTBase] Sending " .. ply:Nick() .. " hat info.")
+			net.Start("gmstation_hatchange")
+			net.WriteEntity(ply)
+			net.WriteString(ply:GetNW2String("hat", ""))
+			net.Broadcast()
+			MsgN("[GMSTBase] Updated " .. ply:Nick() .. " info.")
+		end)
 	end
 
 	function ply:GetMoney()
@@ -100,6 +108,7 @@ function PlayerInit(ply)
 
 	function ply:FetchInfo()
 		local info = {}
+
 		for k, v in pairs(ply) do
 			if type(v) != "function" then
 				info[k] = v
@@ -148,17 +157,51 @@ function GM:PlayerAuthed(ply, steamid, uniqueid)
 	if ply:SteamID64() != ply:OwnerSteamID64() then
 		MsgN("[GMSTBase] " .. ply:Nick() .. " doesn't own Garry's Mod.")
 		ply:Kick("Sorry, but you need to own Garry's Mod to play on this server. Using a family shared copy is not allowed.")
+
 		return
 	end
 end
 
 net.Receive("gmstation_deleteAccount", function(len, ply)
 	MsgN("[GMSTBase] " .. ply:Nick() .. " is deleting their account.")
+
 	apiCall("player_delete", {
 		["steamid"] = ply:SteamID64(),
 		["password"] = SV_GLOBALS.password
 	}, function(body)
 		MsgN("[GMSTBase] " .. ply:Nick() .. " has deleted their account.")
 		ply:Kick("Farewell!\nThank you for being a part of our journey. We'll miss you and your unique contributions. Wishing you all the best in your future endeavors!\n- GMStation Team")
+	end)
+end)
+
+net.Receive("gmstation_hatchange", function(len, ply)
+	local hat = net.ReadString()
+	if hat == ply:GetNW2String("hat", "") then return end
+
+	if hat == "" then
+		hat = "none"
+	end
+
+	apiCall("player_drip", {
+		["steamid"] = ply:SteamID64(),
+		["type"] = "hat",
+		["to"] = hat,
+		["password"] = SV_GLOBALS.password
+	}, function(body)
+		if body["success"] then
+			MsgN("[GMSTBase] " .. ply:Nick() .. " changed their hat to " .. hat .. ".")
+
+			if hat == "none" then
+				hat = ""
+			end
+
+			ply:SetNW2String("hat", hat)
+			net.Start("gmstation_hatchange")
+			net.WriteEntity(ply)
+			net.WriteString(hat)
+			net.Broadcast()
+		else
+			MsgN("[GMSTBase] " .. ply:Nick() .. " failed to change their hat to " .. hat .. ".")
+		end
 	end)
 end)
