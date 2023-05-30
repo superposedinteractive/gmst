@@ -21,7 +21,7 @@ hatoffsets = {
 	barney = {x = 1, y = 0, s = 1},
 	monk = {x = 1, y = 0, s = 1},
 	skeleton = {x = 1, y = 0, s = 1},
-	magnusson = {x = 1, y = 0, s = 1},
+	magnusson = {x = 0, y = -1, s = 1},
 	charple = {x = -1, y = -2, s = 1},
 	gman = {x = 1, y = 0, s = 1},
 	corpse = {x = 1, y = 0, s = 1},
@@ -30,7 +30,7 @@ hatoffsets = {
 	mossmanarctic = {x = 1, y = 0, s = 1},
 
 	zombie = {x = 1, y = 0, s = 1},
-	zombine = {x = 1, y = -6.5, s = 1.2},
+	zombine = {x = 1, y = -6.8, s = 1.3},
 	zombiefast = {x = 0.7, y = -3, s = 1},
 
 	police = {x = 1, y = 1.35, s = 1},

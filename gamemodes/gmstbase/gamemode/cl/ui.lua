@@ -208,8 +208,10 @@ if css:IsError() || tf2:IsError() then
 	end
 
 	local dismiss = vgui.Create("DButton", GUIElements.css)
-	dismiss:Dock(FILL)
 	dismiss:SetText("")
+	dismiss:SetSize(GUIElements.css:GetWide(), GUIElements.css:GetTall())
+	dismiss:SetPos(0, 0)
+	dismiss:SetZPos(100)
 	dismiss.Paint = function(self, w, h) end
 
 	dismiss.DoClick = function()

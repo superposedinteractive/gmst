@@ -19,11 +19,10 @@ local tabs = {"Players", "Drip", "Settings", "Awards", "Credits"}
 local credits = {
 	{"fgor", "Designer, Lead \"Scream at his team\" guy"},
 	{"japannt", "Lead Developer"},
-	{"Dark", "Mapper, Composer & SFX"},
+	{"Dark", "Mapping, Modeling, Composing & SFX"},
 	{}, {"Bartkk", "API Development & Contributions"},
 	{"Michu", "Server hosting & Contributions"},
-	{""},
-	{"Special thanks to :"},
+	{}, {"Special thanks to :"},
 	{"PixelTail Games for the original GMTower concept."},
 	{"The folks over at TCF for the GMTower revival."},
 	{"Our whole community for supporting us and you for playing!"},
@@ -442,6 +441,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		local k = settingOrder[i]
 		local v = settings[settingOrder[i]]
 		// Lua, why lua WHYYYYYYYYYYYYY
+		// i hate garry newman
 		local setting = vgui.Create("DPanel", GUIElements.tabs.settings.list)
 		setting:Dock(TOP)
 		setting.Paint = function(self, w, h) end
@@ -529,6 +529,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs.credits.scroll = vgui.Create("DScrollPanel", GUIElements.tabs.credits)
 	GUIElements.tabs.credits.scroll:Dock(FILL)
 	GUIElements.tabs.credits.scroll.Paint = function(self, w, h) end
+	GUIElements.tabs.credits.scroll:GetVBar():SetWide(0)
 	local title = vgui.Create("DLabel", GUIElements.tabs.credits.scroll)
 	title:SetFont("Trebuchet48")
 	title:SetText("GMStation")
