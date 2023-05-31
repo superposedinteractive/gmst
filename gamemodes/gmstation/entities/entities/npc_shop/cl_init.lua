@@ -7,9 +7,10 @@ function ENT:Initialize()
 end
 
 net.Receive("gmstation_store", function()
-	local type = net.ReadString()
+	local store_type = net.ReadString()
 	local message = net.ReadString()
 	local exitMessage = net.ReadString()
+	local store_items = {}
 	displaySpeech(nil, message)
 
 	if GUIElements.store then
@@ -35,6 +36,12 @@ net.Receive("gmstation_store", function()
 	GUIElements.store:MoveTo(ScrW() - GUIElements.store:GetWide(), 0, 0.5, 0, 0.5, function() end)
 	GUIElements.store:MakePopup()
 
+	local loading = vgui.Create("DLabel", GUIElements.store)
+	loading:Dock(FILL)
+	loading:SetFont("Trebuchet32")
+	loading:SetText("Fetching items...")
+	loading:SetContentAlignment(5)
+
 	GUIElements.store.close = function()
 		hook.Remove("Think", "gmstation_store_close")
 		gui.HideGameUI()
@@ -56,48 +63,51 @@ net.Receive("gmstation_store", function()
 	store:Dock(FILL)
 	store:DockMargin(5, 5, 5, 5)
 
-	for v, k in ipairs(test_elements) do
-		local item = vgui.Create("DPanel", store)
-		item:Dock(TOP)
-		item:DockMargin(0, 0, 0, 5)
-		item:SetTall(128)
+	apiCall("store", {type = store_type}, function(data)
+		store_items = data
+		for v, k in ipairs(store_items) do
+			local item = vgui.Create("DPanel", store)
+			item:Dock(TOP)
+			item:DockMargin(0, 0, 0, 5)
+			item:SetTall(128)
 
-		item.Paint = function(self, w, h)
-			draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
+			item.Paint = function(self, w, h)
+				draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
+			end
+
+			local model = vgui.Create("DModelPanel", item)
+			model:Dock(LEFT)
+			model:SetWide(128)
+			model:SetModel(k.model)
+			model:SetCamPos(Vector(100, 100, 50))
+			model:SetLookAt(Vector(0, 0, 0))
+			model:SetFOV(40)
+			model:SetAnimSpeed(20)
+			local buy = vgui.Create("DButton", item)
+			buy:Dock(BOTTOM)
+			buy:DockMargin(8, 8, 8, 8)
+			buy:SetWide(64)
+			buy:SetText(k.price .. "cc")
+
+			buy.DoClick = function()
+				net.Start("gmstation_store_buy")
+				net.WriteString(k.name)
+				net.SendToServer()
+			end
+
+			local name = vgui.Create("DLabel", item)
+			name:Dock(TOP)
+			name:DockMargin(16, 16, 0, 0)
+			name:SetText(k.name)
+			name:SetFont("Trebuchet32")
+			name:SetTall(32)
+			local desc = vgui.Create("DLabel", item)
+			desc:Dock(TOP)
+			desc:DockMargin(16, 2, 0, 0)
+			desc:SetFont("Trebuchet8")
+			desc:SetText(k.desc)
 		end
-
-		local model = vgui.Create("DModelPanel", item)
-		model:Dock(LEFT)
-		model:SetWide(128)
-		model:SetModel(k.model)
-		model:SetCamPos(Vector(100, 100, 50))
-		model:SetLookAt(Vector(0, 0, 0))
-		model:SetFOV(40)
-		model:SetAnimSpeed(20)
-		local buy = vgui.Create("DButton", item)
-		buy:Dock(BOTTOM)
-		buy:DockMargin(8, 8, 8, 8)
-		buy:SetWide(64)
-		buy:SetText(k.price .. "cc")
-
-		buy.DoClick = function()
-			net.Start("gmstation_store_buy")
-			net.WriteString(k.name)
-			net.SendToServer()
-		end
-
-		local name = vgui.Create("DLabel", item)
-		name:Dock(TOP)
-		name:DockMargin(16, 16, 0, 0)
-		name:SetText(k.name)
-		name:SetFont("Trebuchet32")
-		name:SetTall(32)
-		local desc = vgui.Create("DLabel", item)
-		desc:Dock(TOP)
-		desc:DockMargin(16, 2, 0, 0)
-		desc:SetFont("Trebuchet8")
-		desc:SetText(k.desc)
-	end
+	end)
 
 	local titlebar = vgui.Create("DPanel", GUIElements.store)
 	titlebar:SetSize(GUIElements.store:GetWide(), 48)

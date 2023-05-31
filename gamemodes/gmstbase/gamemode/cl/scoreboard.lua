@@ -193,6 +193,8 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		timer.Create("gmstation_scoreboard_" .. v:SteamID(), 0.5, 0, function()
 			if IsValid(playerPanel.location) then
 				playerPanel.location:SetText(v:GetNW2String("zone") || "Somewhere")
+			else
+				timer.Remove("gmstation_scoreboard_" .. v:SteamID())
 			end
 		end)
 	end
@@ -251,7 +253,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	hat:SetNoDraw(true)
 	hat:SetModelScale(hatoffsets[pm].s, 0)
 	hat:SetupBones()
-	
+
 	local nohat = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.hatsgrid)
 	nohat:SetModel("models/props_c17/streetsign004e.mdl")
 	nohat:SetTall(64)
