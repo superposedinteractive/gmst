@@ -1,4 +1,5 @@
 ﻿util.AddNetworkString("gmstation_store")
+util.AddNetworkString("gmstation_purchased")
 include("shared.lua")
 AddCSLuaFile("shared.lua")
 AddCSLuaFile("cl_init.lua")
@@ -25,3 +26,39 @@ function ENT:Use(activator, caller, useType, value)
 		net.Send(activator)
 	end
 end
+
+net.Receive("gmstation_store", function(len, ply)
+	local items = net.ReadTable()
+
+	local total = 0
+
+	for k, v in pairs(items) do
+		local item = GMSTBase_GetItemInfo(k)
+		if item then
+			total = total + item.price * v
+		end
+	end
+
+	PrintTable(items)
+
+	for k, v in pairs(items) do
+		items[k] = math.floor(v)
+	end
+
+	ply:UpdateInfo(function()
+		if ply:CanAfford(total) then
+			apiCall("store_purchase", {password = SV_GLOBALS["password"], steamid = ply:SteamID64(), ["items"] = util.TableToJSON(items)}, function(data)
+				if data.success then
+					MsgN("[GMStation] ", ply:Nick(), " purchased items for " .. total .. "cc.")
+					ply:MoneyAdd(-total)
+				end
+			end)
+
+			net.Start("gmstation_purchased")
+			net.Send(ply)
+		else
+			MsgN("[GMStation] ", ply:Nick(), " tried to purchase items for " .. total .. "cc, but they only have " .. ply:GetMoney() .. "cc.")
+			PlayerMessage(ply, "You don't have enough money to purchase these items!")
+		end
+	end)
+end)

@@ -143,12 +143,24 @@ end)
 function FetchInfo()
 	MsgN("[GMST] Fetching info...")
 
+	local oldMoney = CL_GLOBALS.money || 0
+
 	apiCall("player_info", {
 		steamid = CL_GLOBALS.steamid
 	}, function(body, len, headers, code)
 		MsgN("[GMST] Info received, updated global variables")
 
 		CL_GLOBALS.money = body["money"] || "ERROR"
+
+		if oldMoney != 0 then
+			if oldMoney > CL_GLOBALS.money then
+				surface.PlaySound("/mvm/mvm_bought_upgrade.wav")
+				GMSTBase_Notification("GMSTBank", "You lost " .. string.Comma(oldMoney - CL_GLOBALS.money) .. "cc.")
+			else
+				surface.PlaySound("/mvm/mvm_money_pickup.wav")
+				GMSTBase_Notification("GMSTBank", "You got " .. string.Comma(CL_GLOBALS.money - oldMoney) .. "cc.")
+			end
+		end
 	end)
 end
 

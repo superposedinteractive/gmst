@@ -63,13 +63,166 @@ net.Receive("gmstation_store", function()
 	store:Dock(FILL)
 	store:DockMargin(5, 5, 5, 5)
 
-	apiCall("store", {type = store_type}, function(data)
+	apiCall("store_items", {store_id = "1"}, function(data)
+		local cartItems = {}
+		local total = 0
+		local count = 0
+
 		store_items = data
+		loading:Remove()
+
+		if !IsValid(store) then return end
+
+		local cartPanel = vgui.Create("DPanel", GUIElements.store)
+		cartPanel:SetTall(48)
+		cartPanel:Dock(BOTTOM)
+		cartPanel:DockMargin(5, 5, 5, 5)
+		cartPanel.Paint = function(self, w, h)
+			draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
+		end
+
+		local cart = vgui.Create("DLabel", cartPanel)
+		cart:Dock(LEFT)
+		cart:DockMargin(8, 8, 0, 8)
+		cart:SetFont("Trebuchet24Bold")
+		cart:SetText("Cart: 0 items / 0cc")
+		cart:SizeToContents()
+
+		local review = vgui.Create("DButton", cartPanel)
+		review:Dock(RIGHT)
+		review:DockMargin(8, 8, 8, 8)
+		review:SetWide(64)
+		review:SetText("Review")
+
+		review.DoClick = function()
+			if count == 0 then
+				displaySpeech(nil, "You have no items in your cart!")
+				return
+			end
+
+			local reviewPanel = vgui.Create("DFrame", GUIElements.store)
+			reviewPanel:SetSize(math.min(600, ScrW() - 100), math.min(600, ScrH() - 100))
+			reviewPanel:Center()
+			reviewPanel:SetDraggable(false)
+			reviewPanel:SetTitle("Review cart")
+
+			local reviewItems = vgui.Create("DScrollPanel", reviewPanel)
+			reviewItems:Dock(FILL)
+			reviewItems:DockMargin(5, 5, 5, 5)
+
+			for v, k in pairs(cartItems) do
+				k = GMSTBase_GetItemInfo(v)
+
+				local item = vgui.Create("DPanel", reviewItems)
+				item:Dock(TOP)
+				item:DockMargin(0, 0, 0, 5)
+				item:SetTall(128)
+				item:InvalidateLayout(true)
+
+				item.Paint = function(self, w, h)
+					draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
+				end
+
+				local model = vgui.Create("DModelPanel", item)
+				model:SetModel(k.model)
+				model:Dock(LEFT)
+				model:SetWide(128)
+				model:SetModel(k.model)
+				model:SetCamPos(Vector(100, 100, 50))
+				model:SetLookAt(Vector(0, 0, 0))
+				model:SetFOV(40)
+				model:SetAnimSpeed(20)
+				local remove = vgui.Create("DButton", item)
+				remove:Dock(BOTTOM)
+				remove:DockMargin(8, 8, 8, 8)
+				remove:SetWide(64)
+				remove:SetText("Remove")
+				local name = vgui.Create("DLabel", item)
+				name:Dock(TOP)
+				name:DockMargin(8, 8, 0, 0)
+				name:SetFont("Trebuchet24Bold")
+				name:SetText(k.name .. " (" .. cartItems[v] .. ")")
+				name:SizeToContents()
+				local desc = vgui.Create("DLabel", item)
+				desc:Dock(TOP)
+				desc:DockMargin(8, 2, 0, 0)
+				desc:SetFont("Trebuchet8")
+				desc:SetText(k.description)
+
+				remove.DoClick = function()
+					surface.PlaySound("buttons/button14.wav")
+
+					if cartItems[v] == 1 then
+						cartItems[v] = nil
+						item:Remove()
+					else
+						cartItems[v] = cartItems[v] - 1
+						name:SetText(k.name .. " (" .. cartItems[v] .. ")")
+					end
+
+					count = 0
+
+					for v, k in pairs(cartItems) do
+						count = count + k
+					end
+
+					total = total - k.price
+
+					if count == 0 then
+						reviewPanel:Remove()
+					end
+
+					cart:SetText("Cart: " .. count .. " items / " .. total .. "cc")
+					cart:SizeToContents()
+				end
+			end
+
+			local purchase = vgui.Create("DButton", reviewPanel)
+			purchase:Dock(BOTTOM)
+			purchase:DockMargin(5, 5, 5, 5)
+			purchase:SetTall(48)
+			purchase:SetText("Purchase")
+			purchase.DoClick = function()
+				surface.PlaySound("buttons/button14.wav")
+
+				if count == 0 then
+					displaySpeech(nil, "You have no items in your cart!")
+					return
+				end
+
+				if count > 500 then
+					displaySpeech(nil, "You can only purchase 500 items at a time!")
+					return
+				end
+
+				if CL_GLOBALS.money < total then
+					displaySpeech(nil, "You do not have enough money to purchase these items!")
+					return
+				end
+
+				GUIElements.buying = vgui.Create("DPanel")
+				GUIElements.buying:SetSize(ScrW(), ScrH())
+				GUIElements.buying:MakePopup()
+				GUIElements.buying.Paint = function(self, w, h)
+					draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 200))
+					draw.SimpleText("Purchasing...", "Trebuchet48Bold", w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+				end
+
+				net.Start("gmstation_store")
+					net.WriteTable(cartItems)
+				net.SendToServer()
+			end
+		end
+
 		for v, k in ipairs(store_items) do
+			local id = k
+			k = GMSTBase_GetItemInfo(k)
+
 			local item = vgui.Create("DPanel", store)
 			item:Dock(TOP)
 			item:DockMargin(0, 0, 0, 5)
 			item:SetTall(128)
+			item:InvalidateLayout(true)
 
 			item.Paint = function(self, w, h)
 				draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
@@ -83,29 +236,50 @@ net.Receive("gmstation_store", function()
 			model:SetLookAt(Vector(0, 0, 0))
 			model:SetFOV(40)
 			model:SetAnimSpeed(20)
-			local buy = vgui.Create("DButton", item)
-			buy:Dock(BOTTOM)
-			buy:DockMargin(8, 8, 8, 8)
-			buy:SetWide(64)
-			buy:SetText(k.price .. "cc")
+			local addtocart = vgui.Create("DButton", item)
+			addtocart:Dock(BOTTOM)
+			addtocart:DockMargin(8, 8, 8, 8)
+			addtocart:SetWide(64)
+			addtocart:SetText("Add to cart")
 
-			buy.DoClick = function()
-				net.Start("gmstation_store_buy")
-				net.WriteString(k.name)
-				net.SendToServer()
+			addtocart.DoClick = function()
+				surface.PlaySound("buttons/button14.wav")
+
+				total = total + k.price
+
+				if !cartItems[id] then
+					cartItems[id] = 1
+				else
+					cartItems[id] = cartItems[id] + 1
+				end
+
+				count = 0
+
+				for v, k in pairs(cartItems) do
+					count = count + k
+				end
+
+				cart:SetText("Cart: " .. count .. " items / " .. total .. "cc")
+				cart:SizeToContents()
 			end
 
 			local name = vgui.Create("DLabel", item)
 			name:Dock(TOP)
-			name:DockMargin(16, 16, 0, 0)
+			name:DockMargin(8, 8, 0, 0)
 			name:SetText(k.name)
-			name:SetFont("Trebuchet32")
+			name:SetFont("Trebuchet24Bold")
 			name:SetTall(32)
 			local desc = vgui.Create("DLabel", item)
 			desc:Dock(TOP)
-			desc:DockMargin(16, 2, 0, 0)
+			desc:DockMargin(8, 2, 0, 0)
 			desc:SetFont("Trebuchet8")
-			desc:SetText(k.desc)
+			desc:SetText(k.description)
+			local price = vgui.Create("DLabel", item)
+			price:SetFont("Trebuchet8")
+			price:SetText(k.price .. "cc")
+			price:SetContentAlignment(9)
+			price:SetWide(GUIElements.store:GetWide() - 16 - 8)
+			price:SetPos(0, 14)
 		end
 	end)
 
@@ -133,4 +307,14 @@ net.Receive("gmstation_store", function()
 			GUIElements.store.close()
 		end
 	end)
+end)
+
+net.Receive("gmstation_purchased", function()
+	if IsValid(GUIElements.buying) then
+		GUIElements.buying:Remove()
+	end
+
+	if IsValid(GUIElements.store) then
+		GUIElements.store.close()
+	end
 end)

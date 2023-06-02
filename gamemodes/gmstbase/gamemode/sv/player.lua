@@ -43,7 +43,7 @@ function PlayerInit(ply)
 	MsgN("[GMSTBase] " .. ply:Nick() .. " joined.")
 	PlayerMessage(nil, ply:Nick() .. " has entered the station.")
 
-	function ply:UpdateInfo()
+	function ply:UpdateInfo(post_fun)
 		MsgN("[GMSTBase] Updating " .. ply:Nick() .. " info.")
 
 		apiCall("player_info", {
@@ -51,7 +51,7 @@ function PlayerInit(ply)
 		}, function(body)
 			for k, v in pairs(body) do
 				MsgN("[GMSTBase] " .. ply:Nick() .. " " .. k .. " = " .. v)
-				ply:SetNW2String(k, v)
+				ply[k] = v
 			end
 
 			MsgN("[GMSTBase] Sending " .. ply:Nick() .. " hat info.")
@@ -59,11 +59,17 @@ function PlayerInit(ply)
 			net.WriteEntity(ply)
 			net.WriteString(ply:GetNW2String("hat", ""))
 			net.Broadcast()
+		
+			if post_fun then
+				post_fun()
+			end
+
 			MsgN("[GMSTBase] Updated " .. ply:Nick() .. " info.")
 		end)
 	end
 
 	function ply:GetMoney()
+		MsgN("[GMSTBase] " .. ply:Nick() .. " has " .. ply.money .. " cc.")
 		return ply.money
 	end
 
