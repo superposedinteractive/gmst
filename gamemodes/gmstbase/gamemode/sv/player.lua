@@ -50,7 +50,7 @@ function PlayerInit(ply)
 			steamid = ply:SteamID64()
 		}, function(body)
 			for k, v in pairs(body) do
-				MsgN("[GMSTBase] " .. ply:Nick() .. " " .. k .. " = " .. v)
+				MsgN("[GMSTBase] " .. ply:Nick() .. " " .. k .. " = " .. tostring(v))
 				ply[k] = v
 			end
 

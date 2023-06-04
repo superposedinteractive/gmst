@@ -39,8 +39,6 @@ net.Receive("gmstation_store", function(len, ply)
 		end
 	end
 
-	PrintTable(items)
-
 	for k, v in pairs(items) do
 		items[k] = math.floor(v)
 	end

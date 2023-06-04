@@ -6,6 +6,7 @@ end
 
 CL_GLOBALS.url = "https://superposed.xyz/gmstation"
 CL_GLOBALS.money = 0
+CL_GLOBALS.inventory = {}
 if !oldChat then
 	MsgN("[GMSTBase] Overriding chat.AddText")
 	oldChat = chat.AddText
@@ -28,8 +29,6 @@ for k, v in ipairs(file.Find("gmstbase/gamemode/cl/*.lua", "LUA")) do
 end
 
 function GM:ForceDermaSkin()
-	MsgN("Forcing GMStation skin...")
-
 	return "GMStation"
 end
 

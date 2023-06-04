@@ -46,12 +46,12 @@ function SetupHUD()
 	GUIElements.quick_hud:SetPos(0, ScrH() - 100 - 32)
 
 	GUIElements.quick_hud.Paint = function(self, w, h)
-		money = math.ceil(Lerp(FrameTime() * 4, money, CL_GLOBALS.money || 0))
+		-- money = math.Round(Lerp(FrameTime() * 4, money, CL_GLOBALS.money || 0))
 		surface.SetDrawColor(0, 0, 0)
 		surface.SetMaterial(hoz)
 		surface.DrawTexturedRect(0, 0, 300, h)
 		draw.SimpleText(CL_GLOBALS.zone || "Somewhere", "Trebuchet24Bold", 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
-		draw.SimpleText(string.Comma(money) .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(string.Comma(CL_GLOBALS.money) .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 end
 
@@ -151,6 +151,7 @@ function FetchInfo()
 		MsgN("[GMST] Info received, updated global variables")
 
 		CL_GLOBALS.money = body["money"] || "ERROR"
+		CL_GLOBALS.inventory = body["inventory"] || {}
 
 		if oldMoney != 0 then
 			if oldMoney > CL_GLOBALS.money then

@@ -40,7 +40,7 @@ local function thirdperson(ply, pos, ang, fov)
 		})
 
 		if tr.Hit then
-			view.origin = tr.HitPos
+			view.origin = tr.HitPos + tr.HitNormal
 		end
 	end
 

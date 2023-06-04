@@ -216,13 +216,6 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	local targetPreviewPos = Vector(50, 50, 50)
 	local targetPreviewTarget = Vector(0, 0, 40)
 	local targetPreviewFov = 40
-	local hats = {}
-
-	for k, v in pairs(items) do
-		if v.type == "hat" then
-			table.insert(hats, v)
-		end
-	end
 
 	GUIElements.tabs.drip.list.hats = vgui.Create("DLabel", GUIElements.tabs.drip.list)
 	GUIElements.tabs.drip.list.hats:SetFont("Trebuchet24Bold")
@@ -278,6 +271,8 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GMSTBase_SimpleHover(nohat, "Take off hat")
 
 	for i = 1, #items do
+		if !CL_GLOBALS.inventory[items[i]] then continue end
+
 		local itemPanel = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.hatsgrid)
 		local item = GMSTBase_GetItemInfo(items[i])
 		itemPanel:SetModel(item.model)
