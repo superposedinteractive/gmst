@@ -21,7 +21,10 @@ function GMSTBase_RetreiveItems()
 				description = item.description,
 				type = item.type,
 				info = item.info,
-				unobtainable = item.unobtainable,
+				unobtainable = item.unobtainable == 1,
+				vip = item.vip == 1,
+				tradeable = item.tradeable == 1,
+				sellable = item.sellable == 1,
 				price = item.price,
 				model = item.model
 			}
@@ -64,6 +67,9 @@ function GMSTBase_GetItemInfo(id)
 			type = "Unknown",
 			info = "Unknown",
 			unobtainable = true,
+			vip = false,
+			tradeable = false,
+			sellable = false,
 			price = 0,
 			model = "error.mdl"
 		}

@@ -35,6 +35,14 @@ local function image_load(dimage, path)
 end
 
 local function createFonts()
+	surface.CreateFont("Trebuchet72Bold", {
+		font = "Trebuchet MS",
+		size = 108,
+		weight = 1000,
+		antialias = true,
+		shadow = false
+	})
+
 	surface.CreateFont("Trebuchet48Bold", {
 		font = "Trebuchet MS",
 		size = 72,

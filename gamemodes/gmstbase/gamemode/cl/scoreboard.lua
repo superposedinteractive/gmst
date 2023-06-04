@@ -28,7 +28,7 @@ local credits = {
 	{"Our whole community for supporting us and you for playing!"},
 }
 
-local settingOrder = {"Music Volume", "sep", "Scoreboard Waves*", "Scoreboard Blur", "Blur Strength", "sep", "Delete Account",}
+local settingOrder = {"Music Volume", "sep", "Scoreboard Waves*", "Scoreboard Blur", "Blur Strength", "sep", "Refresh Data", "sep", "Delete Account"}
 
 local settings = {
 	["sep"] = {"seperator"},
@@ -42,6 +42,15 @@ local settings = {
 				net.Start("gmstation_deleteAccount")
 				net.SendToServer()
 			end, "No")
+		end
+	},
+	["Refresh Data"] = {
+		"refreshData", optionTypes["BUTTON"], "Refresh Data", function()
+			GMSTBase_RequestNetVars()
+			GMSTBase_RetreiveItems()
+			if FetchInfo then
+				FetchInfo()
+			end
 		end
 	}
 }
@@ -326,6 +335,11 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			fancyhoverunobtainable:Dock(TOP)
 			fancyhoverunobtainable:DockMargin(8, 0, 8, 2)
 			tagsh = tagsh + fancyhoverunobtainable:GetTall()
+		else
+			local fancyhoverstores = GMSTBase_tag(fancyhover, Color(30, 160, 25), "In Stores")
+			fancyhoverstores:Dock(TOP)
+			fancyhoverstores:DockMargin(8, 0, 8, 2)
+			tagsh = tagsh + fancyhoverstores:GetTall()
 		end
 
 		if !item.tradeable then
@@ -333,9 +347,14 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			fancyhoveruntradeable:Dock(TOP)
 			fancyhoveruntradeable:DockMargin(8, 0, 8, 2)
 			tagsh = tagsh + fancyhoveruntradeable:GetTall()
+		else
+			local fancyhovertradeable = GMSTBase_tag(fancyhover, Color(0, 160, 140), "Tradeable")
+			fancyhovertradeable:Dock(TOP)
+			fancyhovertradeable:DockMargin(8, 0, 8, 2)
+			tagsh = tagsh + fancyhovertradeable:GetTall()
 		end
 
-		if !item.vip then
+		if item.vip then
 			local fancyhovervip = GMSTBase_tag(fancyhover, Color(255, 0, 255), "VIP")
 			fancyhovervip:Dock(TOP)
 			fancyhovervip:DockMargin(8, 0, 8, 0)

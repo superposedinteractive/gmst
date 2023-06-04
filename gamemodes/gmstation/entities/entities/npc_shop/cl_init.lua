@@ -243,6 +243,16 @@ net.Receive("gmstation_store", function()
 			addtocart:SetText("Add to cart")
 
 			addtocart.DoClick = function()
+				if k.type == "hat" then
+					if cartItems[id] then
+						displaySpeech(nil, "I think you already have this hat in your cart...")
+						return
+					elseif CL_GLOBALS.inventory[id] then
+						displaySpeech(nil, "I don't think you need two of these hats...")
+						return
+					end
+				end
+
 				surface.PlaySound("buttons/button14.wav")
 
 				total = total + k.price

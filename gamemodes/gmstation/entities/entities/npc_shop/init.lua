@@ -55,8 +55,8 @@ net.Receive("gmstation_store", function(len, ply)
 			net.Start("gmstation_purchased")
 			net.Send(ply)
 		else
-			MsgN("[GMStation] ", ply:Nick(), " tried to purchase items for " .. total .. "cc, but they only have " .. ply:GetMoney() .. "cc.")
-			PlayerMessage(ply, "You don't have enough money to purchase these items!")
+			MsgN("[GMStation] ", ply:Nick(), " tried to purchase items for " .. total .. "cc, but they only have " .. ply:GetMoney() .. "cc. (USING CLIENT MODS)")
+			ULib.kick(ply, "Nice try, but your client mods won't work here.")
 		end
 	end)
 end)
