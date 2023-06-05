@@ -1,1 +1,0 @@
-﻿networkVariables["gamestate"] = 0

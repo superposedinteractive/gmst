@@ -1,5 +1,0 @@
-@SolidClass = trigger_zone 
-[
-    zoneName(string) : "Zone name"
-]
-

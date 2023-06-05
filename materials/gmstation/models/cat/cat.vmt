@@ -1,8 +1,0 @@
-"VertexlitGeneric"
-{
-	"$basetexture"				"gmstation/models/cat/cat"
-	"$detail"					"gmstation/models/cat/face"
-	"$detailtexturetransform"	"center .5 .5 scale 1 1 rotate 0 translate -0.09375 -0.109375"
-	"$detailblendmode"			"2"
-	"$detailblendfactor"		"1"
-}

@@ -1,7 +1,0 @@
-"gmstlobby" {
-	"base"  "gmstbase"
-	"title" "GMStation"
-	"category"  "other"
-	"menusystem"	"1"
-	"maps"		"^gmst_"
-}

@@ -1,7 +1,0 @@
-"gmst_rocketeers" {
-	"base"  "gmstbase"
-	"title" "GMStation: Rocketeers"
-	"category"  "other"
-	"menusystem"	"1"
-	"maps"		"^rckt_"
-}

@@ -1,2 +1,0 @@
-﻿// GMSTBase - NETVARS SHARED
-networkVariables = {}

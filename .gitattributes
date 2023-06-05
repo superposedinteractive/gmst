@@ -1,4 +1,0 @@
-*.mp3 filter=lfs diff=lfs merge=lfs
-*.bsp filter=lfs diff=lfs merge=lfs
-*.vmf filter=lfs diff=lfs merge=lfs
-*.vtf filter=lfs diff=lfs merge=lfs
