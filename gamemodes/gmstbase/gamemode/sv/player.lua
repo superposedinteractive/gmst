@@ -153,6 +153,7 @@ end
 
 function GM:PlayerConnect(name)
 	MsgN("[GMSTBase] " .. name .. " is joining.")
+	PlayerMessage(nil, name .. " is arraving at the station.")
 end
 
 function GM:PlayerDisconnected(ply)
