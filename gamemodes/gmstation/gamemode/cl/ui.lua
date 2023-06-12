@@ -120,7 +120,8 @@ function GMST_ScrollingAnnouncement(text)
 		GUIElements.announcement:Remove()
 	end
 
-	local dialouge = string.Replace(string.Replace(string.Replace(string.lower(text), " ", "_"), "'", ""), ".", "")
+	local dialouge = string.Replace(string.Replace(string.Replace(string.lower(text), " ", ""), "'", ""), ".", "")
+	dialouge = string.sub(dialouge, 1, 8)
 
 	MsgN("Announcement: " .. dialouge)
 
