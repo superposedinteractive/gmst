@@ -22,6 +22,7 @@ local credits = {
 	{"Dark", "Mapping, Modeling, Composing & SFX"},
 	{}, {"Bartkk", "API Development & Contributions"},
 	{"Michu", "Server hosting & Contributions"},
+	{"Viz", "Modeling"},
 	{}, {"Special thanks to :"},
 	{"PixelTail Games for the original GMTower concept."},
 	{"The folks over at TCF for the GMTower revival."},
@@ -401,6 +402,27 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		GMSTBase_SimpleHover(itemPanel, name .. "\nDefault playermodel.")
 	end
 
+	GUIElements.tabs.drip.colortext = vgui.Create("DLabel", GUIElements.tabs.drip.list)
+	GUIElements.tabs.drip.colortext:SetText("Colour")
+	GUIElements.tabs.drip.colortext:SetFont("Trebuchet24Bold")
+	GUIElements.tabs.drip.colortext:SetTextColor(Color(255, 255, 255))
+	GUIElements.tabs.drip.colortext:SizeToContents()
+	GUIElements.tabs.drip.colortext:Dock(TOP)
+
+	GUIElements.tabs.drip.color = vgui.Create("DColorMixer", GUIElements.tabs.drip.list)
+	GUIElements.tabs.drip.color:Dock(TOP)
+	GUIElements.tabs.drip.color:DockMargin(0, 0, 16, 0)
+	GUIElements.tabs.drip.color:SetTall(256)
+	GUIElements.tabs.drip.color:SetPalette(false)
+	GUIElements.tabs.drip.color:SetAlphaBar(false)
+	GUIElements.tabs.drip.color:SetWangs(false)
+	GUIElements.tabs.drip.color:SetColor(LocalPlayer():GetPlayerColor():ToColor())
+
+	GUIElements.tabs.drip.color.ValueChanged = function(self, col)
+		local arg = tostring(col.r / 255) .. " " .. tostring(col.g / 255) .. " " .. tostring(col.b / 255)
+		RunConsoleCommand("cl_playercolor", arg)
+	end
+
 	GUIElements.tabs.drip.preview = vgui.Create("DModelPanel", GUIElements.tabs.drip)
 	GUIElements.tabs.drip.preview:Dock(RIGHT)
 	GUIElements.tabs.drip.preview:SetWide(256)
@@ -424,9 +446,10 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 
 		ang:RotateAroundAxis(ang:Forward(), 90)
 		ang:RotateAroundAxis(ang:Right(), -90)
+		ang:RotateAroundAxis(ang:Up(), 180)
 
 		hat:SetPos(pos + ang:Forward() * 0.5 + ang:Up() * 0.5)
-		hat:SetPos(hat:GetPos() + ang:Forward() * -hatoffsets[pm].x + ang:Up() * hatoffsets[pm].y)
+		hat:SetPos(hat:GetPos() + ang:Forward() * hatoffsets[pm].x + ang:Up() * hatoffsets[pm].y)
 
 		hat:SetAngles(ang)
 

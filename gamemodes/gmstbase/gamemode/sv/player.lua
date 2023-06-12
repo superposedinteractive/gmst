@@ -56,8 +56,8 @@ function PlayerInit(ply)
 
 			MsgN("[GMSTBase] Sending " .. ply:Nick() .. " hat info.")
 			net.Start("gmstation_hatchange")
-			net.WriteEntity(ply)
-			net.WriteString(ply:GetNW2String("hat", ""))
+				net.WriteEntity(ply)
+				net.WriteString(body.hat)
 			net.Broadcast()
 		
 			if post_fun then
@@ -210,8 +210,8 @@ net.Receive("gmstation_hatchange", function(len, ply)
 
 			ply:SetNW2String("hat", hat)
 			net.Start("gmstation_hatchange")
-			net.WriteEntity(ply)
-			net.WriteString(hat)
+				net.WriteEntity(ply)
+				net.WriteString(hat)
 			net.Broadcast()
 		else
 			MsgN("[GMSTBase] " .. ply:Nick() .. " failed to change their hat to " .. hat .. ".")

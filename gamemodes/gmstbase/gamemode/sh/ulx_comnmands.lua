@@ -35,3 +35,30 @@ end
 local copydiscord = ulx.command(CATEGORY_NAME, "ulx discord", ulx.copydiscord, "!discord")
 copydiscord:defaultAccess(ULib.ACCESS_ALL)
 copydiscord:help("Copies the discord link to your clipboard.")
+
+function ulx.givemoney(calling_ply, target_ply, amount)
+	if !target_ply:IsPlayer() then return end
+	if !target_ply:Alive() then return end
+	if !calling_ply:IsAdmin() then return end
+	if !amount then return end
+	target_ply:MoneyAdd(amount)
+	ulx.fancyLogAdmin(calling_ply, "#A has given #T #scc", target_ply, amount)
+end
+
+local givemoney = ulx.command(CATEGORY_NAME, "ulx givemoney", ulx.givemoney, "!givemoney")
+givemoney:addParam{
+	type = ULib.cmds.PlayerArg,
+	default = function(ply) return ply end,
+	hint = "player"
+}
+
+givemoney:addParam{
+	type = ULib.cmds.NumArg,
+	default = 0,
+	hint = "amount",
+	max = 1000000,
+	ULib.cmds.round
+}
+
+givemoney:defaultAccess(ULib.ACCESS_ADMIN)
+givemoney:help("Gives the target player money.")

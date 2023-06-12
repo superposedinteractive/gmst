@@ -1,6 +1,13 @@
 ﻿ENT.Type = "anim"
 ENT.Base = "base_gmodentity"
 
+function ENT:KeyValue(key, value)
+	if key == "gamemode" then
+		self.gamemode = value
+		self:SetNWString("gamemode", value)
+	end
+end
+
 function ENT:Initialize()
 	self:SetModel("models/props_office/whiteboard.mdl")
 	self:SetSolid(SOLID_VPHYSICS)
@@ -11,16 +18,16 @@ function ENT:Initialize()
 	self.players = {}
 	self.players_count = 0
 
-	function self:GetQueue()
-		self.queue = {}
-		for k, v in pairs(self.players) do
-			table.insert(queue, v)
-		end
-		return queue
-	end
-
 	if SERVER then
 		self:SetUseType(SIMPLE_USE)
+
+		self:SetNWString("gamemode", self.gamemode)
+
+		timer.Create(tostring(self) .. "_gmupdate", 5, 0, function()
+			net.Start("gmstation_bulletin")
+				net.WriteEntity(self)
+			net.Broadcast()
+		end)
 	end
 end
 

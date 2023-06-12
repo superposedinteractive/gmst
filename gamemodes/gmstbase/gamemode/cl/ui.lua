@@ -17,7 +17,19 @@ GUIElements.notifications.Paint = function() end
 GUIElements.notifications.list = {}
 
 function GM:HUDDrawTargetID()
-	return false
+	local tr = util.GetPlayerTrace(LocalPlayer())
+	local trace = util.TraceLine(tr)
+	if trace.Hit && !trace.Entity:IsPlayer() then return end
+	local text = "ERROR"
+	local color = Color(255, 255, 255)
+	if trace.Entity:IsPlayer() then
+		text = trace.Entity:Nick()
+		color = trace.Entity:GetPlayerColor():ToColor()
+	end
+
+	local x, y = ScrW() / 2, ScrH() / 2 + 64
+	draw.SimpleText(text, "Trebuchet24Bold", x + 1, y + 1, Color(0, 0, 0), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.SimpleText(text, "Trebuchet24Bold", x, y, color, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 function GM:HUDShouldDraw(name)
@@ -551,5 +563,5 @@ hook.Add("HUDPaint", "gmstation_draw_info", function()
 	draw.DrawText(stringified_globals, "TrebuchetChat", ScrW(), height, Color(255, 255, 255), TEXT_ALIGN_RIGHT)
 end)
 
--- hook.Remove("HUDPaint", "gmstation_draw_info")
+hook.Remove("HUDPaint", "gmstation_draw_info")
 timer.Stop("gmstation_payout_timer")

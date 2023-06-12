@@ -11,7 +11,7 @@ net.Receive("gmstation_store", function()
 	local message = net.ReadString()
 	local exitMessage = net.ReadString()
 	local store_items = {}
-	displaySpeech(nil, message)
+	GMST_DisplaySpeech(nil, message, "Shopkeeper")
 
 	if GUIElements.store then
 		GUIElements.store:Remove()
@@ -51,7 +51,7 @@ net.Receive("gmstation_store", function()
 		end)
 
 		timer.Remove("gmstation_store_music")
-		displaySpeech(nil, exitMessage)
+		GMST_DisplaySpeech(nil, exitMessage, "Shopkeeper")
 		music:FadeOut(1)
 
 		if CL_GLOBALS.currentSound then
@@ -96,7 +96,7 @@ net.Receive("gmstation_store", function()
 
 		review.DoClick = function()
 			if count == 0 then
-				displaySpeech(nil, "You have no items in your cart!")
+				GMST_DisplaySpeech(nil, "You have no items in your cart!", "Shopkeeper")
 				return
 			end
 
@@ -186,17 +186,17 @@ net.Receive("gmstation_store", function()
 				surface.PlaySound("buttons/button14.wav")
 
 				if count == 0 then
-					displaySpeech(nil, "You have no items in your cart!")
+					GMST_DisplaySpeech(nil, "You have no items in your cart!", "Shopkeeper")
 					return
 				end
 
 				if count > 500 then
-					displaySpeech(nil, "You can only purchase 500 items at a time!")
+					GMST_DisplaySpeech(nil, "You can only purchase 500 items at a time!", "Shopkeeper")
 					return
 				end
 
 				if CL_GLOBALS.money < total then
-					displaySpeech(nil, "You do not have enough money to purchase these items!")
+					GMST_DisplaySpeech(nil, "You do not have enough money to purchase these items!", "Shopkeeper")
 					return
 				end
 
@@ -245,10 +245,10 @@ net.Receive("gmstation_store", function()
 			addtocart.DoClick = function()
 				if k.type == "hat" then
 					if cartItems[id] then
-						displaySpeech(nil, "I think you already have this hat in your cart...")
+						GMST_DisplaySpeech(nil, "I think you already have this hat in your cart...", "Shopkeeper")
 						return
 					elseif CL_GLOBALS.inventory[id] then
-						displaySpeech(nil, "I don't think you need two of these hats...")
+						GMST_DisplaySpeech(nil, "I don't think you need two of these hats...", "Shopkeeper")
 						return
 					end
 				end
@@ -280,10 +280,12 @@ net.Receive("gmstation_store", function()
 			name:SetFont("Trebuchet24Bold")
 			name:SetTall(32)
 			local desc = vgui.Create("DLabel", item)
-			desc:Dock(TOP)
+			desc:Dock(FILL)
 			desc:DockMargin(8, 2, 0, 0)
+			desc:SetContentAlignment(7)
 			desc:SetFont("Trebuchet8")
 			desc:SetText(k.description)
+			desc:SetVerticalScrollbarEnabled(false)
 			local price = vgui.Create("DLabel", item)
 			price:SetFont("Trebuchet8")
 			price:SetText(k.price .. "cc")

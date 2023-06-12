@@ -27,3 +27,14 @@ hook.Add("gmstation_chat_bad_word", "gmstbadword", function(ply, msg)
 		ply:TakeDamageInfo(d)
 	end
 end)
+
+hook.Add("PlayerInitialSpawn", "gmstdosh", function(ply)
+	timer.Create("gmstation_dosh_" .. ply:SteamID(), 60, 0, function()
+		PlayerMessage(ply, "Thanks for staying around!")
+		ply:MoneyAdd(100)
+	end)
+end)
+
+hook.Add("PlayerDisconnected", "gmstdosh", function(ply)
+	timer.Remove("gmstation_dosh_" .. ply:SteamID())
+end)

@@ -2,7 +2,7 @@
 	["volume"] = 0.5,
 	["tabWaves"] = true,
 	["tabBlur"] = true,
-	["blurStrength"] = 0.5
+	["blurStrength"] = 0.05
 }
 
 function apiCall(url, args, callback)

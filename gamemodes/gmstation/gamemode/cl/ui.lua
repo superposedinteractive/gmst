@@ -46,11 +46,13 @@ function SetupHUD()
 	GUIElements.quick_hud:SetPos(0, ScrH() - 100 - 32)
 
 	GUIElements.quick_hud.Paint = function(self, w, h)
-		-- money = math.Round(Lerp(FrameTime() * 4, money, CL_GLOBALS.money || 0))
+		money = math.Round(Lerp(FrameTime() * 4, money, CL_GLOBALS.money || 0))
 		surface.SetDrawColor(0, 0, 0)
 		surface.SetMaterial(hoz)
 		surface.DrawTexturedRect(0, 0, 300, h)
-		draw.SimpleText(CL_GLOBALS.zone || "Somewhere", "Trebuchet24Bold", 18, 28, Color(255, 255, 255, 100), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(CL_GLOBALS.zone || "Somewhere", "Trebuchet24Bold", 18 + 2, 28 + 2, Color(0, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(CL_GLOBALS.zone || "Somewhere", "Trebuchet24Bold", 18, 28, Color(190, 190, 190), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(string.Comma(CL_GLOBALS.money) .. "cc", "Trebuchet32", 18 + 2, 66 + 2, Color(0, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 		draw.SimpleText(string.Comma(CL_GLOBALS.money) .. "cc", "Trebuchet32", 18, 66, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 end
@@ -63,7 +65,7 @@ function GM:OnScreenSizeChanged(w, h)
 	end
 end
 
-function displaySpeech(icon, text, name)
+function GMST_DisplaySpeech(icon, text, name)
 	timer.Remove("gmstation_textbox")
 
 	if IsValid(GUIElements.speech) then
@@ -112,6 +114,39 @@ function displaySpeech(icon, text, name)
 		end
 	end)
 end
+
+function GMST_ScrollingAnnouncement(text)
+	if IsValid(GUIElements.announcement) then
+		GUIElements.announcement:Remove()
+	end
+
+	local dialouge = string.Replace(string.lower(text), " ", "_")
+	MsgN(dialouge)
+
+	surface.PlaySound("gmstation/sfx/announcer/announce_start.wav")
+
+	surface.SetFont("Trebuchet32Bold")
+	local w, h = surface.GetTextSize(text)
+
+	GUIElements.announcement = vgui.Create("DPanel")
+	GUIElements.announcement:SetSize(w, 64)
+	GUIElements.announcement:SetPos(ScrW(), 128)
+
+	GUIElements.announcement.Paint = function(self, w, h)
+		draw.SimpleText(text, "Trebuchet32Bold", 2, h / 2 + 2, Color(0, 0, 0), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+		draw.SimpleText(text, "Trebuchet32Bold", 0, h / 2, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
+	end
+
+	GUIElements.announcement:MoveTo(-w, GUIElements.announcement:GetY(), 20, 3.5, 1, function()
+		if IsValid(GUIElements.announcement) then
+			GUIElements.announcement:Remove()
+		end
+	end)
+end
+
+net.Receive("gmstation_announcement", function()
+	GMST_ScrollingAnnouncement(net.ReadString())
+end)
 
 function GM:OnReloaded()
 	GMSTBase_RetreiveItems()

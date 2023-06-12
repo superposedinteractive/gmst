@@ -3,3 +3,14 @@
     zoneName(string) : "Zone name"
 ]
 
+@PointClass studio("") = ent_gmstatus
+[
+    gamemode(string) : "Gamemode name"
+]
+
+@PointClass studio("models/humans/group01/female_02.mdl") = npc_shop
+[
+    store(integer) : "Store ID"
+    message(string) : "Enter message"
+    exitMessage(string) : "Exit message"
+]

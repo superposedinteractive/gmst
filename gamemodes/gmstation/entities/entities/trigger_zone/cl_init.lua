@@ -22,6 +22,11 @@ local Sounds = {
 	},
 	["Comedically long tunnel that serves no purpose"] = {
 		["Sounds"] = {"ambient/tones/tunnel_wind_loop.wav"}
+	},
+	["MUM I'M OOB!!!"] = {
+		["Loop"] = true,
+		["Duration"] = {272.44},
+		["Sounds"] = {"/gmstation/music/camcum.mp3"}
 	}
 }
 

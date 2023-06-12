@@ -14,7 +14,7 @@ end
 
 function ENT:KeyValue(key, value)
 	self[key] = value
-	MsgN("GMStation: ", key, " = ", value)
+	MsgN("[" .. tostring(self) .. "] ", key, " = ", value)
 end
 
 function ENT:Use(activator, caller, useType, value)
