@@ -145,7 +145,7 @@ function GMST_ScrollingAnnouncement(text)
 		draw.SimpleText(text, "Trebuchet32Bold", 0, h / 2, Color(255, 255, 255), TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER)
 	end
 
-	GUIElements.announcement:MoveTo(-w, GUIElements.announcement:GetY(), 20, 3.5, 1, function()
+	GUIElements.announcement:MoveTo(-w, GUIElements.announcement:GetY(), 10, 3.5, 1, function()
 		if IsValid(GUIElements.announcement) then
 			GUIElements.announcement:Remove()
 		end
