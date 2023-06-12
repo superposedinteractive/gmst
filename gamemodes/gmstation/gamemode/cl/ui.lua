@@ -120,8 +120,13 @@ function GMST_ScrollingAnnouncement(text)
 		GUIElements.announcement:Remove()
 	end
 
-	local dialouge = string.Replace(string.lower(text), " ", "_")
-	MsgN(dialouge)
+	local dialouge = string.Replace(string.Replace(string.Replace(string.lower(text), " ", "_"), "'", ""), ".", "")
+
+	if file.Exists("sound/gmstation/sfx/announcer/" .. dialouge .. ".wav", "GAME") then
+		timer.Simple(3, function()
+			surface.PlaySound("gmstation/sfx/announcer/" .. dialouge .. ".wav")
+		end)
+	end
 
 	surface.PlaySound("gmstation/sfx/announcer/announce_start.wav")
 
