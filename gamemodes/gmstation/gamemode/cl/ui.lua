@@ -122,6 +122,8 @@ function GMST_ScrollingAnnouncement(text)
 
 	local dialouge = string.Replace(string.Replace(string.Replace(string.lower(text), " ", "_"), "'", ""), ".", "")
 
+	MsgN("Announcement: " .. dialouge)
+
 	if file.Exists("sound/gmstation/sfx/announcer/" .. dialouge .. ".wav", "GAME") then
 		timer.Simple(3, function()
 			surface.PlaySound("gmstation/sfx/announcer/" .. dialouge .. ".wav")
