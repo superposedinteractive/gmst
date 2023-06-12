@@ -29,7 +29,7 @@ hook.Add("gmstation_chat_bad_word", "gmstbadword", function(ply, msg)
 end)
 
 hook.Add("PlayerInitialSpawn", "gmstdosh", function(ply)
-	timer.Create("gmstation_dosh_" .. ply:SteamID(), 60, 0, function()
+	timer.Create("gmstation_dosh_" .. ply:SteamID(), 60 * 5, 0, function()
 		PlayerMessage(ply, "Thanks for staying around!")
 		ply:MoneyAdd(100)
 	end)
