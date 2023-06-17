@@ -57,7 +57,7 @@ function PlayerInit(ply)
 			MsgN("[GMSTBase] Sending " .. ply:Nick() .. " hat info.")
 			net.Start("gmstation_hatchange")
 				net.WriteEntity(ply)
-				net.WriteString(body.hat)
+				net.WriteString(body.hat || "")
 			net.Broadcast()
 		
 			if post_fun then
