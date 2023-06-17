@@ -251,3 +251,13 @@ net.Receive("gmstation_update", function()
 	MsgN("[GMST] Update received, updating...")
 	FetchInfo()
 end)
+
+net.Receive("gmstation_gmabouttostart", function()
+	local gm = net.ReadString()
+	local time = net.ReadInt(32)
+	local timeLeft = time - os.time()
+
+	if timeLeft > 0 then
+		GMST_ScrollingAnnouncement("The gamemode " .. gm .. " is about to start in " .. timeLeft .. " seconds!")
+	end
+end)

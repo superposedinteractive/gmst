@@ -2,10 +2,8 @@
 ENT.Base = "base_gmodentity"
 
 function ENT:KeyValue(key, value)
-	if key == "gamemode" then
-		self.gamemode = value
-		self:SetNWString("gamemode", value)
-	end
+	self:SetNWString(key, value)
+	print(key, value)
 end
 
 function ENT:Initialize()
@@ -20,8 +18,6 @@ function ENT:Initialize()
 
 	if SERVER then
 		self:SetUseType(SIMPLE_USE)
-
-		self:SetNWString("gamemode", self.gamemode)
 
 		timer.Create(tostring(self) .. "_gmupdate", 5, 0, function()
 			net.Start("gmstation_bulletin")
