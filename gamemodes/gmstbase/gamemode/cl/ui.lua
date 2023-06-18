@@ -297,7 +297,7 @@ function GMSTBase_Notification(title_text, text_text, icon_uri)
 	end
 
 	surface.PlaySound("buttons/lightswitch2.wav")
-	notif:SetSize(math.min(w + 128, ScrW()), h + 64)
+	notif:SetSize(math.min(w + 32, ScrW()), h + 64)
 	notif:SetPos(ScrW(), ScrH() - 32 - notif:GetTall() - y - 32)
 
 	notif:MoveTo(ScrW() - notif:GetWide(), notif:GetY(), 0.5, 0, 0.5, function()
@@ -563,5 +563,5 @@ hook.Add("HUDPaint", "gmstation_draw_info", function()
 	draw.DrawText(stringified_globals, "TrebuchetChat", ScrW(), height, Color(255, 255, 255), TEXT_ALIGN_RIGHT)
 end)
 
-hook.Remove("HUDPaint", "gmstation_draw_info")
+-- hook.Remove("HUDPaint", "gmstation_draw_info")
 timer.Stop("gmstation_payout_timer")

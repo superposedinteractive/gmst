@@ -21,7 +21,6 @@ local credits = {
 	{"japannt", "Lead Developer"},
 	{"Dark", "Mapping, Modeling, Composing & SFX"},
 	{}, {"Bartkk", "API Development & Contributions"},
-	{"Michu", "Server hosting & Contributions"},
 	{"Viz", "Modeling"},
 	{}, {"Special thanks to :"},
 	{"PixelTail Games for the original GMTower concept."},

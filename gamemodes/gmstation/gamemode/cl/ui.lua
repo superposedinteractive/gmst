@@ -257,7 +257,7 @@ net.Receive("gmstation_gmabouttostart", function()
 	local time = net.ReadInt(32)
 	local timeLeft = time - os.time()
 
-	if timeLeft > 0 then
-		GMST_ScrollingAnnouncement("The gamemode " .. gm .. " is about to start in " .. timeLeft .. " seconds!")
+	if CL_GLOBALS.watching == gm then
+		GMST_ScrollingAnnouncement(string.upper(gm) .. " is about to start in " .. string.NiceTime(timeLeft) .. "!")
 	end
 end)
