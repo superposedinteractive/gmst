@@ -1,6 +1,4 @@
-﻿local bad_chars = {"!", "?", ".", ",", ":", ";", "'", '"', "(", ")", "[", "]", "{", "}", "<", ">", "/", "\\", "|", "-", "_", "=", "+", "*", "&", "^", "%", "$", "#", "@", "~", "`",}
-
-function GM:PlayerSay(ply, text, team)
+﻿function GM:PlayerSay(ply, text, team)
 	text = string.Trim(text)
 	if text == "" then return "" end
 
@@ -25,21 +23,6 @@ function GM:PlayerSay(ply, text, team)
 				hook.Run("gmstation_chat_bad_word", ply, word)
 			end
 		end
-	end
-
-	for k, v in pairs(words) do
-		if v == "a" then continue end
-
-		if string.len(v) == 1 then
-			words[k] = " "
-		end
-	end
-
-	text = string.Trim(string.Implode(" ", words))
-
-	if string.len(text) == 0 then
-		text = "I tried to bypass the chat filter!! I faild thus making me a big fat idiot!!"
-		hook.Run("gmstation_chat_bad_word", ply, "***")
 	end
 
 	net.Start("gmstation_chat")
