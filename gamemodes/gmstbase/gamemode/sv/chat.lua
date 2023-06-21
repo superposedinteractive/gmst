@@ -10,20 +10,18 @@
 
 	local temptext = string.lower(text)
 
-	for i = 1, #bad_chars do
-		temptext = string.Replace(temptext, bad_chars[i], "")
-	end
-
 	local words = string.Explode(" ", string.lower(temptext))
 
 	for k, v in pairs(words) do
 		for word, replacement in pairs(bad_words) do
-			if string.match(string.lower(v), string.lower(word)) then
+			if v == word then
 				words[k] = replacement
 				hook.Run("gmstation_chat_bad_word", ply, word)
 			end
 		end
 	end
+
+	text = string.Implode(" ", words)
 
 	net.Start("gmstation_chat")
 	net.WriteString(ply:GetNW2String("zone") || "Somewhere")
