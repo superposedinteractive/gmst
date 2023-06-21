@@ -2,7 +2,7 @@
 util.AddNetworkString("rocketeers_death")
 
 hook.Add("PlayerSpawn", "rocketeers_spawn", function(ply)
-	if !IsGameInProgress() then
+	if !IsGamein_progress() then
 		ply:SetTeam(1)
 	end
 

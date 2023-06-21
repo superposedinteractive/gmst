@@ -6,7 +6,7 @@ function GetGameTime()
 	return timer.TimeLeft("rocketeers_timer")
 end
 
-function IsGameInProgress()
+function IsGamein_progress()
 	return timer.Exists("rocketeers_timer")
 end
 

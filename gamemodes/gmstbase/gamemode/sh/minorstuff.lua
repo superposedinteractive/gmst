@@ -1,7 +1,6 @@
-﻿-- local hatOffsets = {
--- 	["css_urban"] = 0
--- }
-
+﻿// local hatOffsets = {
+// 	["css_urban"] = 0
+// }
 local items = {}
 game.AddParticles("particles/achievement.pcf")
 PrecacheParticleSystem("achieved")
@@ -12,6 +11,7 @@ end)
 
 function GMSTBase_RetreiveItems()
 	MsgN("[GMSTBase] Loading item definitions...")
+
 	apiCall("item_list", {}, function(body)
 		for i = 1, #body do
 			local item = body[i]

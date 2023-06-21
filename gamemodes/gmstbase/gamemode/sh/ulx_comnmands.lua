@@ -46,6 +46,7 @@ function ulx.givemoney(calling_ply, target_ply, amount)
 end
 
 local givemoney = ulx.command(CATEGORY_NAME, "ulx givemoney", ulx.givemoney, "!givemoney")
+
 givemoney:addParam{
 	type = ULib.cmds.PlayerArg,
 	default = function(ply) return ply end,

@@ -23,9 +23,6 @@ function OpenTerms(closebutton)
 end
 
 function SetupHUD()
-	GMSTBase_Notification("Welcome", {"Your profile has been loaded."})
-
-	Derma_Message("Welcome to GMStation!\nThis is a very early version of the gamemode, so expect bugs and missing features.\nIf you find any bugs, please report them on the Discord (https://discord.gg/EnadGnaAGm).\n\nHave fun!", "GMStation", "Sounds neat.")
 	local money = 0
 
 	if IsValid(GUIElements.registering) then
@@ -122,7 +119,6 @@ function GMST_ScrollingAnnouncement(text)
 
 	local dialouge = string.Replace(string.Replace(string.Replace(string.lower(text), " ", ""), "'", ""), ".", "")
 	dialouge = string.sub(dialouge, 1, 8)
-
 	MsgN("Announcement: " .. dialouge)
 
 	if file.Exists("sound/gmstation/sfx/announcer/" .. dialouge .. ".wav", "GAME") then
@@ -132,10 +128,8 @@ function GMST_ScrollingAnnouncement(text)
 	end
 
 	surface.PlaySound("gmstation/sfx/announcer/announce_start.wav")
-
 	surface.SetFont("Trebuchet32Bold")
 	local w, h = surface.GetTextSize(text)
-
 	GUIElements.announcement = vgui.Create("DPanel")
 	GUIElements.announcement:SetSize(w, 64)
 	GUIElements.announcement:SetPos(ScrW(), 128)
@@ -158,6 +152,7 @@ end)
 
 function GM:OnReloaded()
 	GMSTBase_RetreiveItems()
+
 	if CL_GLOBALS.steamid != nil then
 		SetupHUD()
 		FetchInfo()
@@ -185,18 +180,17 @@ end)
 
 function FetchInfo()
 	MsgN("[GMST] Fetching info...")
-
 	local oldMoney = CL_GLOBALS.money || 0
 
 	apiCall("player_info", {
 		steamid = CL_GLOBALS.steamid
 	}, function(body, len, headers, code)
 		MsgN("[GMST] Info received, updated global variables")
-
 		CL_GLOBALS.money = body["money"] || "ERROR"
 		CL_GLOBALS.inventory = body["inventory"] || {}
+		CL_GLOBALS.hat = body["hat"] || "ERROR"
 
-		if oldMoney != 0 then
+		if oldMoney != 0 && oldMoney != CL_GLOBALS.money then
 			if oldMoney > CL_GLOBALS.money then
 				surface.PlaySound("/mvm/mvm_bought_upgrade.wav")
 				GMSTBase_Notification("GMSTBank", "You lost " .. string.Comma(oldMoney - CL_GLOBALS.money) .. "cc.")
@@ -254,10 +248,9 @@ end)
 
 net.Receive("gmstation_gmabouttostart", function()
 	local gm = net.ReadString()
-	local time = net.ReadInt(32)
-	local timeLeft = time - os.time()
 
 	if CL_GLOBALS.watching == gm then
-		GMST_ScrollingAnnouncement(string.upper(gm) .. " is about to start in " .. string.NiceTime(timeLeft) .. "!")
+		GMST_ScrollingAnnouncement("The train for \"" .. gm .. "\" has boarded the station.")
+		CL_GLOBALS.watching = nil
 	end
 end)

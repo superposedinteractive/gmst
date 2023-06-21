@@ -15,11 +15,17 @@ opentos:help("Opens the terms of service for GMStation.")
 
 function ulx.announcement(calling_ply, announcement)
 	net.Start("gmstation_announcement")
-		net.WriteString(announcement)
+	net.WriteString(announcement)
 	net.Broadcast()
 end
 
 local announcement = ulx.command(CATEGORY_NAME, "ulx announcement", ulx.announcement, "!announcement")
-announcement:addParam{type=ULib.cmds.StringArg, hint="announcement", ULib.cmds.takeRestOfLine}
+
+announcement:addParam{
+	type = ULib.cmds.StringArg,
+	hint = "announcement",
+	ULib.cmds.takeRestOfLine
+}
+
 announcement:defaultAccess(ULib.ACCESS_ADMIN)
 announcement:help("Sends an announcement to all players.")

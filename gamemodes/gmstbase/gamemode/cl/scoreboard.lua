@@ -48,6 +48,7 @@ local settings = {
 		"refreshData", optionTypes["BUTTON"], "Refresh Data", function()
 			GMSTBase_RequestNetVars()
 			GMSTBase_RetreiveItems()
+
 			if FetchInfo then
 				FetchInfo()
 			end
@@ -209,7 +210,6 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	end
 
 	local hatmodel = LocalPlayer():GetNW2String("hat", "")
-
 	GUIElements.tabs.drip = vgui.Create("DPanel", GUIElements.tabs)
 	GUIElements.tabs.drip:Dock(FILL)
 	GUIElements.tabs.drip:SetVisible(false)
@@ -225,7 +225,6 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	local targetPreviewPos = Vector(50, 50, 50)
 	local targetPreviewTarget = Vector(0, 0, 40)
 	local targetPreviewFov = 40
-
 	GUIElements.tabs.drip.list.hats = vgui.Create("DLabel", GUIElements.tabs.drip.list)
 	GUIElements.tabs.drip.list.hats:SetFont("Trebuchet24Bold")
 	GUIElements.tabs.drip.list.hats:SetText("Hats")
@@ -249,13 +248,12 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs.drip.list.pmgrid:SetColWide(64)
 	GUIElements.tabs.drip.list.pmgrid:SetRowHeight(64)
 	GUIElements.tabs.drip.list.pmgrid:Dock(TOP)
-	local model = GMSTBase_GetItemInfo(LocalPlayer():GetNW2String("hat", "none")).model
+	local model = GMSTBase_GetItemInfo(CL_GLOBALS.hat).model
 	local pm = player_manager.TranslateToPlayerModelName(LocalPlayer():GetModel())
 	local hat = ClientsideModel(model, RENDERGROUP_OPAQUE)
 	hat:SetNoDraw(true)
 	hat:SetModelScale(hatoffsets[pm].s, 0)
 	hat:SetupBones()
-
 	local nohat = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.hatsgrid)
 	nohat:SetModel("models/props_c17/streetsign004e.mdl")
 	nohat:SetTall(64)
@@ -267,11 +265,10 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		net.WriteString("")
 		net.SendToServer()
 		hat:SetModel("error.mdl")
+		CL_GLOBALS.hat = ""
 		hat:SetModelScale(hatoffsets[pm].s, 0)
 		hat:SetupBones()
-
 		hatmodel = ""
-
 		targetPreviewPos = Vector(50, 50, 50)
 		targetPreviewTarget = Vector(0, 0, 40)
 		targetPreviewFov = 40
@@ -281,7 +278,6 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 
 	for i = 1, #items do
 		if !CL_GLOBALS.inventory[items[i]] then continue end
-
 		local itemPanel = vgui.Create("SpawnIcon", GUIElements.tabs.drip.list.hatsgrid)
 		local item = GMSTBase_GetItemInfo(items[i])
 		itemPanel:SetModel(item.model)
@@ -292,12 +288,11 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			net.Start("gmstation_hatchange")
 			net.WriteString(items[i])
 			net.SendToServer()
+			CL_GLOBALS.hat = items[i]
 			hat:SetModel(item.model)
 			hat:SetModelScale(hatoffsets[pm].s, 0)
 			hat:SetupBones()
-
 			hatmodel = item.model
-
 			targetPreviewPos = Vector(50, 50, 70)
 			targetPreviewTarget = Vector(0, 0, 70)
 			targetPreviewFov = 20
@@ -327,7 +322,6 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		fancyhoverprice:SetContentAlignment(9)
 		fancyhoverprice:SetPos(0, 14)
 		fancyhoverprice:SetWide(fancyhover:GetWide() - 16)
-
 		local tagsh = 0
 
 		if item.unobtainable then
@@ -364,10 +358,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 		surface.SetFont("Trebuchet8")
 		local w, h = surface.GetTextSize(item.description)
 		h = h * math.ceil(w / (fancyhover:GetWide() - 16))
-
-
 		fancyhover:SetTall(fancyhoverlabel:GetTall() + fancyhoverprice:GetTall() + h + tagsh)
-
 		GMSTBase_HoverPanel(itemPanel, fancyhover)
 	end
 
@@ -380,24 +371,19 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 
 		itemPanel.DoClick = function()
 			net.Start("gmstation_pmchange")
-				net.WriteString(model)
+			net.WriteString(model)
 			net.SendToServer()
-
 			GUIElements.tabs.drip.preview:SetModel(model)
 			pm = name
-
 			RunConsoleCommand("cl_playermodel", name)
-
 			hat:SetModelScale(hatoffsets[name].s, 0)
 			hat:SetupBones()
-
 			targetPreviewPos = Vector(50, 50, 50)
 			targetPreviewTarget = Vector(0, 0, 40)
 			targetPreviewFov = 40
 		end
 
 		GUIElements.tabs.drip.list.pmgrid:AddItem(itemPanel)
-
 		GMSTBase_SimpleHover(itemPanel, name .. "\nDefault playermodel.")
 	end
 
@@ -407,7 +393,6 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs.drip.colortext:SetTextColor(Color(255, 255, 255))
 	GUIElements.tabs.drip.colortext:SizeToContents()
 	GUIElements.tabs.drip.colortext:Dock(TOP)
-
 	GUIElements.tabs.drip.color = vgui.Create("DColorMixer", GUIElements.tabs.drip.list)
 	GUIElements.tabs.drip.color:Dock(TOP)
 	GUIElements.tabs.drip.color:DockMargin(0, 0, 16, 0)
@@ -436,22 +421,16 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 
 	GUIElements.tabs.drip.preview.PostDrawModel = function(self, ent)
 		if hatmodel == "" then return end
-
 		local bone = ent:LookupBone("ValveBiped.Bip01_Head1")
 		if !bone then return end
-
 		local pos, ang = ent:GetBonePosition(bone)
 		if !pos then return end
-
 		ang:RotateAroundAxis(ang:Forward(), 90)
 		ang:RotateAroundAxis(ang:Right(), -90)
 		ang:RotateAroundAxis(ang:Up(), 180)
-
 		hat:SetPos(pos + ang:Forward() * 0.5 + ang:Up() * 0.5)
 		hat:SetPos(hat:GetPos() + ang:Forward() * hatoffsets[pm].x + ang:Up() * hatoffsets[pm].y)
-
 		hat:SetAngles(ang)
-
 		hat:DrawModel()
 	end
 

@@ -35,7 +35,6 @@ net.Receive("gmstation_store", function()
 	GUIElements.store:SetX(ScrW())
 	GUIElements.store:MoveTo(ScrW() - GUIElements.store:GetWide(), 0, 0.5, 0, 0.5, function() end)
 	GUIElements.store:MakePopup()
-
 	local loading = vgui.Create("DLabel", GUIElements.store)
 	loading:Dock(FILL)
 	loading:SetFont("Trebuchet32")
@@ -63,20 +62,20 @@ net.Receive("gmstation_store", function()
 	store:Dock(FILL)
 	store:DockMargin(5, 5, 5, 5)
 
-	apiCall("store_items", {store_id = "1"}, function(data)
+	apiCall("store_items", {
+		store_id = "1"
+	}, function(data)
 		local cartItems = {}
 		local total = 0
 		local count = 0
-
 		store_items = data
 		loading:Remove()
-
 		if !IsValid(store) then return end
-
 		local cartPanel = vgui.Create("DPanel", GUIElements.store)
 		cartPanel:SetTall(48)
 		cartPanel:Dock(BOTTOM)
 		cartPanel:DockMargin(5, 5, 5, 5)
+
 		cartPanel.Paint = function(self, w, h)
 			draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
 		end
@@ -87,7 +86,6 @@ net.Receive("gmstation_store", function()
 		cart:SetFont("Trebuchet24Bold")
 		cart:SetText("Cart: 0 items / 0cc")
 		cart:SizeToContents()
-
 		local review = vgui.Create("DButton", cartPanel)
 		review:Dock(RIGHT)
 		review:DockMargin(8, 8, 8, 8)
@@ -97,6 +95,7 @@ net.Receive("gmstation_store", function()
 		review.DoClick = function()
 			if count == 0 then
 				GMST_DisplaySpeech(nil, "You have no items in your cart!", "Shopkeeper")
+
 				return
 			end
 
@@ -105,14 +104,12 @@ net.Receive("gmstation_store", function()
 			reviewPanel:Center()
 			reviewPanel:SetDraggable(false)
 			reviewPanel:SetTitle("Review cart")
-
 			local reviewItems = vgui.Create("DScrollPanel", reviewPanel)
 			reviewItems:Dock(FILL)
 			reviewItems:DockMargin(5, 5, 5, 5)
 
 			for v, k in pairs(cartItems) do
 				k = GMSTBase_GetItemInfo(v)
-
 				local item = vgui.Create("DPanel", reviewItems)
 				item:Dock(TOP)
 				item:DockMargin(0, 0, 0, 5)
@@ -182,34 +179,39 @@ net.Receive("gmstation_store", function()
 			purchase:DockMargin(5, 5, 5, 5)
 			purchase:SetTall(48)
 			purchase:SetText("Purchase")
+
 			purchase.DoClick = function()
 				surface.PlaySound("buttons/button14.wav")
 
 				if count == 0 then
 					GMST_DisplaySpeech(nil, "You have no items in your cart!", "Shopkeeper")
+
 					return
 				end
 
 				if count > 500 then
 					GMST_DisplaySpeech(nil, "You can only purchase 500 items at a time!", "Shopkeeper")
+
 					return
 				end
 
 				if CL_GLOBALS.money < total then
 					GMST_DisplaySpeech(nil, "You do not have enough money to purchase these items!", "Shopkeeper")
+
 					return
 				end
 
 				GUIElements.buying = vgui.Create("DPanel")
 				GUIElements.buying:SetSize(ScrW(), ScrH())
 				GUIElements.buying:MakePopup()
+
 				GUIElements.buying.Paint = function(self, w, h)
 					draw.RoundedBox(0, 0, 0, w, h, Color(0, 0, 0, 200))
 					draw.SimpleText("Purchasing...", "Trebuchet48Bold", w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 				end
 
 				net.Start("gmstation_store")
-					net.WriteTable(cartItems)
+				net.WriteTable(cartItems)
 				net.SendToServer()
 			end
 		end
@@ -217,7 +219,6 @@ net.Receive("gmstation_store", function()
 		for v, k in ipairs(store_items) do
 			local id = k
 			k = GMSTBase_GetItemInfo(k)
-
 			local item = vgui.Create("DPanel", store)
 			item:Dock(TOP)
 			item:DockMargin(0, 0, 0, 5)
@@ -246,15 +247,16 @@ net.Receive("gmstation_store", function()
 				if k.type == "hat" then
 					if cartItems[id] then
 						GMST_DisplaySpeech(nil, "I think you already have this hat in your cart...", "Shopkeeper")
+
 						return
 					elseif CL_GLOBALS.inventory[id] then
 						GMST_DisplaySpeech(nil, "I don't think you need two of these hats...", "Shopkeeper")
+
 						return
 					end
 				end
 
 				surface.PlaySound("buttons/button14.wav")
-
 				total = total + k.price
 
 				if !cartItems[id] then

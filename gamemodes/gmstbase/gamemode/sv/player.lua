@@ -56,10 +56,10 @@ function PlayerInit(ply)
 
 			MsgN("[GMSTBase] Sending " .. ply:Nick() .. " hat info.")
 			net.Start("gmstation_hatchange")
-				net.WriteEntity(ply)
-				net.WriteString(body.hat || "")
+			net.WriteEntity(ply)
+			net.WriteString(body.hat || "")
 			net.Broadcast()
-		
+
 			if post_fun then
 				post_fun()
 			end
@@ -70,6 +70,7 @@ function PlayerInit(ply)
 
 	function ply:GetMoney()
 		MsgN("[GMSTBase] " .. ply:Nick() .. " has " .. ply.money .. " cc.")
+
 		return ply.money
 	end
 
@@ -159,6 +160,7 @@ end
 function GM:PlayerDisconnected(ply)
 	PlayerMessage(nil, ply:Nick() .. " has left the station.")
 	MsgN("[GMSTBase] " .. ply:Nick() .. " left.")
+
 	apiCall("player_leave", {
 		["steamid"] = ply:SteamID64(),
 		["password"] = SV_GLOBALS.password
@@ -211,8 +213,8 @@ net.Receive("gmstation_hatchange", function(len, ply)
 
 			ply:SetNW2String("hat", hat)
 			net.Start("gmstation_hatchange")
-				net.WriteEntity(ply)
-				net.WriteString(hat)
+			net.WriteEntity(ply)
+			net.WriteString(hat)
 			net.Broadcast()
 		else
 			MsgN("[GMSTBase] " .. ply:Nick() .. " failed to change their hat to " .. hat .. ".")
@@ -220,10 +222,8 @@ net.Receive("gmstation_hatchange", function(len, ply)
 	end)
 end)
 
-
 net.Receive("gmstation_pmchange", function(len, ply)
 	local model = net.ReadString()
-
 	ply:SetModel(model)
-	ply:SetupHands()	
+	ply:SetupHands()
 end)

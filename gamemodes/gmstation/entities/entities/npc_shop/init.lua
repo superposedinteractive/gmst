@@ -29,11 +29,11 @@ end
 
 net.Receive("gmstation_store", function(len, ply)
 	local items = net.ReadTable()
-
 	local total = 0
 
 	for k, v in pairs(items) do
 		local item = GMSTBase_GetItemInfo(k)
+
 		if item then
 			total = total + item.price * v
 		end
@@ -45,7 +45,11 @@ net.Receive("gmstation_store", function(len, ply)
 
 	ply:UpdateInfo(function()
 		if ply:CanAfford(total) then
-			apiCall("store_purchase", {password = SV_GLOBALS["password"], steamid = ply:SteamID64(), ["items"] = util.TableToJSON(items)}, function(data)
+			apiCall("store_purchase", {
+				password = SV_GLOBALS["password"],
+				steamid = ply:SteamID64(),
+				["items"] = util.TableToJSON(items)
+			}, function(data)
 				if data.success then
 					MsgN("[GMStation] ", ply:Nick(), " purchased items for " .. total .. "cc.")
 					ply:MoneyAdd(-total)

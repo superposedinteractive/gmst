@@ -22,6 +22,7 @@ function GM:HUDDrawTargetID()
 	if trace.Hit && !trace.Entity:IsPlayer() then return end
 	local text = "ERROR"
 	local color = Color(255, 255, 255)
+
 	if trace.Entity:IsPlayer() then
 		text = trace.Entity:Nick()
 		color = trace.Entity:GetPlayerColor():ToColor()
@@ -563,5 +564,5 @@ hook.Add("HUDPaint", "gmstation_draw_info", function()
 	draw.DrawText(stringified_globals, "TrebuchetChat", ScrW(), height, Color(255, 255, 255), TEXT_ALIGN_RIGHT)
 end)
 
--- hook.Remove("HUDPaint", "gmstation_draw_info")
+// hook.Remove("HUDPaint", "gmstation_draw_info")
 timer.Stop("gmstation_payout_timer")
