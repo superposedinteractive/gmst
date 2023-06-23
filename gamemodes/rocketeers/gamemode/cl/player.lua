@@ -86,10 +86,12 @@ GUIElements.timer:SetSize(300, 64)
 GUIElements.timer:CenterHorizontal()
 
 GUIElements.timer.Paint = function(self, w, h)
+	local time = timer.TimeLeft("rocketeers_timer")
+
 	surface.SetMaterial(gradient_v)
 	surface.SetDrawColor(0, 0, 0)
 	surface.DrawTexturedRect(0, 0, w, h)
-	draw.SimpleText(string.FormattedTime(0, "%02i:%02i"), "Trebuchet32Bold", w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+	draw.SimpleText(string.FormattedTime(time, "%02i:%02i"), "Trebuchet32Bold", w / 2, h / 2, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 end
 
 function GM:PlayerAmmoChanged(ply, ammo, oldcount, newcount)
@@ -236,8 +238,7 @@ net.Receive("rocketeers_death", function()
 	end
 end)
 
-net.Receive("rocketeers_20sec", function()
-	// timer.Simple(5, function()
+local function seconds20()
 	if CL_GLOBALS.currentSound then
 		CL_GLOBALS.currentSound:Stop()
 	end
@@ -275,16 +276,29 @@ net.Receive("rocketeers_20sec", function()
 			intensity = 6
 		end)
 	end)
-
-	if timer.Exists("rocketeers_timer") then
-		timer.Adjust("rocketeers_timer", 20, 1)
-	else
-		panic("rocketeers timer not found")
-	end
-end)
+end
 
 timer.Remove("rocketeers_timer")
+timer.Remove("rocketeers_20sectimer")
 
-timer.Simple(1, function()
-	rk_notice("deez nuts in yo mouth")
+net.Receive("rocketeers_gameupdate", function()
+	local type = net.ReadString()
+	local time = net.ReadFloat()
+
+	MsgN("[Rocketeers] Game update: " .. type .. " " .. time)
+
+	if type != "stop" then
+		timer.Create("rocketeers_timer", time, 1, function()
+		end)
+	
+		timer.Create("rocketeers_20sectimer", time - 22, 1, function()
+			seconds20()
+		end)
+	elseif type == "time" then
+		timer.Adjust("rocketeers_timer", time, 1)
+		timer.Adjust("rocketeers_20sectimer", time - 22, 1)
+	else
+		timer.Remove("rocketeers_timer")
+		timer.Remove("rocketeers_20sectimer")
+	end
 end)

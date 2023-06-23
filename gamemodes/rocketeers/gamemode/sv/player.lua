@@ -58,12 +58,18 @@ function GM:PlayerDeath(ply, inflictor, attacker)
 	wep:SetPos(ply:GetPos() + Vector(0, 0, 10))
 	wep:SetVelocity(VectorRand() * 100)
 	net.Start("rocketeers_death")
-	net.WriteEntity(attacker)
+		net.WriteEntity(attacker)
 	net.Send(ply)
 
 	timer.Simple(5, function()
 		ply:Spawn()
 	end)
+
+	if IsValid(ply.flag) then
+		MsgN("[Rocketeers] "..ply:Nick().." dropped the flag!")
+
+		ply.flag:SetNWEntity("capturer", nil)
+	end
 end
 
 function GM:PlayerDeathThink(ply)
