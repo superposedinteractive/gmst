@@ -76,3 +76,27 @@ else
 	file.CreateDir("gmstation")
 	saveSettings()
 end
+
+function FetchInfo()
+	MsgN("[GMSTBase] Fetching info...")
+	local oldMoney = CL_GLOBALS.money || 0
+
+	apiCall("player_info", {
+		steamid = CL_GLOBALS.steamid || LocalPlayer():SteamID64()
+	}, function(body, len, headers, code)
+		MsgN("[GMST] Info received, updated global variables")
+		CL_GLOBALS.money = body["money"] || "ERROR"
+		CL_GLOBALS.inventory = body["inventory"] || {}
+		CL_GLOBALS.hat = body["hat"] || "ERROR"
+
+		if oldMoney != 0 && oldMoney != CL_GLOBALS.money then
+			if oldMoney > CL_GLOBALS.money then
+				surface.PlaySound("/mvm/mvm_bought_upgrade.wav")
+				GMSTBase_Notification("GMSTBank", "You lost " .. string.Comma(oldMoney - CL_GLOBALS.money) .. "cc.")
+			else
+				surface.PlaySound("/mvm/mvm_money_pickup.wav")
+				GMSTBase_Notification("GMSTBank", "You got " .. string.Comma(CL_GLOBALS.money - oldMoney) .. "cc.")
+			end
+		end
+	end)
+end

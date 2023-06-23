@@ -48,10 +48,7 @@ local settings = {
 		"refreshData", optionTypes["BUTTON"], "Refresh Data", function()
 			GMSTBase_RequestNetVars()
 			GMSTBase_RetreiveItems()
-
-			if FetchInfo then
-				FetchInfo()
-			end
+			FetchInfo()
 		end
 	}
 }

@@ -1,13 +1,6 @@
-﻿// local hatOffsets = {
-// 	["css_urban"] = 0
-// }
-local items = {}
+﻿local items = {}
 game.AddParticles("particles/achievement.pcf")
 PrecacheParticleSystem("achieved")
-
-hook.Add("PlayerConnect", "GMSTBase_LoadItems", function()
-	GMSTBase_RetreiveItems()
-end)
 
 function GMSTBase_RetreiveItems()
 	MsgN("[GMSTBase] Loading item definitions...")
@@ -35,12 +28,6 @@ function GMSTBase_RetreiveItems()
 		if CLIENT then
 			UpdateHats()
 		end
-	end)
-end
-
-if CLIENT then
-	hook.Add("InitPostEntity", "GMSTBase_LoadItems", function()
-		GMSTBase_RetreiveItems()
 	end)
 end
 
@@ -85,3 +72,22 @@ end, nil, "Dumps all item definitions to console", FCVAR_CHEAT)
 concommand.Add("gmst_refreshitems", function()
 	GMSTBase_RetreiveItems()
 end, nil, "Refreshes the item definitions")
+
+if SERVER then
+	hook.Add("PlayerConnect", "GMSTBase_LoadItems", function()
+		GMSTBase_RetreiveItems()
+	end)
+elseif CLIENT then
+	hook.Add("InitPostEntity", "GMSTBase_LoadItems", function()
+		GMSTBase_RetreiveItems()
+		FetchInfo()
+	end)
+
+	hook.Add("OnReloaded", "GMSTBase_LoadItems", function()
+		GMSTBase_RetreiveItems()
+		FetchInfo()
+	end)
+
+	GMSTBase_RetreiveItems()
+	FetchInfo()
+end

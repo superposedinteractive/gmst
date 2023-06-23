@@ -2,6 +2,39 @@
 util.AddNetworkString("gmstation_first_join")
 util.AddNetworkString("gmstation_first_join_done")
 
+function apiCall(url, args, callback)
+	local get = ""
+
+	for k, v in pairs(args) do
+		get = get .. k .. "=" .. v .. "&"
+	end
+
+	get = string.sub(get, 1, string.len(get) - 1)
+	MsgN("[GMSTBase] Requesting: " .. SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
+
+	http.Fetch(SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
+		MsgN("[GMSTBase] API Response: " .. body)
+		body = util.JSONToTable(body)
+
+		if body["error"] != nil then
+			MsgN("[GMSTBase] API Error!")
+
+			timer.Simple(240, function()
+				apiPanic()
+			end)
+
+			return
+		end
+
+		if callback then
+			callback(body, len, headers, code)
+		end
+	end, function(error)
+		MsgN(error)
+		apiPanic()
+	end)
+end
+
 local function apiPanic()
 	MsgN("[GMSTBase] API is down. Kicking all players.")
 	gameevent.Listen("player_connect")
@@ -36,39 +69,6 @@ local function regPlayer(ply)
 			PlayerInit(ply)
 			ply:Freeze(false)
 		end)
-	end)
-end
-
-function apiCall(url, args, callback)
-	local get = ""
-
-	for k, v in pairs(args) do
-		get = get .. k .. "=" .. v .. "&"
-	end
-
-	get = string.sub(get, 1, string.len(get) - 1)
-	MsgN("[GMSTBase] Requesting: " .. SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get)
-
-	http.Fetch(SV_GLOBALS.url .. "/api/" .. url .. ".php" .. "?" .. get, function(body, len, headers, code)
-		MsgN("[GMSTBase] API Response: " .. body)
-		body = util.JSONToTable(body)
-
-		if body["error"] != nil then
-			MsgN("[GMSTBase] API Error!")
-
-			timer.Simple(240, function()
-				apiPanic()
-			end)
-
-			return
-		end
-
-		if callback then
-			callback(body, len, headers, code)
-		end
-	end, function(error)
-		MsgN(error)
-		apiPanic()
 	end)
 end
 
