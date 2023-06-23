@@ -1,4 +1,6 @@
-﻿local playerList = {}
+﻿util.AddNetworkString("rocketeers_")
+
+local playerList = {}
 
 function GetGameTime()
 	if !timer.Exists("rocketeers_timer") then return false end
