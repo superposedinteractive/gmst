@@ -63,3 +63,36 @@ givemoney:addParam{
 
 givemoney:defaultAccess(ULib.ACCESS_ADMIN)
 givemoney:help("Gives the target player money.")
+
+
+function ulx.reward(calling_ply, target_plys, rewards)
+	rewards = string.Split(rewards, ",")
+	local processed_rewards = {}
+	for k, v in pairs(rewards) do
+		local split = string.Split(v, "=")
+		if #split != 2 then continue end
+		local name = split[1]
+		local amount = tonumber(split[2])
+		if !amount then continue end
+		table.insert(processed_rewards, {name, amount})
+	end
+	
+	for k, v in pairs(target_plys) do
+		v:Payout(processed_rewards)
+	end
+end
+
+local reward = ulx.command(CATEGORY_NAME, "ulx reward", ulx.reward, "!reward")
+reward:defaultAccess(ULib.ACCESS_ADMIN)
+reward:addParam{
+	type = ULib.cmds.PlayersArg,
+	default = function(ply) return ply end,
+	hint = "players"
+}
+
+reward:addParam{
+	type = ULib.cmds.StringArg,
+	hint = "rewards"
+}
+
+reward:help("Gives the target players rewards.")

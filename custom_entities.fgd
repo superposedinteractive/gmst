@@ -14,3 +14,8 @@
     message(string) : "Enter message"
     exitMessage(string) : "Exit message"
 ]
+
+@PointClass studio("models/flag/flag.mdl") = rk_flag
+[
+    team(integer) : "Team"
+]

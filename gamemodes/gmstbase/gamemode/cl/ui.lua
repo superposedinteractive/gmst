@@ -35,6 +35,7 @@ end
 
 function GM:HUDShouldDraw(name)
 	return hudExceptions[name] || false
+	-- return true
 end
 
 local function image_load(dimage, path)

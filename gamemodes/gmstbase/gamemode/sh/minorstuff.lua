@@ -26,7 +26,9 @@ function GMSTBase_RetreiveItems()
 		end
 
 		if CLIENT then
-			UpdateHats()
+			timer.Simple(1, function()
+				UpdateHats()
+			end)
 		end
 	end)
 end
@@ -87,7 +89,4 @@ elseif CLIENT then
 		GMSTBase_RetreiveItems()
 		FetchInfo()
 	end)
-
-	GMSTBase_RetreiveItems()
-	FetchInfo()
 end

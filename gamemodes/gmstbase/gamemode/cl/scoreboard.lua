@@ -140,6 +140,7 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tabs = vgui.Create("DPanel", GUIElements.tab)
 	GUIElements.tabs:Dock(FILL)
 	GUIElements.tabs.Paint = function(self, w, h) end
+
 	GUIElements.tab.header.title = vgui.Create("DLabel", GUIElements.tab.header)
 	GUIElements.tab.header.title:SetFont("Trebuchet24Bold")
 	GUIElements.tab.header.title:SetText("GMStation")
@@ -147,11 +148,13 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 	GUIElements.tab.header.title:SizeToContents()
 	GUIElements.tab.header.title:Dock(LEFT)
 	GUIElements.tab.header.title:DockMargin(4, 0, 0, 0)
+
 	GUIElements.tabs.players = vgui.Create("DScrollPanel", GUIElements.tabs)
 	GUIElements.tabs.players:Dock(FILL)
 	GUIElements.tabs.players:SetVisible(true)
+
 	GUIElements.tabs.players.panel = vgui.Create("DListLayout", GUIElements.tabs.players)
-	GUIElements.tabs.players.panel:Dock(FILL)
+	GUIElements.tabs.players.panel:Dock(TOP)
 
 	for k, v in pairs(player.GetAll()) do
 		local playerPanel = vgui.Create("DPanel", GUIElements.tabs.players.panel)
@@ -170,11 +173,11 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 
 		playerPanel.avatar = vgui.Create("AvatarImage", playerPanel)
 		playerPanel.avatar:SetPlayer(v, 64)
-		playerPanel.avatar:Dock(LEFT)
 		playerPanel.avatar:DockMargin(8, 8, 8, 8)
 		playerPanel.avatar:SetSize(48, 48)
+
 		local button = vgui.Create("DButton", playerPanel.avatar)
-		button:SetSize(48, 48)
+		button:Dock(FILL)
 		button:SetText("")
 		button.Paint = function(self, w, h) end
 
@@ -184,22 +187,77 @@ hook.Add("ScoreboardShow", "gmstation_tab", function()
 			end
 		end
 
-		playerPanel.name = vgui.Create("DLabel", playerPanel)
+		local vertInfo = vgui.Create("DPanel", playerPanel)
+		vertInfo:Dock(FILL)
+		vertInfo:DockMargin(0, 8, 0, 8)
+		vertInfo.Paint = function(self, w, h) end
+
+		local vertInfo2 = vgui.Create("DPanel", playerPanel)
+		vertInfo2:Dock(RIGHT)
+		vertInfo2:DockMargin(0, 8, 0, 8)
+		vertInfo2.Paint = function(self, w, h) end
+
+		playerPanel.name = vgui.Create("DLabel", vertInfo)
 		playerPanel.name:SetFont("Trebuchet16")
 		playerPanel.name:SetText(v:Nick())
 		playerPanel.name:SetTextColor(textColor)
-		playerPanel.name:Dock(TOP)
-		playerPanel.name:DockMargin(0, 13, 0, 0)
-		playerPanel.location = vgui.Create("DLabel", playerPanel)
+
+		playerPanel.location = vgui.Create("DLabel", vertInfo)
 		playerPanel.location:SetFont("Trebuchet16")
 		playerPanel.location:SetText(v:GetNW2String("zone") || "Somewhere")
 		playerPanel.location:SetTextColor(textColor2)
+
+		playerPanel.ping = vgui.Create("DLabel", vertInfo2)
+		playerPanel.ping:SetFont("Trebuchet16")
+		playerPanel.ping:SetText(v:Ping() .. "ms")
+		playerPanel.ping:SetTextColor(textColor2)
+		playerPanel.ping:SetContentAlignment(5)
+
+		playerPanel.avatar:Dock(LEFT)
+
+		playerPanel.name:Dock(TOP)
 		playerPanel.location:Dock(BOTTOM)
-		playerPanel.location:DockMargin(0, 0, 0, 10)
+
+		playerPanel.ping:Dock(FILL)
+
+		playerPanel.contextMenu = vgui.Create("DButton", playerPanel)
+		playerPanel.contextMenu:Dock(FILL)
+		playerPanel.contextMenu:SetText("")
+		playerPanel.contextMenu:SetMouseInputEnabled(true)
+		playerPanel.contextMenu.Paint = function(self, w, h) end
+
+		playerPanel.contextMenu.DoClick = function()
+			surface.PlaySound("ui/buttonclick.wav")
+
+			local settingsPanel = vgui.Create("DPanel", playerPanel)
+			settingsPanel:SetSize(0, playerPanel:GetTall())
+			settingsPanel.Paint = function(self, w, h)
+				surface.SetMaterial(playerGradient)
+				surface.SetDrawColor(v:GetPlayerColor():ToColor())
+				surface.DrawTexturedRect(0, 0, w, h)
+				surface.DrawTexturedRect(0, 0, w, h)
+				surface.DrawTexturedRect(0, 0, w / 2, h)
+			end
+
+			settingsPanel:SizeTo(playerPanel:GetWide(), playerPanel:GetTall(), 1, 0, 0.15)
+
+			local closeButton = vgui.Create("DButton", settingsPanel)
+			closeButton:Dock(FILL)
+			closeButton:SetText("")
+			closeButton.Paint = function(self, w, h) end
+
+			closeButton.DoClick = function()
+				surface.PlaySound("ui/buttonclickrelease.wav")
+				settingsPanel:SizeTo(0, playerPanel:GetTall(), 1, 0, 0.15, function()
+					settingsPanel:Remove()
+				end)
+			end
+		end
 
 		timer.Create("gmstation_scoreboard_" .. v:SteamID(), 0.5, 0, function()
 			if IsValid(playerPanel.location) then
 				playerPanel.location:SetText(v:GetNW2String("zone") || "Somewhere")
+				playerPanel.ping:SetText(v:Ping() .. "ms")
 			else
 				timer.Remove("gmstation_scoreboard_" .. v:SteamID())
 			end

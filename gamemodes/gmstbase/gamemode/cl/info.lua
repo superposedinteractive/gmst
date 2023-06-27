@@ -33,6 +33,8 @@ function apiCall(url, args, callback)
 	end)
 end
 
+GMSTBase_RetreiveItems()
+
 function saveSettings(write)
 	MsgN("[GMSTBase] Applying settings")
 	local settings = {}
@@ -98,5 +100,7 @@ function FetchInfo()
 				GMSTBase_Notification("GMSTBank", "You got " .. string.Comma(CL_GLOBALS.money - oldMoney) .. "cc.")
 			end
 		end
+
+		UpdateHats()
 	end)
 end

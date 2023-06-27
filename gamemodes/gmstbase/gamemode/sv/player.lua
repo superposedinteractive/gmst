@@ -58,6 +58,7 @@ function PlayerInit(ply)
 			net.Start("gmstation_hatchange")
 			net.WriteEntity(ply)
 			net.WriteString(body.hat || "")
+			ply:SetNW2String("hat", body.hat || "")
 			net.Broadcast()
 
 			if post_fun then
@@ -133,11 +134,11 @@ function GM:GetFallDamage()
 	return 0
 end
 
-function GM:PlayerCanPickupWeapon(ply, wep)
-	if wep:GetClass() == "weapon_physgun" then return true end
+-- function GM:PlayerCanPickupWeapon(ply, wep)
+-- 	if wep:GetClass() == "weapon_physgun" then return true end
 
-	return false
-end
+-- 	return false
+-- end
 
 function GM:PlayerStartTaunt(ply, actid, len)
 	ply:CrosshairDisable()

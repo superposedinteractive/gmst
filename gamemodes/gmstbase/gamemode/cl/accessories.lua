@@ -586,6 +586,8 @@ net.Receive("gmstation_hatchange", function()
 	local ply = net.ReadEntity()
 	local hat = net.ReadString()
 
+	if !IsValid(ply) then return end
+
 	if ply != LocalPlayer() then
 		ply:EmitSound("replay/rendercomplete.wav")
 	end
